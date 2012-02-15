@@ -50,8 +50,8 @@ pix_opencv_findchessboardcorners :: pix_opencv_findchessboardcorners()
   criteria = cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1);
   coord_list = new t_atom[pattern_size.width * pattern_size.height * 2]; // all coordinates are packed in one list [x0 y0 x1 y1 .. xn yn(
   
-  post("pix_opencv_findchessboardcorners by Antoine Villeret");
-  post("build on %s at %s", __DATE__, __TIME__);
+  //~ post("pix_opencv_findchessboardcorners by Antoine Villeret");
+  //~ post("build on %s at %s", __DATE__, __TIME__);
 
 }
 
@@ -94,13 +94,10 @@ void pix_opencv_findchessboardcorners :: processRGBAImage(imageStruct &image)
     rgb->imageData = (char*) image.data;    
     cvCvtColor( rgb, tmp_gray, CV_RGBA2GRAY);
     
-	//~ printf("find corner...*/\n");
 	int found = cvFindChessboardCorners( tmp_gray, pattern_size, corners, &cornerCount, flags);
-	//~ printf(" found : %d\n",found);
 	
 	
 	if ( found ) {
-		//~ printf("find corner sub pix...\n");
 		cvFindCornerSubPix( tmp_gray, corners, cornerCount, win, zero_zone, criteria);
 	}
 	
@@ -122,7 +119,6 @@ void pix_opencv_findchessboardcorners :: processRGBAImage(imageStruct &image)
 		}
 		outlet_list( m_dataout, 0, pattern_size.width * pattern_size.height*2, coord_list );
 	}
-    //~ printf("process RGBA image done\n");
 }
 
 void pix_opencv_findchessboardcorners :: processRGBImage(imageStruct &image)
@@ -139,7 +135,7 @@ void pix_opencv_findchessboardcorners :: processYUVImage(imageStruct &image)
     	
 void pix_opencv_findchessboardcorners :: processGrayImage(imageStruct &image)
 { 
-	//~ printf("process gray image\n");
+
   if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!gray)) 
   {
 
@@ -160,13 +156,10 @@ void pix_opencv_findchessboardcorners :: processGrayImage(imageStruct &image)
     // no need to copy a lot of memory, just point to it...
     gray->imageData = (char*) image.data;    
     
-	//~ printf("find corner...*/\n");
 	int found = cvFindChessboardCorners( gray, pattern_size, corners, &cornerCount, flags);
-	//~ printf(" found : %d\n",found);
 	
 	
 	if ( found ) {
-		//~ printf("find corner sub pix...\n");
 		cvFindCornerSubPix( gray, corners, cornerCount, win, zero_zone, criteria);
 	}
 	
@@ -188,7 +181,6 @@ void pix_opencv_findchessboardcorners :: processGrayImage(imageStruct &image)
 		}
 		outlet_list( m_dataout, 0, pattern_size.width * pattern_size.height*2, coord_list );
 	}
-    //~ printf("process gray image done\n");
 }
 
 /////////////////////////////////////////////////////////

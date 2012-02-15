@@ -19,8 +19,6 @@
 
 #include "pix_opencv_calibration.h"
 #include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
 
 CPPEXTERN_NEW(pix_opencv_calibration)
 
@@ -74,7 +72,7 @@ pix_opencv_calibration :: pix_opencv_calibration()
 	CV_MAT_ELEM( *distortion_coeffs, float, i, 0 ) = 0.0;
 	}
 
-	post("pix_opencv_calibration build on %s at %s", __DATE__, __TIME__);
+	//~ post("pix_opencv_calibration build on %s at %s", __DATE__, __TIME__);
 }
 
 /////////////////////////////////////////////////////////
@@ -106,7 +104,6 @@ void pix_opencv_calibration :: processRGBAImage(imageStruct &image)
 { 
 	if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!rgb)) { 
 	
-		// printf("process rgba image\n");
 		this->comp_xsize = image.xsize;
 		this->comp_ysize = image.ysize;
 		if ( calibration ) error ( "image size changed, calibration was cancelled");
@@ -164,7 +161,6 @@ void pix_opencv_calibration :: processGrayImage(imageStruct &image)
 { 
 	if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!gray)) { 
 		
-		// printf("process gray image\n");
 		this->comp_xsize = image.xsize;
 		this->comp_ysize = image.ysize;
 		if ( calibration ) error ( "image size changed, calibration was cancelled");
@@ -355,13 +351,11 @@ void pix_opencv_calibration :: loadDistMess (t_symbol *filename)
 
 void pix_opencv_calibration :: writeIntraMess (t_symbol *filename)
 {
-	// printf("write intrinsic matrix\n");
 	cvSave(filename->s_name,intrinsic_matrix);
 }
 
 void pix_opencv_calibration :: writeDistMess (t_symbol *filename)
 {
-	// printf("write distorsion coeffs\n");
 	cvSave(filename->s_name,distortion_coeffs);
 }
 

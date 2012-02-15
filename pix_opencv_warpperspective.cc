@@ -73,9 +73,9 @@ pix_opencv_warpperspective :: pix_opencv_warpperspective()
   flags =  CV_WARP_FILL_OUTLIERS; // TODO add a set method
   findmethod = 0; // TODO add a set method
   
-  printf("build on %s at %s\n", __DATE__, __TIME__);
-  post("pix_opencv_warpperspective by Antoine Villeret");
-  post("build on %s at %s", __DATE__, __TIME__);
+  //~ printf("build on %s at %s\n", __DATE__, __TIME__);
+  //~ post("pix_opencv_warpperspective by Antoine Villeret");
+  //~ post("build on %s at %s", __DATE__, __TIME__);
 
 }
 
@@ -117,7 +117,7 @@ void pix_opencv_warpperspective :: processRGBAImage(imageStruct &image)
 	
     // no need to copy a lot of memory, just point to it...
     rgb->imageData = (char*) image.data;
-
+	cvSet(tmp,cvScalar(0));
    	cvWarpPerspective(rgb, tmp, mapMatrix, flags, cvScalar(0));
 	memcpy(image.data, tmp->imageData, image.xsize*image.ysize);
 	
@@ -154,7 +154,7 @@ void pix_opencv_warpperspective :: processGrayImage(imageStruct &image)
 
     // no need to copy a lot of memory, just point to it...
     gray->imageData = (char*) image.data;
-    
+    cvSet(tmp,cvScalar(0));
    	cvWarpPerspective(gray, tmp, mapMatrix, flags, cvScalar(0));
 	memcpy(image.data, tmp->imageData, image.xsize*image.ysize);
 	
@@ -190,32 +190,23 @@ void pix_opencv_warpperspective :: mapMatrixMess (int argc, t_atom *argv)
 	CV_MAT_ELEM( *mapMatrix, float, 1, 2 ) = argv[7].a_w.w_float;
 	CV_MAT_ELEM( *mapMatrix, float, 2, 2 ) = argv[8].a_w.w_float;
 	
-	printf("---mapMatrix---\n");
-	for ( j = 0 ; j < 3 ; j++ ){
-		for( i=0 ; i<3 ; i++){
-			printf("%.2f,\t", CV_MAT_ELEM( *mapMatrix, float, i, j));
-		}
-		printf("\n");
-	}
+	cvSet(tmp,cvScalar(0));
+	
 }
 
 void pix_opencv_warpperspective :: srcMatrixMess (int argc, t_atom *argv)
 {
-	//~ printf("set srcMatrix\n");
 	int i,j;
 	float a;
-	//~ printf("check parity\n");
 	if ( argc % 2 ) { 
 		error("src is should be a list of couple x/y values"); 
 		return; 
 	}
-	//~ printf("check size\n");
 	if ( argc != dstMatrix->rows * dstMatrix->cols )
 	{ 
 		error("src matrix should have the same size as dst matrix (which is %d x %d)", dstMatrix->cols, dstMatrix->rows);
 		return;
 	}
-	//~ printf("check type\n");	
 	for ( i = 0; i < argc ; i++) {		
 		if (argv[i].a_type != A_FLOAT) { 
 				error("src matrix should be float"); 
@@ -224,7 +215,6 @@ void pix_opencv_warpperspective :: srcMatrixMess (int argc, t_atom *argv)
 	}
 
 	// fillin the srcMatrix
-	//~ printf("fillin srcMatrix\n");
 	for ( i = 0 ; i < dstMatrix->rows ; i++ )
 	{
 		CV_MAT_ELEM( *srcMatrix, float, i, 0 ) = argv[i*2].a_w.w_float;
@@ -235,23 +225,18 @@ void pix_opencv_warpperspective :: srcMatrixMess (int argc, t_atom *argv)
 
 void pix_opencv_warpperspective :: dstMatrixMess (int argc, t_atom *argv)
 {
-	//~ printf("set dstMatrix\n");
 	int i,j;
-	//~ printf("check parity\n");
 	if ( argc % 2 ){ 
 			error("dstMatrix is should be a list of x/y pairs"); 
 			return; 
 		}
-	//~ printf("check type\n");
 	for ( i = 0; i < argc ; i++) {
 		if (argv[i].a_type != A_FLOAT) {
 				error("dstMatrix should be float"); 
 				return;
 			}
 	}
-	//~ printf("dstMatrix-cols = %d,\t argc = %d\n", dstMatrix->rows, argc);
 	if ( dstMatrix->rows != argc/2 ) {
-		printf("re-create dstMatrix & srcMatrix\n");
 		// delete and recreate matrix if needed
 		cvReleaseMat(&dstMatrix);
 		cvReleaseMat(&srcMatrix);
@@ -260,7 +245,6 @@ void pix_opencv_warpperspective :: dstMatrixMess (int argc, t_atom *argv)
 		cvSet(srcMatrix, cvScalar(0)); // set all to 0.
 	}
 	// fillin the dstMatrix
-	printf("fillin dstMatrix\n");
 	for ( i = 0 ; i < dstMatrix->rows ; i++ )
 	{
 		CV_MAT_ELEM( *dstMatrix, float, i, 0 ) = argv[i*2].a_w.w_float;
@@ -272,34 +256,19 @@ void pix_opencv_warpperspective :: dstMatrixMess (int argc, t_atom *argv)
 void pix_opencv_warpperspective :: findhomography( )
 {
 	int i,j;
-	//~ printf("find homography\n");
 		if ( srcMatrix->cols != dstMatrix->cols || srcMatrix->rows != dstMatrix->rows ) {
 			error("srcMatrix and dstMatrix should have the same size to compute homography !");
 			return;
 		}
-		/*
-		printf("--- srcMatrix ---");
-		for ( i = 0 ; i < srcMatrix->rows ; i++ ){
-			printf("%.2f\t", CV_MAT_ELEM( *srcMatrix, float, i, 0));
-			printf("%.2f\n", CV_MAT_ELEM( *srcMatrix, float, i, 1));
-		}
-		printf("--- dstMatrix ---");
-		for ( i = 0 ; i < dstMatrix->rows ; i++ ){
-			printf("%.2f\t", CV_MAT_ELEM( *dstMatrix, float, i, 0));
-			printf("%.2f\n", CV_MAT_ELEM( *dstMatrix, float, i, 1));
-		}
-		*/
-			
+		
 		cvFindHomography(srcMatrix, dstMatrix, mapMatrix, findmethod, 0, NULL);
-		printf("---mapMatrix---\n");
 		for ( j = 0 ; j < 3 ; j++ ){
 			for( i=0 ; i<3 ; i++){
 				SETFLOAT(&mapMatrixList[i+j*3], CV_MAT_ELEM( *mapMatrix, float, i, j));
-				printf("%.2f,\t", CV_MAT_ELEM( *mapMatrix, float, i, j));
 			}
-			printf("\n");
 		}
 		// send out mapMatrix
+		cvSet(tmp,cvScalar(0));
 		outlet_list( m_dataout, 0, 9, mapMatrixList);
 }
 /////////////////////////////////////////////////////////
@@ -332,4 +301,3 @@ void pix_opencv_warpperspective :: dstMatrixMessCallback(void *data, t_symbol *s
 {
 		GetMyClass(data)->dstMatrixMess(argc, argv);
 }
-
