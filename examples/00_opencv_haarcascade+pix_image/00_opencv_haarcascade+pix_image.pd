@@ -1,4 +1,5 @@
-#N canvas 52 71 946 685 8;
+#N canvas 563 174 946 685 8;
+#X declare -path ../../;
 #X obj 277 1021 pix_texture;
 #X obj 277 1048 rectangle 4 3;
 #X obj 277 347 pix_rgba;
@@ -41,7 +42,7 @@
 #X connect 6 0 0 0;
 #X connect 7 0 0 0;
 #X restore 304 94 pd gemwin;
-#X msg 304 61 create;
+#X msg 304 61 destroy;
 #X obj -190 155 cnv 15 600 180 empty empty empty 20 12 0 14 -260097
 -66577 0;
 #X text -167 194 2.- Setup your camera;
@@ -123,6 +124,7 @@ change the size of the image accorrding;
 #X obj 394 860 translateXYZ 0 0 0.2;
 #X obj 454 629 -;
 #X obj 484 626 * 2;
+#X obj 503 87 declare -path ../../;
 #X connect 0 0 1 0;
 #X connect 2 0 14 0;
 #X connect 3 0 8 0;
