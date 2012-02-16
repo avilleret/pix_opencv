@@ -117,7 +117,6 @@ void pix_opencv_warpperspective :: processRGBAImage(imageStruct &image)
 	
     // no need to copy a lot of memory, just point to it...
     rgb->imageData = (char*) image.data;
-	cvSet(tmp,cvScalar(0));
    	cvWarpPerspective(rgb, tmp, mapMatrix, flags, cvScalar(0));
 	memcpy(image.data, tmp->imageData, image.xsize*image.ysize);
 	
@@ -154,7 +153,6 @@ void pix_opencv_warpperspective :: processGrayImage(imageStruct &image)
 
     // no need to copy a lot of memory, just point to it...
     gray->imageData = (char*) image.data;
-    cvSet(tmp,cvScalar(0));
    	cvWarpPerspective(gray, tmp, mapMatrix, flags, cvScalar(0));
 	memcpy(image.data, tmp->imageData, image.xsize*image.ysize);
 	
@@ -190,7 +188,6 @@ void pix_opencv_warpperspective :: mapMatrixMess (int argc, t_atom *argv)
 	CV_MAT_ELEM( *mapMatrix, float, 1, 2 ) = argv[7].a_w.w_float;
 	CV_MAT_ELEM( *mapMatrix, float, 2, 2 ) = argv[8].a_w.w_float;
 	
-	cvSet(tmp,cvScalar(0));
 	
 }
 
@@ -268,7 +265,6 @@ void pix_opencv_warpperspective :: findhomography( )
 			}
 		}
 		// send out mapMatrix
-		cvSet(tmp,cvScalar(0));
 		outlet_list( m_dataout, 0, 9, mapMatrixList);
 }
 /////////////////////////////////////////////////////////
