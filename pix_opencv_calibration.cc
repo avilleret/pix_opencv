@@ -56,22 +56,7 @@ pix_opencv_calibration :: pix_opencv_calibration()
 	intrinsic_matrix 		= 	cvCreateMat(3, 3, CV_32FC1);
 	distortion_coeffs 		= 	cvCreateMat(5, 1, CV_32FC1); 
 	
-	// make an "empty" intrinsinc matrix
-	CV_MAT_ELEM( *intrinsic_matrix, float, 0, 0 ) = 8;
-	CV_MAT_ELEM( *intrinsic_matrix, float, 1, 0 ) = 0;
-	CV_MAT_ELEM( *intrinsic_matrix, float, 2, 0 ) = 0;
-	CV_MAT_ELEM( *intrinsic_matrix, float, 0, 1 ) = 0;
-	CV_MAT_ELEM( *intrinsic_matrix, float, 1, 1 ) = 8;
-	CV_MAT_ELEM( *intrinsic_matrix, float, 2, 1 ) = 0;
-	CV_MAT_ELEM( *intrinsic_matrix, float, 0, 2 ) = 3;
-	CV_MAT_ELEM( *intrinsic_matrix, float, 1, 2 ) = 3;
-	CV_MAT_ELEM( *intrinsic_matrix, float, 2, 2 ) = 1;
-
-	// zeros distortion coeffs
-	for ( int i = 0 ; i < 5 ; i++ ) {
-	CV_MAT_ELEM( *distortion_coeffs, float, i, 0 ) = 0.0;
-	}
-
+	pix_opencv_calibration :: resetCorrectionMatrix();
 	//~ post("pix_opencv_calibration build on %s at %s", __DATE__, __TIME__);
 }
 
@@ -312,7 +297,7 @@ void pix_opencv_calibration :: loadIntraMess (t_symbol *filename)
 	if ( filename == NULL ) { error("NULL pointer passed to function loadIntra"); return;}
 	this->intrinsic_matrix = (CvMat*)cvLoad(filename->s_name, 0, 0, 0);
   
-	if (intrinsic_matrix == NULL) {
+	if (intrinsic_matrix == NULL) { // TODO also check if it's a valid intrinsic matrix
 		intrinsic_matrix = 	cvCreateMat(3, 3, CV_32FC1);
 		post("can't open file %s", filename->s_name); 
 		CV_MAT_ELEM( *intrinsic_matrix, float, 0, 0 ) = 8;
@@ -335,8 +320,8 @@ void pix_opencv_calibration :: loadDistMess (t_symbol *filename)
 {
 	if ( filename == NULL ) { error("NULL pointer passed to function loadDist"); return;}
 	distortion_coeffs = (CvMat*)cvLoad(filename->s_name);
-	if (distortion_coeffs == NULL){
-		distortion_coeffs = cvCreateMat(5, 1, CV_32FC1); 
+	if (distortion_coeffs == NULL){ // TODO also check if it's a valid distorsion matrix
+		distortion_coeffs = cvCreateMat(5, 1, CV_32FC1);
 		post("can't open file %s", filename->s_name); 
 		// zeros distortion coeffs
 		for ( int i = 0 ; i < 5 ; i++ ) {
@@ -427,8 +412,10 @@ void pix_opencv_calibration :: obj_setupCallback(t_class *classPtr)
   		  gensym("view"), A_FLOAT, A_NULL);  
   class_addmethod(classPtr, (t_method)&pix_opencv_calibration::waitMessCallback,
   		  gensym("wait"), A_FLOAT, A_NULL); 
-    class_addmethod(classPtr, (t_method)&pix_opencv_calibration::findChessFlagMessCallback,
+	class_addmethod(classPtr, (t_method)&pix_opencv_calibration::findChessFlagMessCallback,
   		  gensym("findChessFlag"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);    
+    class_addmethod(classPtr, (t_method)&pix_opencv_calibration::resetMessCallback,
+  		  gensym("reset"), A_NULL);    
   		    		  	  
 }
 void pix_opencv_calibration :: loadIntraMessCallback(void *data, t_symbol* filename)
@@ -468,3 +455,29 @@ void pix_opencv_calibration :: findChessFlagMessCallback(void *data, t_floatarg 
 		GetMyClass(data)->findChessFlagMess((int) adaptThres, (int) normalize, (int) filter);
 }
 
+void pix_opencv_calibration :: resetMessCallback(void *data)
+{
+		GetMyClass(data)->resetCorrectionMatrix();
+}
+
+void pix_opencv_calibration ::  resetCorrectionMatrix()
+{
+		// make an "empty" intrinsinc matrix
+	CV_MAT_ELEM( *intrinsic_matrix, float, 0, 0 ) = 8;
+	CV_MAT_ELEM( *intrinsic_matrix, float, 1, 0 ) = 0;
+	CV_MAT_ELEM( *intrinsic_matrix, float, 2, 0 ) = 0;
+	CV_MAT_ELEM( *intrinsic_matrix, float, 0, 1 ) = 0;
+	CV_MAT_ELEM( *intrinsic_matrix, float, 1, 1 ) = 8;
+	CV_MAT_ELEM( *intrinsic_matrix, float, 2, 1 ) = 0;
+	CV_MAT_ELEM( *intrinsic_matrix, float, 0, 2 ) = 3;
+	CV_MAT_ELEM( *intrinsic_matrix, float, 1, 2 ) = 3;
+	CV_MAT_ELEM( *intrinsic_matrix, float, 2, 2 ) = 1;
+
+	// zeros distortion coeffs
+	for ( int i = 0 ; i < 5 ; i++ ) {
+	CV_MAT_ELEM( *distortion_coeffs, float, i, 0 ) = 0.0;
+	}
+	
+	// reinitialise size to force reinitialisation of mapx and mapy on next frame
+	this->comp_xsize = 0;
+}

@@ -72,7 +72,8 @@ class GEM_EXTERN pix_opencv_calibration : public GemPixObj
 	void 	viewMess (int view);
 	void 	waitMess (int wait);
 	void 	findChessFlagMess(int adaptThres, int normalize, int filter);
-	
+	void 	resetCorrectionMatrix();
+
 	// to detect changes in the image size
 	int 	comp_xsize;
 	int		comp_ysize;
@@ -99,7 +100,9 @@ class GEM_EXTERN pix_opencv_calibration : public GemPixObj
    	static void viewMessCallback(void *data, t_floatarg view);
     static void waitMessCallback(void *data, t_floatarg wait); 
     static void findChessFlagMessCallback(void *data, t_floatarg adaptThres, t_floatarg normalize, t_floatarg filter);
+    static void resetMessCallback(void *data);
 	/////////
+
 	// CvMat needed
 	CvMat 	*image_points, 
 			*object_points, 
