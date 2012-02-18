@@ -89,6 +89,8 @@ class GEM_EXTERN pix_opencv_calibration : public GemPixObj
 
     private:
     
+    t_outlet *m_dataout;
+    
    	//////////
    	// Static member functions
 	static void	loadIntraMessCallback(void *data, t_symbol* filename);

@@ -32,6 +32,8 @@ CPPEXTERN_NEW(pix_opencv_calibration)
 /////////////////////////////////////////////////////////
 pix_opencv_calibration :: pix_opencv_calibration()
 { 
+	m_dataout = outlet_new(this->x_obj, 0);
+
 	find_rgb = NULL;
 	find_gray = NULL;
 	rgb = NULL;
@@ -107,7 +109,7 @@ void pix_opencv_calibration :: processRGBAImage(imageStruct &image)
 		find_gray = cvCreateImage(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 1);
 
 		//create the images with new size
-		rgb = cvCreateImage(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 4);
+		rgb = cvCreateImageHeader(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 4);
 		tmp  = cvCreateImage(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 4);
 		mapx = cvCreateImage(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_32F, 1);
 		mapy = cvCreateImage(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_32F, 1);
@@ -125,7 +127,7 @@ void pix_opencv_calibration :: processRGBAImage(imageStruct &image)
 		image.data = (unsigned char*) rgb->imageData; 
 	 }
 	else if ( success_count >= board_view_nb && calibration != 0 ) {
-		computeCalibration( rgb );
+		//~ computeCalibration( rgb );
 		image.data = (unsigned char*) rgb->imageData;
 	 }
 	else if ( this->calibration == 0 ) { 
@@ -148,8 +150,14 @@ void pix_opencv_calibration :: processGrayImage(imageStruct &image)
 		
 		this->comp_xsize = image.xsize;
 		this->comp_ysize = image.ysize;
-		if ( calibration ) error ( "image size changed, calibration was cancelled");
-		calibration = 0;
+		if ( calibration ) { 
+			error ( "image size changed, calibration was cancelled");
+			calibration = 0;
+			
+			t_atom data_out;
+			SETFLOAT(&data_out, calibration);
+			outlet_anything( this->m_dataout, gensym("calibration"), 1, &data_out);
+		}
 
 		if ( find_rgb ) cvReleaseImage(&find_rgb);
 		if ( find_gray ) cvReleaseImage(&find_gray);
@@ -164,7 +172,7 @@ void pix_opencv_calibration :: processGrayImage(imageStruct &image)
 		find_gray = cvCreateImage(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 1);
 		
 		//create the images with new size
-		gray = cvCreateImage(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 1);
+		gray = cvCreateImageHeader(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 1);
 		tmp = cvCreateImage(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 1);
 		mapx = cvCreateImage(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_32F, 1);
 		mapy = cvCreateImage(cvSize(this->comp_xsize,this->comp_ysize), IPL_DEPTH_32F, 1);
@@ -203,6 +211,7 @@ void pix_opencv_calibration :: findCorners ( IplImage *image )
 	int					step;
 	CvSize				patternSize, image_size;
 	CvMat				in_cv;
+
 	
 	patternSize = cvSize( this->patternSize[0], this->patternSize[1] );
 	image_size = cvSize( image->width, image->height );
@@ -235,7 +244,7 @@ void pix_opencv_calibration :: findCorners ( IplImage *image )
 	cvDrawChessboardCorners(find_rgb, patternSize, corners, corner_count, found);
 
 	this->frame++;
-	if ( this->frame % this->wait_n_frame == 0 ) {
+	if ( this->frame % this->wait_n_frame == 0 ) { // TODO this above cvFindChessboard to count frame without chessboard
 	// update arrays
 
 		if( corner_count == board_point_nb ) {
@@ -252,7 +261,11 @@ void pix_opencv_calibration :: findCorners ( IplImage *image )
 
 			cvNot( find_rgb , find_rgb );
 		}
-		post("take : %d/%d\n", success_count, board_view_nb);
+		
+		t_atom data_out;
+		SETFLOAT(&data_out, success_count);
+		outlet_anything( this->m_dataout, gensym("take"), 1, &data_out);
+
 	}
 
 	// convert color to gray
@@ -285,7 +298,24 @@ void pix_opencv_calibration :: computeCalibration ( IplImage *image )
 	this->mapy = cvCreateImage( cvSize( image->width, image->height ), IPL_DEPTH_32F, 1 );
 
 	cvInitUndistortMap(this->intrinsic_matrix, this->distortion_coeffs, this->mapx, this->mapy);
+	
+	t_atom intra_out[9];
+	for ( int i = 0 ; i < 9 ; i++ ){
+		SETFLOAT(&intra_out[i], CV_MAT_ELEM( *intrinsic_matrix, float, i%3, i/3));
+	}		
+	outlet_anything( this->m_dataout, gensym("intrinsic_matrix"), 9, intra_out);
+	
+	t_atom dist_out[5];
+	for ( int i = 0 ; i < 5 ; i++ ){
+		SETFLOAT(&dist_out[i], CV_MAT_ELEM( *distortion_coeffs, float, i, 0));
+	}		
+	outlet_anything( this->m_dataout, gensym("distortion_coeffs"), 5, dist_out);
+	
 	calibration = 0;
+	
+	t_atom data_out;
+	SETFLOAT(&data_out, calibration);
+	outlet_anything( this->m_dataout, gensym("calibration"), 1, &data_out);
 }
 /////////////////////////////////////////////////////////
 // LoadMess
@@ -294,23 +324,27 @@ void pix_opencv_calibration :: computeCalibration ( IplImage *image )
 
 void pix_opencv_calibration :: loadIntraMess (t_symbol *filename)
 {
-	if ( filename == NULL ) { error("NULL pointer passed to function loadIntra"); return;}
+	if ( filename == NULL ) { error("%s is not a valid matrix", filename->s_name); return;}
 	this->intrinsic_matrix = (CvMat*)cvLoad(filename->s_name, 0, 0, 0);
   
 	if (intrinsic_matrix == NULL) { // TODO also check if it's a valid intrinsic matrix
 		intrinsic_matrix = 	cvCreateMat(3, 3, CV_32FC1);
-		post("can't open file %s", filename->s_name); 
-		CV_MAT_ELEM( *intrinsic_matrix, float, 0, 0 ) = 8;
-		CV_MAT_ELEM( *intrinsic_matrix, float, 1, 0 ) = 0;
-		CV_MAT_ELEM( *intrinsic_matrix, float, 2, 0 ) = 0;
-		CV_MAT_ELEM( *intrinsic_matrix, float, 0, 1 ) = 0;
-		CV_MAT_ELEM( *intrinsic_matrix, float, 1, 1 ) = 8;
-		CV_MAT_ELEM( *intrinsic_matrix, float, 2, 1 ) = 0;
-		CV_MAT_ELEM( *intrinsic_matrix, float, 0, 2 ) = 3;
-		CV_MAT_ELEM( *intrinsic_matrix, float, 1, 2 ) = 3;
-		CV_MAT_ELEM( *intrinsic_matrix, float, 2, 2 ) = 1;
+		post("can't open file %s", filename->s_name);
+		resetCorrectionMatrix();
+	}
+	else if ( intrinsic_matrix->rows != 3 || intrinsic_matrix->cols != 3 || CV_MAT_TYPE(intrinsic_matrix->type) != CV_32FC1 ) {
+		error("%s is not a valid intrinsic matrix", filename->s_name);
+		cvReleaseMat(&intrinsic_matrix);
+		intrinsic_matrix = 	cvCreateMat(3, 3, CV_32FC1);
+		resetCorrectionMatrix();
 	}
 	else post("load transformation matrix from %s",filename->s_name);
+	
+	t_atom intra_out[9];
+	for ( int i = 0 ; i < 9 ; i++ ){
+		SETFLOAT(&intra_out[i], CV_MAT_ELEM( *intrinsic_matrix, float, i%3, i/3));
+	}		
+	outlet_anything( this->m_dataout, gensym("intrinsic_matrix"), 9, intra_out);
 
 	// reinitialise size to force reinitialisation of mapx and mapy on next frame
 	this->comp_xsize = 0;  
@@ -320,16 +354,20 @@ void pix_opencv_calibration :: loadDistMess (t_symbol *filename)
 {
 	if ( filename == NULL ) { error("NULL pointer passed to function loadDist"); return;}
 	distortion_coeffs = (CvMat*)cvLoad(filename->s_name);
-	if (distortion_coeffs == NULL){ // TODO also check if it's a valid distorsion matrix
-		distortion_coeffs = cvCreateMat(5, 1, CV_32FC1);
-		post("can't open file %s", filename->s_name); 
-		// zeros distortion coeffs
-		for ( int i = 0 ; i < 5 ; i++ ) {
-		CV_MAT_ELEM( *distortion_coeffs, float, i, 0 ) = 0.0;
-		}
+	else ( intrinsic_matrix->rows != 5 || intrinsic_matrix->cols != 1 || CV_MAT_TYPE(intrinsic_matrix->type) != CV_32FC1 ) {
+		error("%s is not a valid distortions coeffs file", filename->s_name);
+		cvReleaseMat(&intrinsic_matrix);
+		intrinsic_matrix = 	cvCreateMat(3, 3, CV_32FC1);
+		resetCorrectionMatrix();
 	}
 	else post("load distortion coefficients from %s",filename->s_name);
 
+	t_atom dist_out[5];
+	for ( int i = 0 ; i < 5 ; i++ ){
+		SETFLOAT(&dist_out[i], CV_MAT_ELEM( *distortion_coeffs, float, i, 0));
+	}		
+	outlet_anything( this->m_dataout, gensym("distortion_coeffs"), 5, dist_out);
+	
 	// reinitialise size to force reinitialisation of mapx and mapy on next frame
 	this->comp_xsize = 0;  
 }
@@ -351,15 +389,25 @@ void pix_opencv_calibration :: floatCalibrationhMess (float calib_flag)
 		this->success_count = 0;
 		this->frame = 0;
 	}
-	post("calibration : %d", this->calibration);
+	t_atom data_out;
+	SETFLOAT(&data_out, calibration);
+	outlet_anything( this->m_dataout, gensym("calibration"), 1, &data_out);
 }
 
 void pix_opencv_calibration :: patternSizeMess (float xsize, float ysize)
 {
-	if (calibration) error("you can't change pattern size during calibration"); return;
-	if ( xsize < 3 || ysize < 3 ) error("patternSize should be at least 3x3"); return;
+	if (calibration) {error("you can't change pattern size during calibration"); return;}
+	if ( xsize < 3 || ysize < 3 ) {error("patternSize should be at least 3x3"); return;}
 	this->patternSize[0]=xsize;
 	this->patternSize[1]=ysize;
+	
+	// reallocate matrix
+	cvReleaseMat(&image_points);
+	cvReleaseMat(&object_points);
+	cvReleaseMat(&point_counts);
+	image_points	=	cvCreateMat(patternSize[0]*patternSize[1]*board_view_nb, 2, CV_32FC1);
+	object_points	=	cvCreateMat(patternSize[0]*patternSize[1]*board_view_nb, 3, CV_32FC1);
+	point_counts	=	cvCreateMat(board_view_nb, 1, CV_32SC1);	
 }
 
 void pix_opencv_calibration :: viewMess (int view)
@@ -368,6 +416,7 @@ void pix_opencv_calibration :: viewMess (int view)
 	board_view_nb=view<2?2:view;
 	if (view < 2) error("view should be greater or equal to 2");
 
+	// reallocate matrix
 	cvReleaseMat(&image_points);
 	cvReleaseMat(&object_points);
 	cvReleaseMat(&point_counts);

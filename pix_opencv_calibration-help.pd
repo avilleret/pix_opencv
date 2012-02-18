@@ -1,11 +1,11 @@
-#N canvas 263 106 1106 660 10;
+#N canvas 690 127 1106 660 10;
 #X obj 182 329 cnv 15 400 180 empty empty empty 20 12 0 14 -4034 -66577
 0;
 #X obj 145 -162 gemhead;
 #X obj 192 525 pix_texture;
 #X obj 356 -216 cnv 15 220 70 empty empty empty 20 12 0 14 -195568
 -66577 0;
-#N canvas 3 79 454 304 gemwin 0;
+#N canvas 3 81 454 304 gemwin 0;
 #X obj 67 89 outlet;
 #X obj 67 10 inlet;
 #X obj 65 41 route create;
@@ -165,7 +165,7 @@ the calibration part.;
 #X obj -136 73 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X text -119 71 switch color mode ( grey / rgba );
-#X msg 225 446 loadDist XCD-V60_4mm-dist;
+#X msg 243 444 loadDist XCD-V60_4mm-dist;
 #X msg 414 446 loadIntra XCD-V60_4mm-intra;
 #X msg -193 -56 device 1;
 #X obj -164 100 == 0;
@@ -195,6 +195,11 @@ O'Reilly;
 #X restore -78 391 pd how-to calibrate;
 #X msg 360 267 reset;
 #X text 404 266 reset corrections;
+#X obj 321 491 print;
+#X text 357 491 print some infos;
+#X obj 112 302 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
+-1;
+#X obj 112 331 openpanel;
 #X connect 1 0 13 0;
 #X connect 2 0 39 0;
 #X connect 4 0 5 0;
@@ -230,6 +235,7 @@ O'Reilly;
 #X connect 32 0 26 0;
 #X connect 33 0 26 0;
 #X connect 34 0 2 0;
+#X connect 34 1 76 0;
 #X connect 35 0 23 0;
 #X connect 35 0 21 0;
 #X connect 36 0 6 0;
@@ -254,8 +260,11 @@ O'Reilly;
 #X connect 63 0 35 0;
 #X connect 65 0 70 0;
 #X connect 65 0 71 1;
+#X connect 67 0 34 0;
 #X connect 68 0 34 0;
 #X connect 69 0 26 0;
 #X connect 70 0 63 1;
 #X connect 71 0 62 0;
 #X connect 74 0 34 0;
+#X connect 78 0 79 0;
+#X connect 79 0 40 0;
