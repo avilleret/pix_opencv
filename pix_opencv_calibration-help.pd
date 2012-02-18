@@ -1,4 +1,4 @@
-#N canvas 263 105 1106 660 10;
+#N canvas 263 106 1106 660 10;
 #X obj 182 329 cnv 15 400 180 empty empty empty 20 12 0 14 -4034 -66577
 0;
 #X obj 145 -162 gemhead;
@@ -109,19 +109,19 @@
 #X msg 321 377 writeIntra \$1;
 #X text 224 357 write distorsion coefficients and intrinsic matrix
 ;
-#X obj 353 79 cnv 15 500 220 empty empty empty 20 12 0 14 -4034 -66577
+#X obj 353 49 cnv 15 500 240 empty empty empty 20 12 0 14 -4034 -66577
 0;
-#X obj 361 90 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X obj 361 60 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X msg 361 110 calibration \$1;
-#X msg 361 154 view \$1;
-#X text 400 132 number of view to take during calibration;
-#X floatatom 361 136 5 0 0 0 - - -;
-#X obj 361 195 pack f f;
-#X msg 361 215 patternSize \$1 \$2;
-#X floatatom 361 177 5 0 0 0 - - -;
-#X floatatom 414 177 5 0 0 0 - - -;
-#X text 451 173 number of inner corners on the chessboard;
+#X msg 361 80 calibration \$1;
+#X msg 361 124 view \$1;
+#X text 400 102 number of view to take during calibration;
+#X floatatom 361 106 5 0 0 0 - - -;
+#X obj 361 165 pack f f;
+#X msg 361 185 patternSize \$1 \$2;
+#X floatatom 361 147 5 0 0 0 - - -;
+#X floatatom 414 147 5 0 0 0 - - -;
+#X text 451 143 number of inner corners on the chessboard;
 #N canvas 130 67 612 325 advance-options 0;
 #X msg 55 161 findChessFlag \$1 \$2 \$3;
 #X obj 68 91 t b f;
@@ -150,12 +150,12 @@
 #X connect 4 0 2 0;
 #X connect 5 0 1 0;
 #X connect 6 0 3 0;
-#X restore 360 277 pd advance-options;
-#X floatatom 361 236 5 0 0 0 - - -;
-#X msg 361 254 wait \$1;
-#X text 399 235 number of frame to wait between two takes during calibration
+#X restore 360 247 pd advance-options;
+#X floatatom 361 206 5 0 0 0 - - -;
+#X msg 361 224 wait \$1;
+#X text 399 205 number of frame to wait between two takes during calibration
 ;
-#X text 380 90 start callibration;
+#X text 380 60 start callibration;
 #X text -168 -242 pix_opencv_calibration is an object allowing camera
 calibration. you need to move a checkboard in front of the camera during
 the calibration part.;
@@ -193,6 +193,8 @@ Zhang \, 1998 \, Microsoft Research;
 #X text -89 116 - Learning Opencv \, Bradski and Kaehler \, 2008 \,
 O'Reilly;
 #X restore -78 391 pd how-to calibrate;
+#X msg 360 267 reset;
+#X text 404 266 reset corrections;
 #X connect 1 0 13 0;
 #X connect 2 0 39 0;
 #X connect 4 0 5 0;
@@ -256,3 +258,4 @@ O'Reilly;
 #X connect 69 0 26 0;
 #X connect 70 0 63 1;
 #X connect 71 0 62 0;
+#X connect 74 0 34 0;
