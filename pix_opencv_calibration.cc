@@ -325,9 +325,9 @@ void pix_opencv_calibration :: computeCalibration ( IplImage *image )
 void pix_opencv_calibration :: loadIntraMess (t_symbol *filename)
 {
 	if ( filename == NULL ) { error("%s is not a valid matrix", filename->s_name); return;}
-	this->intrinsic_matrix = (CvMat*)cvLoad(filename->s_name, 0, 0, 0);
+	this->intrinsic_matrix = (CvMat*)cvLoad(filename->s_name, 0, 0, 0);// TODO crash when passing non-XML file
   
-	if (intrinsic_matrix == NULL) { // TODO also check if it's a valid intrinsic matrix
+	if (intrinsic_matrix == NULL) {
 		intrinsic_matrix = 	cvCreateMat(3, 3, CV_32FC1);
 		post("can't open file %s", filename->s_name);
 		resetCorrectionMatrix();
@@ -353,11 +353,17 @@ void pix_opencv_calibration :: loadIntraMess (t_symbol *filename)
 void pix_opencv_calibration :: loadDistMess (t_symbol *filename)
 {
 	if ( filename == NULL ) { error("NULL pointer passed to function loadDist"); return;}
-	distortion_coeffs = (CvMat*)cvLoad(filename->s_name);
-	else ( intrinsic_matrix->rows != 5 || intrinsic_matrix->cols != 1 || CV_MAT_TYPE(intrinsic_matrix->type) != CV_32FC1 ) {
+	distortion_coeffs = (CvMat*)cvLoad(filename->s_name); // TODO crash when passing non-XML file
+	
+	if (distortion_coeffs == NULL) { 
+		distortion_coeffs = 	cvCreateMat(5, 1, CV_32FC1);
+		post("can't open file %s", filename->s_name);
+		resetCorrectionMatrix();
+	}
+	else if( distortion_coeffs->rows != 5 || distortion_coeffs->cols != 1 || CV_MAT_TYPE(distortion_coeffs->type) != CV_32FC1 ) {
 		error("%s is not a valid distortions coeffs file", filename->s_name);
-		cvReleaseMat(&intrinsic_matrix);
-		intrinsic_matrix = 	cvCreateMat(3, 3, CV_32FC1);
+		cvReleaseMat(&distortion_coeffs);
+		distortion_coeffs = 	cvCreateMat(3, 3, CV_32FC1);
 		resetCorrectionMatrix();
 	}
 	else post("load distortion coefficients from %s",filename->s_name);
@@ -524,7 +530,7 @@ void pix_opencv_calibration ::  resetCorrectionMatrix()
 
 	// zeros distortion coeffs
 	for ( int i = 0 ; i < 5 ; i++ ) {
-	CV_MAT_ELEM( *distortion_coeffs, float, i, 0 ) = 0.0;
+	CV_MAT_ELEM( *distortion_coeffs, float, i, 0) = 0.0;
 	}
 	
 	// reinitialise size to force reinitialisation of mapx and mapy on next frame
