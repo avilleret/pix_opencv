@@ -118,7 +118,7 @@ void pix_opencv_warpperspective :: processRGBAImage(imageStruct &image)
     // no need to copy a lot of memory, just point to it...
     rgb->imageData = (char*) image.data;
    	cvWarpPerspective(rgb, tmp, mapMatrix, flags, cvScalar(0));
-	memcpy(image.data, tmp->imageData, image.xsize*image.ysize);
+	memcpy(image.data, tmp->imageData, image.xsize*image.ysize*4);
 	
 }
 
