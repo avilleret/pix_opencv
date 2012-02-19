@@ -127,7 +127,7 @@ void pix_opencv_calibration :: processRGBAImage(imageStruct &image)
 		image.data = (unsigned char*) rgb->imageData; 
 	 }
 	else if ( success_count >= board_view_nb && calibration != 0 ) {
-		//~ computeCalibration( rgb );
+		computeCalibration( rgb );
 		image.data = (unsigned char*) rgb->imageData;
 	 }
 	else if ( this->calibration == 0 ) { 
@@ -210,13 +210,9 @@ void pix_opencv_calibration :: findCorners ( IplImage *image )
 	int					corner_count;
 	int					step;
 	CvSize				patternSize, image_size;
-	CvMat				in_cv;
-
 	
 	patternSize = cvSize( this->patternSize[0], this->patternSize[1] );
 	image_size = cvSize( image->width, image->height );
-	// cvGetImage	(&in_cv,	&in_image);	// create an IplImage from a CvMat
-	cvGetMat ( image, &in_cv ); // create a CvMat from IplImage
 
 	// find chessboard corners (gray or RGBA image...)
 	int found = cvFindChessboardCorners(image, 
@@ -225,6 +221,7 @@ void pix_opencv_calibration :: findCorners ( IplImage *image )
 										&corner_count, 
 										findChessFlag);
 	if (image->nChannels == 4) {
+		cvCopy(image, find_rgb) ;
 		cvCvtColor( image , find_gray , CV_RGBA2GRAY); // convert color to gray
 	} else {
 		cvCopy(image, find_gray) ;
@@ -238,13 +235,17 @@ void pix_opencv_calibration :: findCorners ( IplImage *image )
 					   cvSize(-1,-1), 
 					   cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1));
 
-	cvCvtColor( find_gray , find_rgb , CV_GRAY2RGBA); // convert gray to color
 
 	// draw chessboard corner (color image only)
-	cvDrawChessboardCorners(find_rgb, patternSize, corners, corner_count, found);
-
+	if (image->nChannels == 4) cvDrawChessboardCorners(find_rgb, patternSize, corners, corner_count, found);
+	else 
+	{
+		cvCvtColor( find_gray , find_rgb , CV_GRAY2RGBA); // convert gray to color
+		cvDrawChessboardCorners(find_rgb, patternSize, corners, corner_count, found);
+	}
+	
 	this->frame++;
-	if ( this->frame % this->wait_n_frame == 0 ) { // TODO this above cvFindChessboard to count frame without chessboard
+	if ( this->frame % this->wait_n_frame == 0 ) { 
 	// update arrays
 
 		if( corner_count == board_point_nb ) {
@@ -329,7 +330,7 @@ void pix_opencv_calibration :: loadIntraMess (t_symbol *filename)
   
 	if (intrinsic_matrix == NULL) {
 		intrinsic_matrix = 	cvCreateMat(3, 3, CV_32FC1);
-		post("can't open file %s", filename->s_name);
+		error("can't open file %s", filename->s_name);
 		resetCorrectionMatrix();
 	}
 	else if ( intrinsic_matrix->rows != 3 || intrinsic_matrix->cols != 3 || CV_MAT_TYPE(intrinsic_matrix->type) != CV_32FC1 ) {
@@ -357,7 +358,7 @@ void pix_opencv_calibration :: loadDistMess (t_symbol *filename)
 	
 	if (distortion_coeffs == NULL) { 
 		distortion_coeffs = 	cvCreateMat(5, 1, CV_32FC1);
-		post("can't open file %s", filename->s_name);
+		error("can't open file %s", filename->s_name);
 		resetCorrectionMatrix();
 	}
 	else if( distortion_coeffs->rows != 5 || distortion_coeffs->cols != 1 || CV_MAT_TYPE(distortion_coeffs->type) != CV_32FC1 ) {
