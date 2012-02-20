@@ -71,6 +71,7 @@ class GEM_EXTERN pix_opencv_bgstats : public GemPixObj
         float           x_minarea;
         float           x_alpha;
         int             x_frames;
+        bool			x_reset_flag;
 
 	// to detect changes in the image size
 	int 		comp_xsize;
