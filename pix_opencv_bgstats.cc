@@ -98,7 +98,7 @@ void pix_opencv_bgstats :: processRGBAImage(imageStruct &image)
     if ( x_model == NULL || x_reset_flag )
     {
       x_model = cvCreateFGDStatModel( incoming );
-      x_reset_flag = FALSE;
+      x_reset_flag = 0;
     }
     else if ( x_frames == 5 )
     {
@@ -150,7 +150,7 @@ void pix_opencv_bgstats :: processRGBImage(imageStruct &image)
     if ( x_model == NULL || x_reset_flag)
     {
       x_model = cvCreateFGDStatModel( incoming );
-      x_reset_flag = FALSE;
+      x_reset_flag = 0;
       
     }
     else if ( x_frames == 5 )
@@ -213,7 +213,7 @@ void pix_opencv_bgstats :: resetMess ()
 {
   if ( x_model != NULL )
   {
-	  x_reset_flag = TRUE;
+	  x_reset_flag = 1;
   }
 }
 
