@@ -325,6 +325,10 @@ void pix_opencv_calibration :: computeCalibration ( IplImage *image )
 
 void pix_opencv_calibration :: loadIntraMess (t_symbol *filename)
 {
+	if ( filename->s_name[0] == 0 ) {
+		error("no filename passed to loadIntra message");
+		return;
+	}
 	if ( filename == NULL ) { error("%s is not a valid matrix", filename->s_name); return;}
 	this->intrinsic_matrix = (CvMat*)cvLoad(filename->s_name, 0, 0, 0);// TODO crash when passing non-XML file
   
@@ -353,6 +357,10 @@ void pix_opencv_calibration :: loadIntraMess (t_symbol *filename)
 
 void pix_opencv_calibration :: loadDistMess (t_symbol *filename)
 {
+	if ( filename->s_name[0] == 0 ) {
+		error("no filename passed to loadDist message");
+		return;
+	}
 	if ( filename == NULL ) { error("NULL pointer passed to function loadDist"); return;}
 	distortion_coeffs = (CvMat*)cvLoad(filename->s_name); // TODO crash when passing non-XML file
 	
