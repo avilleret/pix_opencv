@@ -43,14 +43,7 @@ pix_opencv_patreco :: pix_opencv_patreco()
 	
 	m_patternCount = 0;
 	
-	int norm_pattern_size = PAT_SIZE;
-	double fixed_thresh = 40;
-	double adapt_thresh = 5;//non-used with FIXED_THRESHOLD mode
-	int adapt_block_size = 45;//non-used with FIXED_THRESHOLD mode
-	double confidenceThreshold = 0.35;
-	int mode = 2;//1:FIXED_THRESHOLD, 2: ADAPTIVE_THRESHOLD
-	
-	m_detector = new ARma::PatternDetector( fixed_thresh, adapt_thresh, adapt_block_size, confidenceThreshold, norm_pattern_size, mode);
+	m_detector = new ARma::PatternDetector();
 
 	post("pix_opencv_patreco build on %s at %s", __DATE__, __TIME__);
 }
@@ -83,8 +76,21 @@ void pix_opencv_patreco :: processYUVImage(imageStruct &image) {
     	
 void pix_opencv_patreco :: processGrayImage(imageStruct &image)
 { 
-	Mat imgMat( image.xsize, image.ysize, CV_8UC1, image.data, image.csize*image.xsize);
+	Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize);
+	m_detectedPattern.clear();
     m_detector->detect(imgMat, m_cameraMatrix, m_distortions, m_patternLibrary, m_detectedPattern);
+    
+    //~ std::cout << "Found : " << m_detectedPattern.size() << " pattern(s)" << endl;
+    
+    t_atom pattern[9];
+    for ( unsigned int i = 0 ; i < m_detectedPattern.size() ; i++ ){
+		SETFLOAT(&pattern[0], m_detectedPattern.at(i).id);
+		for ( int j = 0 ; j < 4 ; j++ ) {
+			SETFLOAT(&pattern[j*2+1], float(m_detectedPattern.at(i).vertices.at(j).x/image.xsize));
+			SETFLOAT(&pattern[j*2+2], float(m_detectedPattern.at(i).vertices.at(j).y/image.ysize));
+		}
+		outlet_anything( m_dataout, gensym("pattern_pos"), 9, pattern);
+	}
 }
 
 /////////////////////////////////////////////////////////
@@ -200,6 +206,57 @@ void pix_opencv_patreco :: loadMess (t_symbol *filename)
 	outlet_anything( m_dataout, gensym("patternCount"), 1, &data_out);
 }
 
+void pix_opencv_patreco :: fixedThreshMess(float arg)
+{
+	m_detector->m_fixed_threshold = arg;	
+	t_atom data_out;
+	SETFLOAT(&data_out, m_detector->m_fixed_threshold);
+	outlet_anything( m_dataout, gensym("fixedThresh"), 1, &data_out);
+}
+
+void pix_opencv_patreco :: adaptThreshMess(float arg)
+{
+	m_detector->m_adapt_threshold = arg;	
+	t_atom data_out;
+	SETFLOAT(&data_out, m_detector->m_adapt_threshold);
+	outlet_anything( m_dataout, gensym("adaptThresh"), 1, &data_out);
+}
+
+void pix_opencv_patreco :: adaptBlockSizeMess(t_float arg)
+{
+	if ( int(arg) % 2 == 1 && int(arg) > 1 ){
+		m_detector->m_adapt_block_size = int(arg);	
+		t_atom data_out;
+		SETFLOAT(&data_out, m_detector->m_adapt_block_size);
+		outlet_anything( m_dataout, gensym("adaptBlockSize"), 1, &data_out);
+	} else error("adaptBlockSize should be > 1 and odd");
+}
+
+void pix_opencv_patreco :: threshModeMess(float arg)
+{
+	m_detector->m_threshold_mode = int(arg);	
+	t_atom data_out;
+	SETFLOAT(&data_out, m_detector->m_threshold_mode);
+	outlet_anything( m_dataout, gensym("threshMode"), 1, &data_out);
+}
+
+void pix_opencv_patreco :: patternSizeMess(float arg)
+{
+	m_detector->m_pattern_size = int(arg);
+	t_atom data_out;
+	SETFLOAT(&data_out, m_detector->m_pattern_size);
+	outlet_anything( m_dataout, gensym("patternSize"), 1, &data_out);
+}
+
+void pix_opencv_patreco :: monitorStageMess(t_float arg)
+{
+	m_detector->m_monitor_stage = int(arg);
+	t_atom data_out;
+	SETFLOAT(&data_out, m_detector->m_monitor_stage);
+	outlet_anything( m_dataout, gensym("monitorStage"), 1, &data_out);
+}
+
+
 /////////////////////////////////////////////////////////
 // static member function
 //
@@ -212,6 +269,19 @@ void pix_opencv_patreco :: obj_setupCallback(t_class *classPtr)
   		  gensym("loadDist"), A_SYMBOL, A_NULL);
   class_addmethod(classPtr, (t_method)&pix_opencv_patreco::loadMessCallback,
   		  gensym("load"), A_SYMBOL, A_NULL);
+  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::fixedThreshMessCallback,
+  		  gensym("fixedThresh"), A_FLOAT, A_NULL);
+  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::adaptThreshMessCallback,
+  		  gensym("adaptThresh"), A_FLOAT, A_NULL);
+  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::adaptBlockSizeMessCallback,
+  		  gensym("adaptBlockSize"), A_FLOAT, A_NULL);
+  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::threshModeMessCallback,
+  		  gensym("threshMode"), A_FLOAT, A_NULL);
+  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::patternSizeMessCallback,
+  		  gensym("patternSize"), A_FLOAT, A_NULL);
+  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::monitorStageMessCallback,
+  		  gensym("monitorStage"), A_FLOAT, A_NULL);
+
   		  
   // TODO add a clear method to empty the pattern library
   		    		  	  
@@ -227,4 +297,28 @@ void pix_opencv_patreco :: loadDistMessCallback(void *data, t_symbol* filename)
 void pix_opencv_patreco :: loadMessCallback(void *data, t_symbol* filename)
 {
 	    GetMyClass(data)->loadMess(filename);
+}
+void pix_opencv_patreco :: fixedThreshMessCallback(void *data, t_floatarg arg)
+{
+	    GetMyClass(data)->fixedThreshMess((float)arg);
+}
+void pix_opencv_patreco :: adaptThreshMessCallback(void *data, t_floatarg arg)
+{
+	    GetMyClass(data)->adaptThreshMess((float)arg);
+}
+void pix_opencv_patreco :: adaptBlockSizeMessCallback(void *data, t_floatarg arg)
+{
+	    GetMyClass(data)->adaptBlockSizeMess((float)arg);
+}
+void pix_opencv_patreco :: threshModeMessCallback(void *data, t_floatarg arg)
+{
+	    GetMyClass(data)->threshModeMess((float)arg);
+}
+void pix_opencv_patreco :: patternSizeMessCallback(void *data, t_floatarg arg)
+{
+	    GetMyClass(data)->patternSizeMess((float)arg);
+}
+void pix_opencv_patreco :: monitorStageMessCallback(void *data, t_floatarg arg)
+{
+	    GetMyClass(data)->monitorStageMess(arg);
 }

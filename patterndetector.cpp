@@ -7,37 +7,39 @@ using namespace cv;
 
 namespace ARma
 {
-	PatternDetector::PatternDetector(const double param1, const double param2, const int param3, const double param4, const int param5, const int thresh_mode)
+	PatternDetector::PatternDetector()
 {
-	thresh1 = param1;//for image thresholding
-	thresh2 = param2;// for adaptive thresholding
-	block_size = param3;//for adaptive image thresholding
-	mode = thresh_mode;//1 means fixed threshol, otherwise the adaptive algorithm is enabled
-	confThreshold = param4;//bound for accepted similarities between detected patterns and loaded patterns
-	normSize = param5;// the size of normalized ROI 
-	normROI = Mat(normSize,normSize,CV_8UC1);//normalized ROI
+	
+	m_fixed_threshold = 40;
+	m_adapt_threshold = 5;					//non-used with FIXED_THRESHOLD mode
+	m_adapt_block_size = 45;			//non-used with FIXED_THRESHOLD mode
+	m_confidence_threshold = 0.35;
+	m_threshold_mode = 2;						//0:no binarisation, 1:FIXED_THRESHOLD, 2: ADAPTIVE_THRESHOLD
+	m_pattern_size = 64;
+	
+	normROI = Mat(m_pattern_size, m_pattern_size, CV_8UC1);//normalized ROI
 	
 	//Masks for exterior(black) and interior area inside the pattern
-	patMask = Mat::ones(normSize,normSize,CV_8UC1);
-	Mat submat = patMask(cv::Range(normSize/4,3*normSize/4), cv::Range(normSize/4, 3*normSize/4));// AV crop 25% on each side -> specific to AR tag ?
+	patMask = Mat::ones(m_pattern_size, m_pattern_size, CV_8UC1);
+	Mat submat = patMask(cv::Range(m_pattern_size/4,3*m_pattern_size/4), cv::Range(m_pattern_size/4, 3*m_pattern_size/4));// AV crop 25% on each side -> specific to AR tag ?
 	submat = Scalar(0);
 	
-	patMaskInt = Mat::zeros(normSize,normSize,CV_8UC1);
-	submat = patMaskInt(cv::Range(normSize/4,3*normSize/4), cv::Range(normSize/4, 3*normSize/4));// AV crop 25% on each side -> specific to AR tag ?
+	patMaskInt = Mat::zeros(m_pattern_size, m_pattern_size, CV_8UC1);
+	submat = patMaskInt(cv::Range(m_pattern_size/4,3*m_pattern_size/4), cv::Range(m_pattern_size/4, 3*m_pattern_size/4));// AV crop 25% on each side -> specific to AR tag ?
 	submat = Scalar(1);
 
 
 	//corner of normalized area
 	norm2DPts[0] = Point2f(0,0);
-	norm2DPts[1] = Point2f(normSize-1,0);
-	norm2DPts[2] = Point2f(normSize-1,normSize-1);
-	norm2DPts[3] = Point2f(0,normSize-1);
+	norm2DPts[1] = Point2f(m_pattern_size-1,0);
+	norm2DPts[2] = Point2f(m_pattern_size-1,m_pattern_size-1);
+	norm2DPts[3] = Point2f(0,m_pattern_size-1);
 
 
 
 
 	
-imshow("test",patMask);
+//~ imshow("test",patMask);
 //	cvWaitKey(0);
 //	exit(0);
 
@@ -52,8 +54,9 @@ void PatternDetector::detect(Mat& frame, const Mat& cameraMatrix, const Mat& dis
 	Mat binImage2;
 
 	//binarize image
-	convertAndBinarize(frame, binImage, grayImage, mode);
-	frame.copyTo(binImage2);
+	convertAndBinarize(frame, binImage, grayImage, m_threshold_mode);
+	binImage.copyTo(binImage2);
+	if ( m_monitor_stage == 1 ) binImage.copyTo(frame);
 
 	int avsize = (binImage.rows+binImage.cols)/2;
 	
@@ -80,7 +83,6 @@ void PatternDetector::detect(Mat& frame, const Mat& cameraMatrix, const Mat& dis
 			//check rectangularity and convexity
 			if (polycont.size()==4 && isContourConvex(Mat (polycont))){
 				
-				cout << " rectangle found " << endl;
 				//locate the 2D box of contour,
 				p = polycont.at(0);
 				pMinX = pMaxX = p.x;
@@ -134,6 +136,7 @@ void PatternDetector::detect(Mat& frame, const Mat& cameraMatrix, const Mat& dis
 
 				//normalize the ROI (find homography and warp the ROI)
 				normalizePattern(grayImage, roi2DPts, box, normROI);
+				if ( m_monitor_stage == 2 ) normROI.copyTo(frame);
 					//~ imshow("normROI",normROI);
 					//cvWaitKey(0);
 					
@@ -178,15 +181,20 @@ void PatternDetector::convertAndBinarize(const Mat& src, Mat& dst1, Mat& dst2, i
 	} else {
 		src.copyTo(dst2);
 	}
-	
-	if (thresh_mode == 1){
-		threshold(dst2, dst1, thresh1, 255, CV_THRESH_BINARY_INV);
-	}
-	else {
-		adaptiveThreshold( dst2, dst1, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, block_size, thresh2);
+	switch (thresh_mode){
+		case 0:
+			src.copyTo(dst1);
+			break;
+		case 1:
+			threshold(dst2, dst1, m_fixed_threshold, 255, CV_THRESH_BINARY_INV);
+			dilate( dst1, dst1, Mat());
+			break;
+		default:
+			adaptiveThreshold( dst2, dst1, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, m_adapt_block_size, m_adapt_threshold);
+			dilate( dst1, dst1, Mat());
+			break;
 	}
 
-	dilate( dst1, dst1, Mat());
 }
 
 
@@ -217,7 +225,7 @@ int PatternDetector::identifyPattern(const Mat& src, std::vector<cv::Mat>& loade
 	unsigned int j;
 	int i;
 	double tempsim;
-	double N = (double)(normSize*normSize/4);
+	double N = (double)(m_pattern_size*m_pattern_size/4);
 	double nom, den;
 
 	
@@ -234,7 +242,7 @@ int PatternDetector::identifyPattern(const Mat& src, std::vector<cv::Mat>& loade
 //	cout << "Std of ext: " << std_ext.val[0] << "Std of int: " << std_int.val[0] << endl;
 
 
-	Mat inter = src(cv::Range(normSize/4,3*normSize/4), cv::Range(normSize/4,3*normSize/4)); // AV crop 25% black border -> specific to AR Tag
+	Mat inter = src(cv::Range(m_pattern_size/4,3*m_pattern_size/4), cv::Range(m_pattern_size/4,3*m_pattern_size/4)); // AV crop 25% black border -> specific to AR Tag
 	double normSrcSq = pow(norm(inter),2); // AV is it equivalent to norm(inter,NORM8L1) ??
 
 
@@ -272,7 +280,7 @@ int PatternDetector::identifyPattern(const Mat& src, std::vector<cv::Mat>& loade
 	cout << "MaxCor: " << info.maxCor << endl;
 	cout << "Ori: " << info.ori << endl;
 
-	if (info.maxCor>confThreshold)
+	if (info.maxCor>m_confidence_threshold)
 		return 1;
 	else
 		return 0;
