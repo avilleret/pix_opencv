@@ -1,4 +1,4 @@
-#N canvas 771 235 1032 521 10;
+#N canvas 771 241 1032 521 10;
 #X obj 634 81 pix_video;
 #X obj 634 43 gemhead;
 #X obj 634 435 pix_texture;
@@ -46,11 +46,11 @@
 #X msg 903 181 5;
 #X msg 63 77 monitorStage \$1;
 #X obj 63 56 hradio 15 1 0 8 empty empty empty 0 -8 0 10 -262144 -1
--1 0;
+-1 1;
 #X obj 28 413 s patreco_in;
 #X msg 64 120 fixedThresh \$1;
 #X floatatom 64 100 5 0 0 0 - - -;
-#X floatatom 64 140 5 0 0 0 - - -;
+#X floatatom 197 131 5 0 0 0 - - -;
 #X msg 64 160 adaptThresh \$1;
 #X floatatom 66 186 5 0 0 0 - - -;
 #X msg 66 206 adaptBlockSize \$1;
@@ -61,6 +61,15 @@
 #X msg 63 34 threshMode \$1;
 #X obj 387 271 t b b b;
 #X obj 634 409 pix_opencv_patreco;
+#X msg 79 314 ARTpattern \$1;
+#X obj 86 282 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 91 357 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X msg 91 377 dilate \$1;
+#X obj 196 151 * 2;
+#X obj 195 172 + 1;
+#X floatatom 88 138 5 0 0 0 - - -;
 #X connect 0 0 24 0;
 #X connect 1 0 0 0;
 #X connect 2 0 26 0;
@@ -99,7 +108,7 @@
 #X connect 42 0 41 0;
 #X connect 44 0 43 0;
 #X connect 45 0 44 0;
-#X connect 46 0 47 0;
+#X connect 46 0 60 0;
 #X connect 47 0 43 0;
 #X connect 48 0 49 0;
 #X connect 49 0 43 0;
@@ -112,3 +121,10 @@
 #X connect 54 2 8 0;
 #X connect 55 0 2 0;
 #X connect 55 1 9 0;
+#X connect 56 0 43 0;
+#X connect 57 0 56 0;
+#X connect 58 0 59 0;
+#X connect 59 0 43 0;
+#X connect 60 0 61 0;
+#X connect 61 0 49 0;
+#X connect 62 0 47 0;
