@@ -17,7 +17,7 @@ ifeq ($(UNAME),Linux)
  INCLUDES += `pkg-config --cflags opencv`
  LDFLAGS =  -Wl,--export-dynamic -shared
  OPENCVLIB = `pkg-config --libs opencv`
- LIBS = $(OPENCVLIB) -L. -larma
+ LIBS = $(OPENCVLIB)
  EXTENSION = pd_linux
  SOURCES_OPT = pix_opencv_surf.cc
 endif
@@ -25,7 +25,7 @@ ifeq ($(UNAME),Darwin)
  INCLUDES += -I/Library/Frameworks/OpenCV.framework/Headers/ -I/Applications/Pd-extended.app/Contents/Resources/include/pdextended -I/Applications/Pd-extended.app/Contents/Resources/include/
  LDFLAGS =  -bundle -undefined dynamic_lookup
  OPENCVLIB = -framework OpenCV
- LIBS =  -lm $(OPENCVLIB) -larma
+ LIBS =  -lm $(OPENCVLIB)
  EXTENSION = pd_darwin
  SOURCES_OPT = pix_opencv_surf.cc
 endif
