@@ -7,27 +7,18 @@ using namespace cv;
 
 namespace ARma
 {
-	PatternDetector::PatternDetector()
+	PatternDetector::PatternDetector(void) : 	m_fixed_threshold(40),
+										m_adapt_threshold(5),				//non-used with FIXED_THRESHOLD mode
+										m_adapt_block_size(45), 			//non-used with FIXED_THRESHOLD mode
+										m_confidence_threshold(0.35),
+										m_threshold_mode(2),				//0:no binarisation, 1:FIXED_THRESHOLD, 2: ADAPTIVE_THRESHOLD
+										m_pattern_size(64),
+										m_ART_pattern(1),
+										m_dilate(1)
 {
-	
-	m_fixed_threshold = 40;
-	m_adapt_threshold = 5;					//non-used with FIXED_THRESHOLD mode
-	m_adapt_block_size = 45;			//non-used with FIXED_THRESHOLD mode
-	m_confidence_threshold = 0.35;
-	m_threshold_mode = 2;						//0:no binarisation, 1:FIXED_THRESHOLD, 2: ADAPTIVE_THRESHOLD
-	m_pattern_size = 64;
-	
 	normROI = Mat(m_pattern_size, m_pattern_size, CV_8UC1);//normalized ROI
 	
-	//Masks for exterior(black) and interior area inside the pattern
-	patMask = Mat::ones(m_pattern_size, m_pattern_size, CV_8UC1);
-	Mat submat = patMask(cv::Range(m_pattern_size/4,3*m_pattern_size/4), cv::Range(m_pattern_size/4, 3*m_pattern_size/4));// AV crop 25% on each side -> specific to AR tag ?
-	submat = Scalar(0);
-	
-	patMaskInt = Mat::zeros(m_pattern_size, m_pattern_size, CV_8UC1);
-	submat = patMaskInt(cv::Range(m_pattern_size/4,3*m_pattern_size/4), cv::Range(m_pattern_size/4, 3*m_pattern_size/4));// AV crop 25% on each side -> specific to AR tag ?
-	submat = Scalar(1);
-
+	makeMask();
 
 	//corner of normalized area
 	norm2DPts[0] = Point2f(0,0);
@@ -187,11 +178,11 @@ void PatternDetector::convertAndBinarize(const Mat& src, Mat& dst1, Mat& dst2, i
 			break;
 		case 1:
 			threshold(dst2, dst1, m_fixed_threshold, 255, CV_THRESH_BINARY_INV);
-			dilate( dst1, dst1, Mat());
+			if (m_dilate) dilate( dst1, dst1, Mat());
 			break;
 		default:
 			adaptiveThreshold( dst2, dst1, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, m_adapt_block_size, m_adapt_threshold);
-			dilate( dst1, dst1, Mat());
+			if (m_dilate) dilate( dst1, dst1, Mat());
 			break;
 	}
 
@@ -218,7 +209,7 @@ void PatternDetector::normalizePattern(const Mat& src, const Point2f roiPoints[]
 int PatternDetector::identifyPattern(const Mat& src, std::vector<cv::Mat>& loadedPatterns, patInfo& info)
 {
 	if (loadedPatterns.size()<1){
-		printf("No loaded pattern");
+		//~ printf("No loaded pattern\n");
 		return -1;
 	}
 
@@ -234,16 +225,22 @@ int PatternDetector::identifyPattern(const Mat& src, std::vector<cv::Mat>& loade
 	meanStdDev(src, mean_ext, std_ext, patMask);
 	meanStdDev(src,mean_int, std_int, patMaskInt);
 	
-	// AV returns -1 if there is no 25% black border -> specific to AR tags ? 
-	if ((mean_ext.val[0]>mean_int.val[0]))
-		return -1;
+	if ( m_ART_pattern ) {
+		// AV returns -1 if there is no 25% black border -> specific to AR tags ? 
+		if ((mean_ext.val[0]>mean_int.val[0]))
+			return -1;
+	}
 
 //	cout << "Mean of ext: " << mean_ext.val[0] << "Mean of int: " << mean_int.val[0] << endl;
 //	cout << "Std of ext: " << std_ext.val[0] << "Std of int: " << std_int.val[0] << endl;
-
-
-	Mat inter = src(cv::Range(m_pattern_size/4,3*m_pattern_size/4), cv::Range(m_pattern_size/4,3*m_pattern_size/4)); // AV crop 25% black border -> specific to AR Tag
-	double normSrcSq = pow(norm(inter),2); // AV is it equivalent to norm(inter,NORM8L1) ??
+	Mat inter;
+	
+	if ( m_ART_pattern ) {
+		inter = src(cv::Range(m_pattern_size/4,3*m_pattern_size/4), cv::Range(m_pattern_size/4,3*m_pattern_size/4)); // AV crop 25% black border -> specific to AR Tag
+	} else {
+		inter = src;
+	}
+		double normSrcSq = pow(norm(inter),2); // AV is it equivalent to norm(inter,NORM8L1) ??
 
 
 	//zero_mean_mode;
@@ -285,6 +282,26 @@ int PatternDetector::identifyPattern(const Mat& src, std::vector<cv::Mat>& loade
 	else
 		return 0;
 
+}
+
+void PatternDetector :: makeMask(){
+	cout << "Make mask..." << endl;
+
+	if ( m_ART_pattern ){
+		//Masks for exterior(black) and interior area inside the pattern
+		patMask = Mat::ones(m_pattern_size, m_pattern_size, CV_8UC1);
+		Mat submat = patMask(cv::Range(m_pattern_size/4,3*m_pattern_size/4), cv::Range(m_pattern_size/4, 3*m_pattern_size/4));// AV crop 25% on each side -> specific to AR tag ?
+		submat = Scalar(0);
+		
+		patMaskInt = Mat::zeros(m_pattern_size, m_pattern_size, CV_8UC1);
+		submat = patMaskInt(cv::Range(m_pattern_size/4,3*m_pattern_size/4), cv::Range(m_pattern_size/4, 3*m_pattern_size/4));// AV crop 25% on each side -> specific to AR tag ?
+		submat = Scalar(1);
+	} else {
+		// AV useless for generic pattern
+		patMask = Mat::zeros(m_pattern_size, m_pattern_size, CV_8UC1);
+		patMaskInt = Mat::ones(m_pattern_size, m_pattern_size, CV_8UC1);
+	}
+	cout << "done." << endl;
 }
 
 };

@@ -90,6 +90,9 @@ namespace ARma {
 			case 3:
 				 color = cvScalar(0,255,255);
 				break;
+			default:
+				 color = cvScalar(255,255,255);
+				break;
 		}
 
 		//model 3D points: they must be projected to the image plane

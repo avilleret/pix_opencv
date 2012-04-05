@@ -23,6 +23,8 @@
 #include "pix_opencv_patreco.h"
 #include <stdio.h>
 #include <opencv/highgui.h>
+#include <RTE/MessageCallbacks.h>
+
 //~ #include "cameraparams.h"
 
 
@@ -83,14 +85,20 @@ void pix_opencv_patreco :: processGrayImage(imageStruct &image)
     //~ std::cout << "Found : " << m_detectedPattern.size() << " pattern(s)" << endl;
     
     t_atom pattern[9];
-    for ( unsigned int i = 0 ; i < m_detectedPattern.size() ; i++ ){
+    t_atom pattern_list[512]; // TODO set to smthg like PD_MESS_MAX_SIZE
+	for ( int i = 0 ; i < m_patternCount ; i++ ){
+		SETFLOAT(&pattern_list[i], 0.);
+	} 
+    for (unsigned int i = 0 ; i < m_detectedPattern.size() ; i++ ){
 		SETFLOAT(&pattern[0], m_detectedPattern.at(i).id);
+		SETFLOAT(&pattern_list[m_detectedPattern.at(i).id - 1], 1);
 		for ( int j = 0 ; j < 4 ; j++ ) {
 			SETFLOAT(&pattern[j*2+1], float(m_detectedPattern.at(i).vertices.at(j).x/image.xsize));
 			SETFLOAT(&pattern[j*2+2], float(m_detectedPattern.at(i).vertices.at(j).y/image.ysize));
 		}
 		outlet_anything( m_dataout, gensym("pattern_pos"), 9, pattern);
 	}
+	outlet_anything( m_dataout, gensym("pattern_list"), m_patternCount, pattern_list);
 }
 
 /////////////////////////////////////////////////////////
@@ -175,6 +183,11 @@ void pix_opencv_patreco :: loadMess (t_symbol *filename)
 	
 	Mat img = imread(filename->s_name,0);
 	
+	if ( img.data == NULL ){
+		error("failed to load image '%s'", filename->s_name);
+		return;
+	}
+	
 	if(img.cols!=img.rows){
 		error("%s is not a square pattern", filename->s_name);
 		return;
@@ -187,8 +200,13 @@ void pix_opencv_patreco :: loadMess (t_symbol *filename)
 	Mat rot_mat(2,3,CV_32F);
 	
 	cv::resize(img, src, Size(msize,msize));
-	Mat subImg = src(cv::Range(msize/4,3*msize/4), cv::Range(msize/4,3*msize/4));
-	m_patternLibrary.push_back(subImg);
+	if ( m_detector->m_ART_pattern ) {
+		Mat subImg = src(cv::Range(msize/4,3*msize/4), cv::Range(msize/4,3*msize/4));
+		m_patternLibrary.push_back(subImg);
+	}
+	else {
+		m_patternLibrary.push_back(src);
+	}
 
 	rot_mat = getRotationMatrix2D( center, 90, 1.0);
 
@@ -196,8 +214,12 @@ void pix_opencv_patreco :: loadMess (t_symbol *filename)
 		Mat dst= Mat(msize, msize, CV_8UC1);
 		rot_mat = getRotationMatrix2D( center, -i*90, 1.0);
 		cv::warpAffine( src, dst , rot_mat, Size(msize,msize));
-		Mat subImg = dst(cv::Range(msize/4,3*msize/4), cv::Range(msize/4,3*msize/4)); // AV crop 25% on each side -> specific to AR tag ?
-		m_patternLibrary.push_back(subImg);	
+		if ( m_detector->m_ART_pattern ) {
+			Mat subImg = dst(cv::Range(msize/4,3*msize/4), cv::Range(msize/4,3*msize/4)); // AV crop 25% on each side -> specific to AR tag ?
+			m_patternLibrary.push_back(subImg);	
+		} else {
+			m_patternLibrary.push_back(dst);
+		}
 	}
 
 	m_patternCount++;	
@@ -256,6 +278,33 @@ void pix_opencv_patreco :: monitorStageMess(t_float arg)
 	outlet_anything( m_dataout, gensym("monitorStage"), 1, &data_out);
 }
 
+void pix_opencv_patreco :: ARTpatternMess(t_float arg)
+{
+	if (int(arg)) {
+		m_detector->m_ART_pattern = 1;
+	} else m_detector->m_ART_pattern = 0;
+	m_patternLibrary.clear();
+	m_patternCount = 0;
+	m_detector->makeMask();
+	t_atom data_out;
+	SETFLOAT(&data_out, m_detector->m_ART_pattern);
+	outlet_anything( m_dataout, gensym("ARTpattern"), 1, &data_out);
+}
+
+void pix_opencv_patreco :: dilateMess(t_float arg){
+	if (int(arg)) {
+		m_detector->m_dilate = 1;
+	} else m_detector->m_dilate = 0;
+	
+	t_atom data_out;	
+	SETFLOAT(&data_out, m_detector->m_dilate);
+	outlet_anything( m_dataout, gensym("dilate"), 1, &data_out);
+}
+
+void pix_opencv_patreco :: clearLibMess(void){
+	m_patternLibrary.clear();
+	m_patternCount = 0;
+}
 
 /////////////////////////////////////////////////////////
 // static member function
@@ -263,62 +312,22 @@ void pix_opencv_patreco :: monitorStageMess(t_float arg)
 /////////////////////////////////////////////////////////
 void pix_opencv_patreco :: obj_setupCallback(t_class *classPtr)
 {
-  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::loadIntraMessCallback,
-  		  gensym("loadIntra"), A_SYMBOL, A_NULL);
-  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::loadDistMessCallback,
-  		  gensym("loadDist"), A_SYMBOL, A_NULL);
-  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::loadMessCallback,
-  		  gensym("load"), A_SYMBOL, A_NULL);
-  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::fixedThreshMessCallback,
-  		  gensym("fixedThresh"), A_FLOAT, A_NULL);
-  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::adaptThreshMessCallback,
-  		  gensym("adaptThresh"), A_FLOAT, A_NULL);
-  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::adaptBlockSizeMessCallback,
-  		  gensym("adaptBlockSize"), A_FLOAT, A_NULL);
-  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::threshModeMessCallback,
-  		  gensym("threshMode"), A_FLOAT, A_NULL);
-  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::patternSizeMessCallback,
-  		  gensym("patternSize"), A_FLOAT, A_NULL);
-  class_addmethod(classPtr, (t_method)&pix_opencv_patreco::monitorStageMessCallback,
-  		  gensym("monitorStage"), A_FLOAT, A_NULL);
+  		  
+	CPPEXTERN_MSG1(classPtr, "loadIntra", 		loadIntraMess, 			t_symbol*);
+	CPPEXTERN_MSG1(classPtr, "loadDist",		loadDistMess, 			t_symbol*);
+	CPPEXTERN_MSG1(classPtr, "load",			loadMess, 				t_symbol*);
+	CPPEXTERN_MSG1(classPtr, "fixedThresh",		fixedThreshMess, 		t_float);
+	CPPEXTERN_MSG1(classPtr, "adaptThresh",		adaptThreshMess, 		t_float);
+	CPPEXTERN_MSG1(classPtr, "adaptBlockSize",	adaptBlockSizeMess, 	t_float);
+	CPPEXTERN_MSG1(classPtr, "threshMode",		threshModeMess, 		t_float);
+	CPPEXTERN_MSG1(classPtr, "patternSize",		patternSizeMess, 		t_float);
+	CPPEXTERN_MSG1(classPtr, "monitorStage",	monitorStageMess, 		t_float);
+	CPPEXTERN_MSG1(classPtr, "ARTpattern",		ARTpatternMess, 		t_float);
+	CPPEXTERN_MSG1(classPtr, "dilate", 			dilateMess, 			t_float);
+	CPPEXTERN_MSG0(classPtr, "clearLibrary", 	clearLibMess);
+
 
   		  
-  // TODO add a clear method to empty the pattern library
+  // TODO add a class to manage the pattern library
   		    		  	  
-}
-void pix_opencv_patreco :: loadIntraMessCallback(void *data, t_symbol* filename)
-{
-	    GetMyClass(data)->loadIntraMess(filename);
-}
-void pix_opencv_patreco :: loadDistMessCallback(void *data, t_symbol* filename)
-{
-	    GetMyClass(data)->loadDistMess(filename);
-}
-void pix_opencv_patreco :: loadMessCallback(void *data, t_symbol* filename)
-{
-	    GetMyClass(data)->loadMess(filename);
-}
-void pix_opencv_patreco :: fixedThreshMessCallback(void *data, t_floatarg arg)
-{
-	    GetMyClass(data)->fixedThreshMess((float)arg);
-}
-void pix_opencv_patreco :: adaptThreshMessCallback(void *data, t_floatarg arg)
-{
-	    GetMyClass(data)->adaptThreshMess((float)arg);
-}
-void pix_opencv_patreco :: adaptBlockSizeMessCallback(void *data, t_floatarg arg)
-{
-	    GetMyClass(data)->adaptBlockSizeMess((float)arg);
-}
-void pix_opencv_patreco :: threshModeMessCallback(void *data, t_floatarg arg)
-{
-	    GetMyClass(data)->threshModeMess((float)arg);
-}
-void pix_opencv_patreco :: patternSizeMessCallback(void *data, t_floatarg arg)
-{
-	    GetMyClass(data)->patternSizeMess((float)arg);
-}
-void pix_opencv_patreco :: monitorStageMessCallback(void *data, t_floatarg arg)
-{
-	    GetMyClass(data)->monitorStageMess(arg);
 }

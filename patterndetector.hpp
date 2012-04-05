@@ -25,8 +25,9 @@ enum THRES_MODE {
 		ADAPTIVE_THRESHOLD, 
 	}; 
 
-//detect patterns in the input frame
-void detect(Mat& frame, const Mat& cameraMatrix, const Mat& distortions, vector<Mat>& library, vector<Pattern>& foundPatterns);
+	//detect patterns in the input frame
+	void detect(Mat& frame, const Mat& cameraMatrix, const Mat& distortions, vector<Mat>& library, vector<Pattern>& foundPatterns);
+	void makeMask();
 
 	int 	m_patternCount;								// patternCount
 	float 	m_fixed_threshold;							// fixed threshold
@@ -36,7 +37,9 @@ void detect(Mat& frame, const Mat& cameraMatrix, const Mat& distortions, vector<
 	int 	m_pattern_size;								// size of pattern for recognition ( 64 is good, smaller is faster...)
 	int 	m_monitor_stage;							// monitored stage, 1 : binarisation, 2 : normalised ROI...
 	float	m_confidence_threshold;						// threshold above which we are sure to identify the pattern
-
+	int		m_ART_pattern;								// pattern style : 1 = ARToolkit
+	int 	m_dilate;									// enable dilatation in binarisation process, default : 1
+	
 private:
 	//~ int mode, normSize, block_size;
 	//~ double confThreshold, thresh1, thresh2;

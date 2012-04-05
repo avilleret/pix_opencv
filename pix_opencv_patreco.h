@@ -73,35 +73,20 @@ class GEM_EXTERN pix_opencv_patreco : public GemPixObj
 	void 	threshModeMess(float arg);
 	void 	patternSizeMess(float arg);
 	void 	monitorStageMess(t_float arg);
-	
+	void 	ARTpatternMess(t_float arg);
+	void 	dilateMess(t_float arg);
+	void 	clearLibMess(void);
 
     private:
     
     t_outlet *m_dataout;
-    
-   	//////////
-   	// Static member functions
-	static void	loadIntraMessCallback(void *data, t_symbol* filename);
-	static void	loadDistMessCallback(void *data, t_symbol* filename);
-	static void	loadMessCallback(void *data, t_symbol* filename);
-	static void	fixedThreshMessCallback(void *data, t_floatarg arg);
-	static void	adaptThreshMessCallback(void *data, t_floatarg arg);
-	static void	adaptBlockSizeMessCallback(void *data, t_floatarg arg);
-	static void	threshModeMessCallback(void *data, t_floatarg arg);
-	static void	patternSizeMessCallback(void *data, t_floatarg arg);
-	static void	monitorStageMessCallback(void *data, t_floatarg arg);
 	
 	cv::Mat m_cameraMatrix, m_distortions;
     
     ARma::PatternDetector *m_detector;
-    std::vector<cv::Mat> m_patternLibrary;  			// pattern library
-	std::vector<ARma::Pattern> m_detectedPattern; 		// detected pattern 
-	int m_patternCount;									// patternCount
-	//~ float 	m_fixed_threshold;							// fixed threshold
-	//~ float	m_adapt_threshold;							// adaptive threshold
-	//~ int		m_adapt_block_size;							// block size for adaptive threshold
-	//~ int 	m_threshold_mode;							// 0 : no thresholding (input image should be already binarised, 1 : fixed threshold method, 2 : adaptive threshold method
-	//~ int 	m_pattern_size;								// size of pattern for recognition ( 64 is good, smaller is faster...)
-	//~ int 	m_monitor_stage;							// monitored stage, 1 : binarisation, 2 : normalised ROI...
+    std::vector<cv::Mat> m_patternLibrary;  				// pattern library
+	std::vector<ARma::Pattern> m_detectedPattern; 			// detected pattern 
+	int m_patternCount;										// patternCount
+	
 };
 #endif	// for header file
