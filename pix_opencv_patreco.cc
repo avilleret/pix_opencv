@@ -98,7 +98,8 @@ void pix_opencv_patreco :: processGrayImage(imageStruct &image)
 		}
 		outlet_anything( m_dataout, gensym("pattern_pos"), 9, pattern);
 	}
-	outlet_anything( m_dataout, gensym("pattern_list"), m_patternCount, pattern_list);
+	if ( m_patternCount > 0 )
+		outlet_anything( m_dataout, gensym("pattern_list"), m_patternCount, pattern_list);
 }
 
 /////////////////////////////////////////////////////////
