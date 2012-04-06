@@ -2,7 +2,7 @@
  * OpenCV 2.3 - blobtrack_sample.cpp ported to Gem by Antoine Villeret - 2012
 */
 
-
+#include "blobtrack.h"
 #include "opencv2/video/background_segm.hpp"
 #include "opencv2/legacy/blobtrack.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -24,13 +24,6 @@ static CvFGDetector* cvCreateFGDetector0      () { return cvCreateFGDetectorBase
 static CvFGDetector* cvCreateFGDetector0Simple() { return cvCreateFGDetectorBase(CV_BG_MODEL_FGD_SIMPLE, NULL); }
 static CvFGDetector* cvCreateFGDetector1      () { return cvCreateFGDetectorBase(CV_BG_MODEL_MOG,        NULL); }
 
-typedef struct DefModule_FGDetector
-{
-    CvFGDetector* (*create)();
-    const char* nickname;
-    const char* description;
-} DefModule_FGDetector;
-
 DefModule_FGDetector FGDetector_Modules[] =
 {
     {cvCreateFGDetector0,"FG_0","Foreground Object Detection from Videos Containing Complex Background. ACM MM2003."},
@@ -40,12 +33,6 @@ DefModule_FGDetector FGDetector_Modules[] =
 };
 
 /* List of BLOB DETECTION modules: */
-typedef struct DefModule_BlobDetector
-{
-    CvBlobDetector* (*create)();
-    const char* nickname;
-    const char* description;
-} DefModule_BlobDetector;
 
 DefModule_BlobDetector BlobDetector_Modules[] =
 {
@@ -55,12 +42,6 @@ DefModule_BlobDetector BlobDetector_Modules[] =
 };
 
 /* List of BLOB TRACKING modules: */
-typedef struct DefModule_BlobTracker
-{
-    CvBlobTracker* (*create)();
-    const char* nickname;
-    const char* description;
-} DefModule_BlobTracker;
 
 DefModule_BlobTracker BlobTracker_Modules[] =
 {
@@ -73,12 +54,6 @@ DefModule_BlobTracker BlobTracker_Modules[] =
 };
 
 /* List of BLOB TRAJECTORY GENERATION modules: */
-typedef struct DefModule_BlobTrackGen
-{
-    CvBlobTrackGen* (*create)();
-    const char* nickname;
-    const char* description;
-} DefModule_BlobTrackGen;
 
 DefModule_BlobTrackGen BlobTrackGen_Modules[] =
 {
@@ -88,12 +63,7 @@ DefModule_BlobTrackGen BlobTrackGen_Modules[] =
 };
 
 /* List of BLOB TRAJECTORY POST PROCESSING modules: */
-typedef struct DefModule_BlobTrackPostProc
-{
-    CvBlobTrackPostProc* (*create)();
-    const char* nickname;
-    const char* description;
-} DefModule_BlobTrackPostProc;
+
 
 DefModule_BlobTrackPostProc BlobTrackPostProc_Modules[] =
 {
@@ -107,12 +77,6 @@ DefModule_BlobTrackPostProc BlobTrackPostProc_Modules[] =
 /* List of BLOB TRAJECTORY ANALYSIS modules: */
 CvBlobTrackAnalysis* cvCreateModuleBlobTrackAnalysisDetector();
 
-typedef struct DefModule_BlobTrackAnalysis
-{
-    CvBlobTrackAnalysis* (*create)();
-    const char* nickname;
-    const char* description;
-} DefModule_BlobTrackAnalysis;
 
 DefModule_BlobTrackAnalysis BlobTrackAnalysis_Modules[] =
 {
@@ -371,7 +335,7 @@ static void print_params(CvVSModule* pM, const char* module, const char* log_nam
 int main(int argc, char* argv[])
 {   /* Main function: */
     CvCapture*                  pCap = NULL;
-    CvBlobTrackerAutoParam1     param = {0};
+    CvBlobTrackerAutoParam1     param = {0}; // TODO need more params
     CvBlobTrackerAuto*          pTracker = NULL;
 
     float       scale = 1;

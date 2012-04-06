@@ -17,7 +17,7 @@
 // based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org ) (pix_opencv)
 //
 
-#include "pix_opencv_template.h"
+#include "pix_opencv_blobtrack.h"
 #include <stdio.h>
 #include <opencv/highgui.h>
 #include <RTE/MessageCallbacks.h>
@@ -26,17 +26,17 @@
 
 
 
-CPPEXTERN_NEW(pix_opencv_template)
+CPPEXTERN_NEW(pix_opencv_blobtrack)
 
 /////////////////////////////////////////////////////////
 //
-// pix_opencv_template
+// pix_opencv_blobtrack
 //
 /////////////////////////////////////////////////////////
 // Constructor
 //
 /////////////////////////////////////////////////////////
-pix_opencv_template :: pix_opencv_template()
+pix_opencv_blobtrack :: pix_opencv_blobtrack()
 { 
 	m_dataout = outlet_new(this->x_obj, 0);
 }
@@ -45,7 +45,7 @@ pix_opencv_template :: pix_opencv_template()
 // Destructor
 //
 /////////////////////////////////////////////////////////
-pix_opencv_template :: ~pix_opencv_template()
+pix_opencv_blobtrack :: ~pix_opencv_blobtrack()
 { 
 }
 
@@ -53,20 +53,20 @@ pix_opencv_template :: ~pix_opencv_template()
 // processImage
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_template :: processRGBAImage(imageStruct &image)
+void pix_opencv_blobtrack :: processRGBAImage(imageStruct &image)
 { 
-	error( "pix_opencv_template : rgba format not supported" );
+	error( "pix_opencv_blobtrack : rgba format not supported" );
 }
 
-void pix_opencv_template :: processRGBImage(imageStruct &image) {
-	error( "pix_opencv_template : rgb format not supported");
+void pix_opencv_blobtrack :: processRGBImage(imageStruct &image) {
+	error( "pix_opencv_blobtrack : rgb format not supported");
 }
 
-void pix_opencv_template :: processYUVImage(imageStruct &image) {
-	error( "pix_opencv_template : yuv format not supported" );
+void pix_opencv_blobtrack :: processYUVImage(imageStruct &image) {
+	error( "pix_opencv_blobtrack : yuv format not supported" );
 }
     	
-void pix_opencv_template :: processGrayImage(imageStruct &image)
+void pix_opencv_blobtrack :: processGrayImage(imageStruct &image)
 { 
 	Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
 }
@@ -75,7 +75,7 @@ void pix_opencv_template :: processGrayImage(imageStruct &image)
 // static member function
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_template :: obj_setupCallback(t_class *classPtr)
+void pix_opencv_blobtrack :: obj_setupCallback(t_class *classPtr)
 {
   		    		    		  	  
 }
