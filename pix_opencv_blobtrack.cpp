@@ -68,7 +68,7 @@ void pix_opencv_blobtrack :: processYUVImage(imageStruct &image) {
     	
 void pix_opencv_blobtrack :: processGrayImage(imageStruct &image)
 { 
-	Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
+	cv::Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
 }
 
 /////////////////////////////////////////////////////////
