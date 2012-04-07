@@ -52,7 +52,7 @@ pix_opencv_blobtrack :: pix_opencv_blobtrack() : 	m_fg_name(FGDetector_Modules[0
 //
 /////////////////////////////////////////////////////////
 pix_opencv_blobtrack :: ~pix_opencv_blobtrack()
-{ 
+{ 	
 }
 
 /////////////////////////////////////////////////////////
@@ -61,47 +61,57 @@ pix_opencv_blobtrack :: ~pix_opencv_blobtrack()
 /////////////////////////////////////////////////////////
 void pix_opencv_blobtrack :: processRGBAImage(imageStruct &image)
 { 
-	cv::Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, 4*image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
-	IplImage img;
-	cvCvtColor(&imgMat, &img, CV_RGBA2RGB);
+	cv::Mat imgMat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
+	IplImage img = imgMat;
+	printf("imageStruct csize : %d\tIplImage.nbChannels : %d\n",image.csize, img.nChannels);
+
 	RunBlobTrackingAuto( &img );
 }
 
 void pix_opencv_blobtrack :: processRGBImage(imageStruct &image) {
-	cv::Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, 3*image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
+	cv::Mat imgMat( image.ysize, image.xsize, CV_8UC3, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
 	IplImage img = imgMat;
 	RunBlobTrackingAuto( &img );
 }
 
 void pix_opencv_blobtrack :: processYUVImage(imageStruct &image) {
-	error( "pix_opencv_blobtrack : yuv format not supported" );
-}
+	cv::Mat imgMat( image.ysize, image.xsize, CV_8UC2, image.data, image.csize*image.xsize); // convert imageStruct to cv::Mat without copying data
+	IplImage img = imgMat; // convert cv::Mat to IplImage
+	printf("imageStruct csize : %d\tIplImage.nbChannels : %d\n",image.csize, img.nChannels);
+
+	RunBlobTrackingAuto( &img );}
     	
 void pix_opencv_blobtrack :: processGrayImage(imageStruct &image)
 { 
-	cv::Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
-	//~ cv::Mat imgMatRGB;
-	//~ cvCvtColor(&imgMat, &imgMatRGB, CV_GRAY2BGR);
-	IplImage img = imgMat;
+	cv::Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // convert imageStruct to cv::Mat without copying data
+	IplImage img = imgMat; // convert cv::Mat to IplImage
 	RunBlobTrackingAuto( &img );
 }
 
 void pix_opencv_blobtrack :: RunBlobTrackingAuto( IplImage* img )
 {
-	puts("run !");
         IplImage*   pMask = NULL;
         static IplImage*    imgRGB = NULL;
+        
+        printf("image depth : %d\n", img->depth);
 
         imgRGB = cvCreateImage(cvSize(img->width,img->height),img->depth,3);
-        cvCvtColor(img, imgRGB, CV_GRAY2RGB);
-        
-        puts("cvtColor done");
-            
+        switch (img->nChannels){
+			case 1:
+			cvCvtColor(img, imgRGB, CV_GRAY2RGB);
+			break;
+			case 2:
+			cvCvtColor(img, imgRGB, CV_YUV2RGB);
+			break;
+			case 3:
+			break;
+			case 4:
+			cvCvtColor(img, imgRGB, CV_RGBA2RGB);
+			break;
+		}
         /* Process: */
         m_tracker->Process(imgRGB, pMask);
         
-        puts("process done");
-
         /* Draw debug info: */
         if ( m_monitoring_stage == 3 ) {
            /* Draw all information about test sequence: */
@@ -172,6 +182,7 @@ void pix_opencv_blobtrack :: RunBlobTrackingAuto( IplImage* img )
 /////////////////////////////////////////////////////////
 void pix_opencv_blobtrack :: obj_setupCallback(t_class *classPtr)
 {
+	CPPEXTERN_MSG1(classPtr, "monitorStage",	monitorStageMess, 		t_float);
 }
 
 /////////////////////////////////////////////////////////
@@ -279,4 +290,15 @@ void pix_opencv_blobtrack :: createModules()
         m_tracker = cvCreateBlobTrackerAuto1(&m_param);
         if(!m_tracker)
             error("Can not create BlobTrackerAuto");
+}
+/////////////////////////////////////////////////////////
+// messages handling
+//
+/////////////////////////////////////////////////////////
+void pix_opencv_blobtrack :: monitorStageMess(t_float arg)
+{
+	m_monitoring_stage = int(arg);
+	t_atom data_out;
+	SETFLOAT(&data_out, m_monitoring_stage);
+	outlet_anything( m_dataout, gensym("monitorStage"), 1, &data_out);
 }

@@ -63,11 +63,15 @@ class GEM_EXTERN pix_opencv_blobtrack : public GemPixObj
 	virtual void 	processYUVImage(imageStruct &image);
    	virtual void 	processGrayImage(imageStruct &image);
    	void RunBlobTrackingAuto( IplImage* img );
-   	
+   		
+   	//////////
+   	// Messages handling
+   	void 	monitorStageMess(t_float arg);
+
    	// Members
-   	int m_monitoring_stage; // 0 : input image, 1 : FG, 2 : BG, 3 : input with trackng info
    	std::string m_fg_name, m_bd_name, m_bt_name, m_btgen_name, m_btpp_name, m_bta_name, m_bt_corr;
    	int m_FGTrainFrames;
+   	int m_monitoring_stage; // 0 : input image, 1 : FG, 2 : BG, 3 : input with trackng info
 
    	
    	CvBlobTrackerAuto* m_tracker;
