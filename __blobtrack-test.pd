@@ -1,0 +1,38 @@
+#N canvas 610 153 450 447 10;
+#X obj 89 193 pix_opencv_blobtrack;
+#X obj 334 170 gemwin;
+#X msg 334 124 create \, 1;
+#X msg 349 147 0 \, destroy;
+#X obj 334 78 loadbang;
+#X obj 334 100 t b b;
+#X obj 392 77 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 89 31 pix_video;
+#X obj 89 -7 gemhead;
+#X obj 89 50 cnv 15 160 100 empty empty empty 20 12 0 14 -24198 -66577
+0;
+#X floatatom 100 132 4 0 0 1 width - -;
+#X floatatom 110 114 4 0 0 1 height - -;
+#X floatatom 120 96 4 0 0 1 bytes/pixel - -;
+#X floatatom 130 79 5 0 0 1 coulorspace - -;
+#X obj 89 58 pix_info . . . .;
+#X msg 164 5 dimen 640 480;
+#X obj 89 222 pix_texture;
+#X obj 89 253 square 3;
+#X obj 34 156 pix_grey;
+#X connect 0 0 16 0;
+#X connect 2 0 1 0;
+#X connect 3 0 1 0;
+#X connect 4 0 5 0;
+#X connect 5 0 2 0;
+#X connect 6 0 5 0;
+#X connect 7 0 14 0;
+#X connect 8 0 7 0;
+#X connect 14 0 18 0;
+#X connect 14 1 10 0;
+#X connect 14 2 11 0;
+#X connect 14 3 12 0;
+#X connect 14 4 13 0;
+#X connect 15 0 7 0;
+#X connect 16 0 17 0;
+#X connect 18 0 0 0;
