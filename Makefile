@@ -72,9 +72,10 @@ patreco: arma
 	g++ $(LDFLAGS) -o pix_opencv_patreco.$(EXTENSION) pix_opencv_patreco.o pattern.o patterndetector.o $(LIBS)
 	
 blobtrack:
-	g++ $(CPPFLAGS) -c blobtrack.cpp -o blobtrack.o $(OPENCVLIB)
+	#~ g++ $(CPPFLAGS) -c blobtrack.cpp -o blobtrack.o $(OPENCVLIB)
 	g++ $(CPPFLAGS) $(INCLUDES) -o pix_opencv_blobtrack.o -c pix_opencv_blobtrack.cpp
-	g++ $(LDFLAGS) -o pix_opencv_blobtrack.$(EXTENSION) pix_opencv_blobtrack.o blobtrack.o $(LIBS)
+	#~ g++ $(LDFLAGS) -o pix_opencv_blobtrack.$(EXTENSION) pix_opencv_blobtrack.o blobtrack.o $(LIBS)
+	g++ $(LDFLAGS) -o pix_opencv_blobtrack.$(EXTENSION) pix_opencv_blobtrack.o $(LIBS)
 
 template:
 	g++ $(CPPFLAGS) $(INCLUDES) -o pix_opencv_template.o -c pix_opencv_template.cpp
