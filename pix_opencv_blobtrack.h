@@ -66,12 +66,19 @@ class GEM_EXTERN pix_opencv_blobtrack : public GemPixObj
    		
    	//////////
    	// Messages handling
-   	void 	monitorStageMess(t_float arg);
+   	void 	monitorStageMess(int arg);
+    void 	fgTrainFramesMess(int arg);
+	void 	printParamsMess(void);
+	void 	getParamMess(t_symbol*s, int argc, t_atom*argv); // get available params or param value
+	void 	setParamMess(t_symbol*s, int argc, t_atom*argv); // set param
+	void 	getModuleMess(t_symbol*s, int argc, t_atom*argv); // list available and currently used modules
+	void 	setModuleMess(t_symbol*s, int argc, t_atom*argv); // set selected modules
 
    	// Members
    	std::string m_fg_name, m_bd_name, m_bt_name, m_btgen_name, m_btpp_name, m_bta_name, m_bt_corr;
    	int m_FGTrainFrames;
-   	int m_monitoring_stage; // 0 : input image, 1 : FG, 2 : BG, 3 : input with trackng info
+   	int m_monitoring_stage; // 0 : input image, 1 : FG 3 : input with trackng info
+   	int x_size, y_size;
 
    	
    	CvBlobTrackerAuto* m_tracker;
@@ -89,6 +96,8 @@ class GEM_EXTERN pix_opencv_blobtrack : public GemPixObj
     
     void setupModules();
 	void createModules();
+	void releaseModules(void);
+	void print_params(CvVSModule* pM, const char* module); 
     t_outlet *m_dataout; // info outlet
 	    
 };
