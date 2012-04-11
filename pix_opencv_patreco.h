@@ -39,15 +39,16 @@ KEYWORDS
 DESCRIPTION
    
 -----------------------------------------------------------------*/
+
 class GEM_EXTERN pix_opencv_patreco : public GemPixObj
 {
     CPPEXTERN_HEADER(pix_opencv_patreco, GemPixObj)
 
     public:
 
-	    //////////
-	    // Constructor
-    	pix_opencv_patreco();
+	//////////
+	// Constructor
+	pix_opencv_patreco();
     	
     protected:
     	
@@ -66,7 +67,7 @@ class GEM_EXTERN pix_opencv_patreco : public GemPixObj
    	// Set parameters
 	void 	loadIntraMess(t_symbol *filename);
 	void 	loadDistMess(t_symbol *filename);
-	void 	loadMess(t_symbol *filename);
+	void 	loadMess(t_symbol *s, int argc, t_atom* argv);
 	void 	fixedThreshMess(float arg);
 	void 	adaptThreshMess(float arg);
 	void 	adaptBlockSizeMess(float arg);
@@ -84,9 +85,10 @@ class GEM_EXTERN pix_opencv_patreco : public GemPixObj
 	cv::Mat m_cameraMatrix, m_distortions;
     
     ARma::PatternDetector *m_detector;
-    std::vector<cv::Mat> m_patternLibrary;  				// pattern library
+    //~ std::vector<cv::Mat> m_patternLibrary;  				// pattern library
+    std::map<int, PatternLib> m_patternLibrary;
 	std::vector<ARma::Pattern> m_detectedPattern; 			// detected pattern 
-	int m_patternCount;										// patternCount
+	int m_pattern_size;
 	
 };
 #endif	// for header file

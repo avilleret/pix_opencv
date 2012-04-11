@@ -10,34 +10,16 @@ namespace ARma
 	PatternDetector::PatternDetector(void) : 	m_fixed_threshold(40),
 										m_adapt_threshold(5),				//non-used with FIXED_THRESHOLD mode
 										m_adapt_block_size(45), 			//non-used with FIXED_THRESHOLD mode
-										m_confidence_threshold(0.35),
 										m_threshold_mode(2),				//0:no binarisation, 1:FIXED_THRESHOLD, 2: ADAPTIVE_THRESHOLD
 										m_pattern_size(64),
+										m_confidence_threshold(0.35),
 										m_ART_pattern(1),
 										m_dilate(1)
-{
-	normROI = Mat(m_pattern_size, m_pattern_size, CV_8UC1);//normalized ROI
-	
+{	
 	makeMask();
-
-	//corner of normalized area
-	norm2DPts[0] = Point2f(0,0);
-	norm2DPts[1] = Point2f(m_pattern_size-1,0);
-	norm2DPts[2] = Point2f(m_pattern_size-1,m_pattern_size-1);
-	norm2DPts[3] = Point2f(0,m_pattern_size-1);
-
-
-
-
-	
-//~ imshow("test",patMask);
-//	cvWaitKey(0);
-//	exit(0);
-
-
 }
 
-void PatternDetector::detect(Mat& frame, const Mat& cameraMatrix, const Mat& distortions, vector<Mat>& library, vector<Pattern>& foundPatterns)
+void PatternDetector::detect(Mat& frame, const Mat& cameraMatrix, const Mat& distortions, map<int,PatternLib>& library, vector<Pattern>& foundPatterns)
 {
 
 	patInfo out;
@@ -206,9 +188,9 @@ void PatternDetector::normalizePattern(const Mat& src, const Point2f roiPoints[]
 
 }
 
-int PatternDetector::identifyPattern(const Mat& src, std::vector<cv::Mat>& loadedPatterns, patInfo& info)
+int PatternDetector::identifyPattern(const Mat& src, std::map<int,PatternLib>& library, patInfo& info)
 {
-	if (loadedPatterns.size()<1){
+	if (library.size()<1){
 		//~ printf("No loaded pattern\n");
 		return -1;
 	}
@@ -248,27 +230,28 @@ int PatternDetector::identifyPattern(const Mat& src, std::vector<cv::Mat>& loade
 	
 	//use correlation coefficient as a robust similarity measure
 	info.maxCor = -1.0;
-	for (j=0; j<(loadedPatterns.size()/4); j++){
+	for (std::map<int,PatternLib>::iterator it=library.begin() ; it!=library.end() ; it++){
 		for(i=0; i<4; i++){
 			
-			double const nnn = pow(norm(loadedPatterns.at(j*4+i)),2); // AV is it equivalent to norm(loadedPatterns.at(j*4+i),NORM_L1) ??
-
+			//~ double const nnn = pow(norm(loadedPatterns.at(j*4+i)),2); // AV is it equivalent to norm(loadedPatterns.at(j*4+i),NORM_L1) ??
+			double const nnn = it->second.norm[i];
 			if (zero_mean_mode ==1){
 
-				double const mmm = cvMean(&((CvMat)loadedPatterns.at(j*4+i)));
+				//~ double const mmm = cvMean(&((CvMat)loadedPatterns.at(j*4+i)));
+				double const mmm = it->second.mean[i];
 				
-				nom = inter.dot(loadedPatterns.at(j*4+i)) - (N*mean_int.val[0]*mmm);
+				nom = inter.dot(it->second.pattern[i]) - (N*mean_int.val[0]*mmm);
 				den = sqrt( (normSrcSq - (N*mean_int.val[0]*mean_int.val[0]) ) * (nnn - (N*mmm*mmm) ) );
 				tempsim = nom/den;
 			}
 			else 
 			{
-			tempsim = inter.dot(loadedPatterns.at(j*4+i))/(sqrt(normSrcSq*nnn));
+			tempsim = inter.dot(it->second.pattern[i])/(sqrt(normSrcSq*nnn));
 			}
 
 			if(tempsim>info.maxCor){
 				info.maxCor = tempsim;
-				info.index = j+1;
+				info.index = it->second.id;
 				info.ori = i;
 			}
 		}
@@ -285,8 +268,15 @@ int PatternDetector::identifyPattern(const Mat& src, std::vector<cv::Mat>& loade
 }
 
 void PatternDetector :: makeMask(){
-	cout << "Make mask..." << endl;
+	
+	normROI = Mat(m_pattern_size, m_pattern_size, CV_8UC1);//normalized ROI
 
+	//corner of normalized area
+	norm2DPts[0] = Point2f(0,0);
+	norm2DPts[1] = Point2f(m_pattern_size-1,0);
+	norm2DPts[2] = Point2f(m_pattern_size-1,m_pattern_size-1);
+	norm2DPts[3] = Point2f(0,m_pattern_size-1);
+	
 	if ( m_ART_pattern ){
 		//Masks for exterior(black) and interior area inside the pattern
 		patMask = Mat::ones(m_pattern_size, m_pattern_size, CV_8UC1);
@@ -301,7 +291,6 @@ void PatternDetector :: makeMask(){
 		patMask = Mat::zeros(m_pattern_size, m_pattern_size, CV_8UC1);
 		patMaskInt = Mat::ones(m_pattern_size, m_pattern_size, CV_8UC1);
 	}
-	cout << "done." << endl;
 }
 
 };
