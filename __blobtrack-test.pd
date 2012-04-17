@@ -1,4 +1,4 @@
-#N canvas 817 174 1061 809 10;
+#N canvas 824 244 1061 809 10;
 #X obj 96 383 pix_opencv_blobtrack;
 #X obj 341 270 gemwin;
 #X msg 356 247 0 \, destroy;
@@ -41,7 +41,7 @@
 #X obj 213 411 route blobnum blob;
 #X obj 628 345 s blobtrack_in;
 #X obj 142 360 r blobtrack_in;
-#N canvas 1097 180 709 722 showblob 1;
+#N canvas 1097 184 709 722 showblob 0;
 #X obj 187 13 inlet blobinformation;
 #X obj 279 316 gemlist;
 #X obj 279 296 t b a;

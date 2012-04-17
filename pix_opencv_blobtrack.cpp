@@ -391,7 +391,7 @@ void pix_opencv_blobtrack :: print_params(CvVSModule* pM, const char* module)
     if(pM->GetParamName(0) == NULL ) return;
 
 
-    printf("%s(%s) module parameters:\n",module,pM->GetNickName());
+    post("%s(%s) module parameters:",module,pM->GetNickName());
 
     for (i=0; ; ++i)
     {
@@ -400,11 +400,11 @@ void pix_opencv_blobtrack :: print_params(CvVSModule* pM, const char* module)
         if(param == NULL)break;
         if(str)
         {
-            printf("  %s: %s\n",param,str);
+            post("  %s: %s",param,str);
         }
         else
         {
-            printf("  %s: %g\n",param,pM->GetParam(param));
+            post("  %s: %g",param,pM->GetParam(param));
         }
     }
 }   /* print_params */
