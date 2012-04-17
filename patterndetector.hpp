@@ -38,6 +38,7 @@ enum THRES_MODE {
 	int 	m_monitor_stage;							// monitored stage, 1 : binarisation, 2 : normalised ROI...
 	float	m_confidence_threshold;						// threshold above which we are sure to identify the pattern
 	int		m_ART_pattern;								// pattern style : 1 = ARToolkit
+	int		m_erode;									// enable erosion in binarisation process, default : 0
 	int 	m_dilate;									// enable dilatation in binarisation process, default : 1
 	
 private:

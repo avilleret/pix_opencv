@@ -292,6 +292,16 @@ void pix_opencv_patreco :: ARTpatternMess(t_float arg)
 	outlet_anything( m_dataout, gensym("ARTpattern"), 1, &data_out);
 }
 
+void pix_opencv_patreco :: erodeMess(t_float arg){
+	if (int(arg)) {
+		m_detector->m_erode = 1;
+	} else m_detector->m_erode = 0;
+	
+	t_atom data_out;	
+	SETFLOAT(&data_out, m_detector->m_erode);
+	outlet_anything( m_dataout, gensym("erode"), 1, &data_out);
+}
+
 void pix_opencv_patreco :: dilateMess(t_float arg){
 	if (int(arg)) {
 		m_detector->m_dilate = 1;
@@ -325,6 +335,7 @@ void pix_opencv_patreco :: obj_setupCallback(t_class *classPtr)
 	CPPEXTERN_MSG1(classPtr, "monitorStage",	monitorStageMess, 		t_float);
 	CPPEXTERN_MSG1(classPtr, "ARTpattern",		ARTpatternMess, 		t_float);
 	CPPEXTERN_MSG1(classPtr, "dilate", 			dilateMess, 			t_float);
+	CPPEXTERN_MSG1(classPtr, "erode", 			erodeMess,	 			t_float);
 	CPPEXTERN_MSG0(classPtr, "clearLibrary", 	clearLibMess);
 
 

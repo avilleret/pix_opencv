@@ -75,6 +75,7 @@ class GEM_EXTERN pix_opencv_patreco : public GemPixObj
 	void 	monitorStageMess(t_float arg);
 	void 	ARTpatternMess(t_float arg);
 	void 	dilateMess(t_float arg);
+	void 	erodeMess(t_float arg);
 	void 	clearLibMess(void);
 
     private:

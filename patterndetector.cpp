@@ -14,6 +14,7 @@ namespace ARma
 										m_threshold_mode(2),				//0:no binarisation, 1:FIXED_THRESHOLD, 2: ADAPTIVE_THRESHOLD
 										m_pattern_size(64),
 										m_ART_pattern(1),
+										m_erode(0),
 										m_dilate(1)
 {
 	normROI = Mat(m_pattern_size, m_pattern_size, CV_8UC1);//normalized ROI
@@ -142,7 +143,7 @@ void PatternDetector::detect(Mat& frame, const Mat& cameraMatrix, const Mat& dis
 					patCand.id = out.index;
 					patCand.orientation = out.ori;
 					patCand.confidence = out.maxCor;
-					cout << "Id: " << patCand.id << endl;
+					//~ cout << "Id: " << patCand.id << endl;
 
 					for (j=0; j<4; j++){
 						patCand.vertices.push_back(refinedVertices.at((8-out.ori+v1-j)%4));
@@ -178,10 +179,12 @@ void PatternDetector::convertAndBinarize(const Mat& src, Mat& dst1, Mat& dst2, i
 			break;
 		case 1:
 			threshold(dst2, dst1, m_fixed_threshold, 255, CV_THRESH_BINARY_INV);
+			if (m_erode) erode(dst1,dst1, Mat());
 			if (m_dilate) dilate( dst1, dst1, Mat());
 			break;
 		default:
 			adaptiveThreshold( dst2, dst1, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, m_adapt_block_size, m_adapt_threshold);
+			if (m_erode) erode(dst1,dst1, Mat());
 			if (m_dilate) dilate( dst1, dst1, Mat());
 			break;
 	}
@@ -274,8 +277,8 @@ int PatternDetector::identifyPattern(const Mat& src, std::vector<cv::Mat>& loade
 		}
 	}
 
-	cout << "MaxCor: " << info.maxCor << endl;
-	cout << "Ori: " << info.ori << endl;
+	//~ cout << "MaxCor: " << info.maxCor << endl;
+	//~ cout << "Ori: " << info.ori << endl;
 
 	if (info.maxCor>m_confidence_threshold)
 		return 1;
@@ -285,8 +288,6 @@ int PatternDetector::identifyPattern(const Mat& src, std::vector<cv::Mat>& loade
 }
 
 void PatternDetector :: makeMask(){
-	cout << "Make mask..." << endl;
-
 	if ( m_ART_pattern ){
 		//Masks for exterior(black) and interior area inside the pattern
 		patMask = Mat::ones(m_pattern_size, m_pattern_size, CV_8UC1);
@@ -301,7 +302,6 @@ void PatternDetector :: makeMask(){
 		patMask = Mat::zeros(m_pattern_size, m_pattern_size, CV_8UC1);
 		patMaskInt = Mat::ones(m_pattern_size, m_pattern_size, CV_8UC1);
 	}
-	cout << "done." << endl;
 }
 
 };
