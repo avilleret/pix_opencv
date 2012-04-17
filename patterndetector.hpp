@@ -6,12 +6,6 @@
 using namespace std;
 using namespace cv;
 
-typedef struct PatternLib {
-	int 		id;
-	cv::Mat 	pattern[4];
-	double		mean[4], norm[4];
-	
-} PatternLib;
 
 namespace ARma
 {
@@ -32,7 +26,7 @@ enum THRES_MODE {
 	}; 
 
 	//detect patterns in the input frame
-	void detect(Mat& frame, const Mat& cameraMatrix, const Mat& distortions, map<int,PatternLib>& library, vector<Pattern>& foundPatterns);
+	void detect(Mat& frame, const Mat& cameraMatrix, const Mat& distortions, vector<Mat>& library, vector<Pattern>& foundPatterns);
 	void makeMask();
 
 	int 	m_patternCount;								// patternCount
@@ -60,7 +54,7 @@ private:
 
 	void convertAndBinarize(const Mat& src, Mat& dst1, Mat& dst2, int thresh_mode = 1);
 	void normalizePattern(const Mat& src, const Point2f roiPoints[], Rect& rec, Mat& dst);
-	int identifyPattern(const Mat& src, std::map<int,PatternLib>& loadedPatterns, patInfo& out);
+	int identifyPattern(const Mat& src, std::vector<cv::Mat>& loadedPatterns, patInfo& out);
 
 };
 
