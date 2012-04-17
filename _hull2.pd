@@ -1,0 +1,37 @@
+#N canvas 695 425 586 427 10;
+#X obj 180 182 pix_opencv_contours_convexhull2;
+#X obj 182 -10 gemhead;
+#X obj 12 84 gemwin;
+#X msg 12 38 create \, 1;
+#X msg 27 61 0 \, destroy;
+#X obj 182 153 pix_grey;
+#X obj 12 -8 loadbang;
+#X obj 12 14 t b b;
+#X obj 70 -9 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 182 47 cnv 15 160 100 empty empty empty 20 12 0 14 -24198 -66577
+0;
+#X floatatom 193 129 4 0 0 1 width - -;
+#X floatatom 203 111 4 0 0 1 height - -;
+#X floatatom 213 93 4 0 0 1 bytes/pixel - -;
+#X floatatom 223 76 5 0 0 1 coulorspace - -;
+#X obj 182 55 pix_info . . . .;
+#X msg 257 2 dimen 640 480;
+#X obj 182 28 pix_video;
+#X obj 180 203 pix_texture;
+#X obj 180 224 rectangle 5.333 4;
+#X connect 0 0 17 0;
+#X connect 1 0 16 0;
+#X connect 3 0 2 0;
+#X connect 4 0 2 0;
+#X connect 6 0 7 0;
+#X connect 7 0 3 0;
+#X connect 8 0 7 0;
+#X connect 14 0 5 0;
+#X connect 14 1 10 0;
+#X connect 14 2 11 0;
+#X connect 14 3 12 0;
+#X connect 14 4 13 0;
+#X connect 15 0 16 0;
+#X connect 16 0 14 0;
+#X connect 17 0 18 0;
