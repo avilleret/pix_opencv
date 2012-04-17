@@ -64,31 +64,22 @@ void pix_opencv_contours_convexhull2 :: processYUVImage(imageStruct &image) {
     	
 void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 { 
-	cv::Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
+	Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
 	
-	std::vector<std::vector<cv::Point> > contours;
-	std::vector<cv::Point> one_contour;
+	std::vector<std::vector<cv::Point>> contours;
+	std::vector<cv::Point>> one_contour;
 	cv::findContours(imgMat, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
 	
 	m_contours.clear();
 	
 	for( size_t i = 0; i < contours.size(); i++ ) {
 		if ( cv::contourArea(contours[i], false) > m_area_threshold ){
-			approxPolyDP(m_contours[i], one_contour, 3, true);
+			approxPolyDP(Mat(contours0[k]), one_contour, 3, true);
 			m_contours.push_back(one_contour);
 		}
 	}
-		
-	for( std::vector<std::vector<cv::Point> >::iterator it = m_contours.begin(); it < m_contours.end(); it++ ) {
-		t_atom*ap = new t_atom[2+it->size()*2];
-		SETFLOAT(ap, static_cast<t_float>(it->size()));
-		SETFLOAT(ap+1, 2);
-		
-		t_atom* pt=ap+2;
-		for ( std::vector<cv::Point>::iterator ite=it->begin(); ite<it->end(); ite++){
-			SETFLOAT(pt++,ite->x);
-			SETFLOAT(pt++,ite->y);
-		}
+	
+	for( size_t i = 0; i < m_contours.size(); i++ ) {
 	}
 }
 
