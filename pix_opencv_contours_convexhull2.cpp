@@ -32,7 +32,7 @@ CPPEXTERN_NEW(pix_opencv_contours_convexhull2)
 // Constructor
 //
 /////////////////////////////////////////////////////////
-pix_opencv_contours_convexhull2 :: pix_opencv_contours_convexhull2()
+pix_opencv_contours_convexhull2 :: pix_opencv_contours_convexhull2() : m_area_threshold(30)
 { 
 	m_dataout = outlet_new(this->x_obj, 0);
 }
@@ -64,32 +64,50 @@ void pix_opencv_contours_convexhull2 :: processYUVImage(imageStruct &image) {
     	
 void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 { 
-	cv::Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
+	if ( image.xsize < 0 || image.ysize < 0 ) return;
+
+	cv::Mat imgMat2( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
 	
+	cv::Mat imgMat = imgMat2.clone();
+		
 	std::vector<std::vector<cv::Point> > contours;
-	std::vector<cv::Point> one_contour;
-	cv::findContours(imgMat, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
-	
+	std::vector<cv::Point> one_contour;		
+
+	contours.clear();
 	m_contours.clear();
-	
+
+	cv::findContours(imgMat, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+		
 	for( size_t i = 0; i < contours.size(); i++ ) {
 		if ( cv::contourArea(contours[i], false) > m_area_threshold ){
-			approxPolyDP(m_contours[i], one_contour, 3, true);
+			one_contour.clear();
+			cv::approxPolyDP(contours[i], one_contour, 3, true);
 			m_contours.push_back(one_contour);
 		}
 	}
-		
-	for( std::vector<std::vector<cv::Point> >::iterator it = m_contours.begin(); it < m_contours.end(); it++ ) {
-		t_atom*ap = new t_atom[2+it->size()*2];
-		SETFLOAT(ap, static_cast<t_float>(it->size()));
-		SETFLOAT(ap+1, 2);
-		
-		t_atom* pt=ap+2;
-		for ( std::vector<cv::Point>::iterator ite=it->begin(); ite<it->end(); ite++){
-			SETFLOAT(pt++,ite->x);
-			SETFLOAT(pt++,ite->y);
+	//~ cv::drawContours(imgMat2, m_contours, -1, cv::Scalar(128,255,255), 3);
+
+	int i = 0;
+	for( std::vector<std::vector<cv::Point> >::iterator it = m_contours.begin(); it != m_contours.end(); ++it ) {
+		if (!it->empty()) {
+			int size = 2+it->size()*2;
+			t_atom*ap = new t_atom[size];
+			SETFLOAT(ap, static_cast<t_float>(it->size()));
+			SETFLOAT(ap+1, 2.0);
+			
+			t_atom* pt=ap+2;
+			int offset = 2;
+			
+			for ( std::vector<cv::Point>::iterator ite=it->begin(); ite!=it->end(); ++ite){
+				SETFLOAT(ap+offset,(float) (*ite).x/image.xsize);
+				SETFLOAT(ap+offset+1,(float) (*ite).y/image.ysize);
+				offset+=2;
+			}
+			
+			outlet_anything(m_dataout, gensym("contours"), size, ap);
+			if(ap)delete[]ap;ap=NULL;
 		}
-	}
+	}	
 }
 
 /////////////////////////////////////////////////////////
