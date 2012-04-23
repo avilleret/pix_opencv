@@ -81,7 +81,7 @@
 #X msg 433 309 1;
 #X msg 377 290 14;
 #X obj 519 507 hradio 15 1 0 14 empty empty empty 0 -8 0 10 -262144
--1 -1 1;
+-1 -1 4;
 #X msg 91 370 dilate \$1;
 #X obj 101 344 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
@@ -113,6 +113,7 @@
 #X obj 797 628 list append;
 #X obj 734 654 list append;
 #X obj 741 466 print;
+#X msg 826 493 0 0 0 1 0 0 0 0 0 0 0 0 0 0;
 #X connect 0 0 52 0;
 #X connect 2 0 1 0;
 #X connect 3 0 1 0;
