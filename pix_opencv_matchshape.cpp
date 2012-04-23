@@ -80,12 +80,31 @@ void pix_opencv_matchshape :: processGrayImage(imageStruct &image)
 //
 /////////////////////////////////////////////////////////
 void pix_opencv_matchshape :: obj_setupCallback(t_class *classPtr)
-{
+{	
+	CPPEXTERN_MSG0(classPtr, 	"clear",		clearMess);
 	CPPEXTERN_MSG(classPtr, 	"template",		templateMess);
 	CPPEXTERN_MSG(classPtr, 	"contour",		contourMess);
 	CPPEXTERN_MSG1(classPtr, 	"threshold",	thresholdMess,	float);
 	CPPEXTERN_MSG1(classPtr, 	"method",		methodMess,		int);
 }
+
+void pix_opencv_matchshape :: clearMess(void)
+{
+	for ( vector<vector<cv::Point2f> >::iterator it=m_template_vec_vec.end(); it!=m_template_vec_vec.begin(); it--)
+	{
+		(*it).clear();
+	}
+	m_template_vec_vec.clear();
+	m_template_vec_mat.clear();
+	
+	t_atom data;
+	SETFLOAT(&data, (float)m_template_vec_vec.size());
+	outlet_anything(m_dataout, gensym("template_vec"), 1, &data);
+
+	SETFLOAT(&data, (float)m_template_vec_mat.size());
+	outlet_anything(m_dataout, gensym("template_mat"), 1, &data);
+}
+	
 
 void pix_opencv_matchshape :: contourMess(t_symbol*s, int argc, t_atom*argv)
 {

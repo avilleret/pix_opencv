@@ -46,6 +46,7 @@ class GEM_EXTERN pix_opencv_matchshape : public GemPixObj
     	
     protected:
     // process messages
+    void clearMess(void);
     void templateMess(t_symbol*s, int argc, t_atom*argv);
 	void contourMess(t_symbol*s, int argc, t_atom*argv);
 	void thresholdMess(float arg);
