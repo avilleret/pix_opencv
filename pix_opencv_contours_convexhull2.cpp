@@ -81,7 +81,7 @@ void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 	for( size_t i = 0; i < contours.size(); i++ ) {
 		if ( cv::contourArea(contours[i], false) > m_area_threshold ){
 			one_contour.clear();
-			cv::approxPolyDP(contours[i], one_contour, 3, true);
+			cv::approxPolyDP(contours[i], one_contour, m_epsilon, true);
 			m_contours.push_back(one_contour);
 		}
 	}
@@ -116,5 +116,25 @@ void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 /////////////////////////////////////////////////////////
 void pix_opencv_contours_convexhull2 :: obj_setupCallback(t_class *classPtr)
 {
-  		    		    		  	  
+	CPPEXTERN_MSG1(classPtr, "epsilon",	epsilonMess, 		double);		    		  	  
+	CPPEXTERN_MSG1(classPtr, "area",	areaMess, 			double);		    		  	  
+}
+
+/////////////////////////////////////////////////////////
+// messages handling
+//
+/////////////////////////////////////////////////////////
+void pix_opencv_contours_convexhull2 :: epsilonMess(double arg)
+{
+	m_epsilon = arg > 0 ? arg : 3.;
+	t_atom data_out;
+	SETFLOAT(&data_out, (float) m_epsilon);
+	outlet_anything( m_dataout, gensym("epsilon"), 1, &data_out);
+}
+void pix_opencv_contours_convexhull2 :: areaMess(double arg)
+{
+	m_area_threshold = arg > 0 ? arg : 30.;
+	t_atom data_out;
+	SETFLOAT(&data_out, (float) m_area_threshold);
+	outlet_anything( m_dataout, gensym("area"), 1, &data_out);
 }
