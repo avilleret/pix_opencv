@@ -13,25 +13,21 @@ LOG
 
 -----------------------------------------------------------------*/
 
-#ifndef INCLUDE_pix_opencv_patreco_H_
-#define INCLUDE_pix_opencv_patreco_H_
+#ifndef INCLUDE_PIX_OPENCV_CONTOURS_CONVEXHULL2_H_
+#define INCLUDE_PIX_OPENCV_CONTOURS_CONVEXHULL2_H_
 
 #ifndef _EiC
 #include "cv.h"
 #endif
-
-// ARma lib
-#include "pattern.hpp"
-#include "patterndetector.hpp"
 
 #include "Base/GemPixObj.h"
 
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
 CLASS
-    pix_opencv_patreco
+    pix_opencv_contours_convexhull2
     
-	square pattern detector
+	detects contours and send them out
 	
 KEYWORDS
     pix
@@ -39,22 +35,21 @@ KEYWORDS
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-
-class GEM_EXTERN pix_opencv_patreco : public GemPixObj
+class GEM_EXTERN pix_opencv_contours_convexhull2 : public GemPixObj
 {
-    CPPEXTERN_HEADER(pix_opencv_patreco, GemPixObj)
+    CPPEXTERN_HEADER(pix_opencv_contours_convexhull2, GemPixObj)
 
     public:
 
-	//////////
-	// Constructor
-	pix_opencv_patreco();
+	    //////////
+	    // Constructor
+    	pix_opencv_contours_convexhull2();
     	
     protected:
     	
    	//////////
    	// Destructor
-   	virtual ~pix_opencv_patreco();
+   	virtual ~pix_opencv_contours_convexhull2();
 
    	//////////
    	// Do the processing
@@ -62,33 +57,12 @@ class GEM_EXTERN pix_opencv_patreco : public GemPixObj
    	virtual void 	processRGBImage(imageStruct &image);
 	virtual void 	processYUVImage(imageStruct &image);
    	virtual void 	processGrayImage(imageStruct &image);
-   	   	    	
-	//////////
-   	// Set parameters
-	void 	loadIntraMess(t_symbol *filename);
-	void 	loadDistMess(t_symbol *filename);
-	void 	loadMess(t_symbol *s, int argc, t_atom* argv);
-	void 	fixedThreshMess(float arg);
-	void 	adaptThreshMess(float arg);
-	void 	adaptBlockSizeMess(float arg);
-	void 	threshModeMess(float arg);
-	void 	patternSizeMess(float arg);
-	void 	monitorStageMess(t_float arg);
-	void 	ARTpatternMess(t_float arg);
-	void 	dilateMess(t_float arg);
-	void 	clearLibMess(void);
 
     private:
     
-    t_outlet *m_dataout;
-	
-	cv::Mat m_cameraMatrix, m_distortions;
-    
-    ARma::PatternDetector *m_detector;
-    //~ std::vector<cv::Mat> m_patternLibrary;  				// pattern library
-    std::map<int, PatternLib> m_patternLibrary;
-	std::vector<ARma::Pattern> m_detectedPattern; 			// detected pattern 
-	int m_pattern_size;
-	
+    t_outlet *m_dataout; // info outlet
+    std::vector<std::vector<cv::Point> > m_contours;	
+    double m_area_threshold;	// min area for contour
+	    
 };
 #endif	// for header file

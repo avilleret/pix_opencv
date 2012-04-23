@@ -33,8 +33,6 @@ class Pattern
 		void showPattern(void);
 
 };
-
-
 }
 
 #endif
