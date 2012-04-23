@@ -1,0 +1,63 @@
+#N canvas 751 345 1026 526 10;
+#X obj 155 295 pix_opencv_matchshape;
+#X obj 155 33 gemhead;
+#X obj 155 316 pix_texture;
+#X obj 155 337 rectangle 4 3;
+#X obj 20 195 gemwin;
+#X msg 20 142 create \, 1;
+#X msg 33 168 0 \, destroy;
+#X msg 224 72 contour 4 2 0 0 0 1 1 1 1 0;
+#X obj 278 325 print;
+#X msg 210 208 method \$1;
+#X floatatom 210 186 5 0 0 0 - - -;
+#X msg 234 122 template 4 2 0 0 0 1 1 1 1 0;
+#X msg 244 142 template 4 2 2 0 4 1 1 1 1 0;
+#X msg 214 52 contour 6 2 0 0 0 1 1 1 1 0 -0.5 -0.5;
+#X floatatom 210 236 5 0 0 0 - - -;
+#X msg 210 256 threshold \$1;
+#X msg 204 33 contour 4 2 2 0 4 1 1 1 1 0;
+#X obj 325 326 route match_vec template_vec;
+#X obj 325 435 unpack;
+#X text 332 418 found corresponding contour;
+#X floatatom 313 463 5 0 0 0 - - -;
+#X floatatom 360 463 5 0 0 0 - - -;
+#X text 312 476 id;
+#X text 360 476 absolute difference from template;
+#X floatatom 407 386 5 0 0 0 - - -;
+#X text 441 383 number of loaded contour;
+#X text 617 52 pix_opencv_matchshape compare input images or input
+contours to a library of images (or contours). It send out the id of
+the closest found behind a threshold.;
+#X text 617 92 You can use pix_opencv_contour_convexhull2 to find all
+contours in the image and send founded contours to pix_opencv_matchshape
+to recognize it.;
+#X text 617 132 See example xx.;
+#X text 247 182 method to compare shape (1 \, 2 or 3 \, please refer
+to OpenCV doc for details);
+#X text 617 152 This external uses cv::matchShapes function. Documentation
+is here : http://docs.opencv.org/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=matchshapes#matchshapes
+;
+#X text 242 235 threshold behind wich a shape is recognized;
+#X text 229 104 template message add a template to library;
+#X text 203 15 contour message compare the contour to each loaded contour
+;
+#X connect 0 0 2 0;
+#X connect 0 1 8 0;
+#X connect 0 1 17 0;
+#X connect 1 0 0 0;
+#X connect 2 0 3 0;
+#X connect 5 0 4 0;
+#X connect 6 0 4 0;
+#X connect 7 0 0 0;
+#X connect 9 0 0 0;
+#X connect 10 0 9 0;
+#X connect 11 0 0 0;
+#X connect 12 0 0 0;
+#X connect 13 0 0 0;
+#X connect 14 0 15 0;
+#X connect 15 0 0 0;
+#X connect 16 0 0 0;
+#X connect 17 0 18 0;
+#X connect 17 1 24 0;
+#X connect 18 0 20 0;
+#X connect 18 1 21 0;
