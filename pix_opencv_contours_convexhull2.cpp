@@ -89,7 +89,7 @@ void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 
 	int i = 0;
 	for( std::vector<std::vector<cv::Point> >::iterator it = m_contours.begin(); it != m_contours.end(); ++it ) {
-		if (!it->empty()) {
+		if (!it->empty() && it->size() > 2) {
 			int size = 2+it->size()*2;
 			t_atom*ap = new t_atom[size];
 			SETFLOAT(ap, static_cast<t_float>(it->size()));
