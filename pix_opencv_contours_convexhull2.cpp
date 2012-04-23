@@ -104,7 +104,7 @@ void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 				offset+=2;
 			}
 			
-			outlet_anything(m_dataout, gensym("contours"), size, ap);
+			outlet_anything(m_dataout, gensym("contour"), size, ap);
 			if(ap)delete[]ap;ap=NULL;
 		}
 	}	
