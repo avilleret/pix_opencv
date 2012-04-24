@@ -34,6 +34,7 @@ CPPEXTERN_NEW(pix_opencv_contours_convexhull2)
 /////////////////////////////////////////////////////////
 pix_opencv_contours_convexhull2 :: pix_opencv_contours_convexhull2() : m_area_threshold(30)
 { 
+	m_contourout = outlet_new(this->x_obj, 0);
 	m_dataout = outlet_new(this->x_obj, 0);
 }
 
@@ -87,7 +88,15 @@ void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 	}
 	//~ cv::drawContours(imgMat2, m_contours, -1, cv::Scalar(128,255,255), 3);
 
-	int i = 0;
+	t_atom*info;
+	info = new t_atom[(int) m_contours.size()*10+2];
+	// info : 6x(contour_nb) matrix
+	// info for each contour : area, rotrect corner (8 float), angle
+	SETFLOAT(info, (float) m_contours.size());
+	SETFLOAT(info+1, 10.);
+	int info_offset(2);
+
+	
 	for( std::vector<std::vector<cv::Point> >::iterator it = m_contours.begin(); it != m_contours.end(); ++it ) {
 		if (!it->empty() && it->size() > 2) {
 			int size = 2+it->size()*2;
@@ -95,19 +104,40 @@ void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 			SETFLOAT(ap, static_cast<t_float>(it->size()));
 			SETFLOAT(ap+1, 2.0);
 			
-			t_atom* pt=ap+2;
-			int offset = 2;
+			int offset(2);
 			
 			for ( std::vector<cv::Point>::iterator ite=it->begin(); ite!=it->end(); ++ite){
 				SETFLOAT(ap+offset,(float) (*ite).x/image.xsize);
 				SETFLOAT(ap+offset+1,(float) (*ite).y/image.ysize);
 				offset+=2;
 			}
-			
-			outlet_anything(m_dataout, gensym("contour"), size, ap);
+			outlet_anything(m_contourout, gensym("contour"), size, ap);
 			if(ap)delete[]ap;ap=NULL;
+			
+			SETFLOAT(info+info_offset, (float) cv::contourArea(*it));
+			
+			
+			cv::RotatedRect rot_rect = cv::minAreaRect(*it);
+			cv::Point2f corners[4];
+			rot_rect.points(corners);
+			for (int j=0;j<4;j++) {
+				SETFLOAT(info+info_offset+j+1, corners[j/2].x/image.xsize);
+				SETFLOAT(info+info_offset+j+2, corners[j/2].y/image.ysize);
+			}
+
+			//~ SETFLOAT(info+info_offset+1, rot_rect.center.x/image.xsize);
+			//~ SETFLOAT(info+info_offset+2, rot_rect.center.y/image.ysize);
+			//~ SETFLOAT(info+info_offset+3, rot_rect.size.width/image.xsize);
+			//~ SETFLOAT(info+info_offset+4, rot_rect.size.height/image.xsize);
+			SETFLOAT(info+info_offset+5, rot_rect.angle);
+			
+			info_offset+=10;
 		}
-	}	
+	}
+	outlet_anything(m_dataout, gensym("info"), m_contours.size()*10+2, info);
+	
+	if (info) delete info;
+	info = NULL;
 }
 
 /////////////////////////////////////////////////////////
