@@ -1,5 +1,5 @@
-PD_DIR = /home/antoine/pd/pd
-GEM_DIR = /home/antoine/pd/externals/Gem
+PD_DIR = /home/nusmuk/pd/pd
+GEM_DIR = /home/nusmuk/pd/externals/Gem
 
 GEM_OPENCV_VERSION = 0.2
 
