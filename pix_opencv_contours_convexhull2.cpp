@@ -36,6 +36,8 @@ pix_opencv_contours_convexhull2 :: pix_opencv_contours_convexhull2() : m_area_th
 { 
 	m_contourout = outlet_new(this->x_obj, 0);
 	m_dataout = outlet_new(this->x_obj, 0);
+	
+	post("build on %s at %s", __DATE__, __TIME__);
 }
 
 /////////////////////////////////////////////////////////
@@ -92,7 +94,7 @@ void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 	info = new t_atom[(int) m_contours.size()*10+2];
 	// info : 6x(contour_nb) matrix
 	// info for each contour : area, rotrect corner (8 float), angle
-	SETFLOAT(info, (float) m_contours.size());
+	int count(0);
 	SETFLOAT(info+1, 10.);
 	int info_offset(2);
 
@@ -121,20 +123,22 @@ void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 			cv::Point2f corners[4];
 			rot_rect.points(corners);
 			for (int j=0;j<4;j++) {
-				SETFLOAT(info+info_offset+j+1, corners[j/2].x/image.xsize);
-				SETFLOAT(info+info_offset+j+2, corners[j/2].y/image.ysize);
+				SETFLOAT(info+info_offset+j*2+1, corners[j].x/image.xsize);
+				SETFLOAT(info+info_offset+j*2+2, corners[j].y/image.ysize);
 			}
 
 			//~ SETFLOAT(info+info_offset+1, rot_rect.center.x/image.xsize);
 			//~ SETFLOAT(info+info_offset+2, rot_rect.center.y/image.ysize);
 			//~ SETFLOAT(info+info_offset+3, rot_rect.size.width/image.xsize);
 			//~ SETFLOAT(info+info_offset+4, rot_rect.size.height/image.xsize);
-			SETFLOAT(info+info_offset+5, rot_rect.angle);
+			SETFLOAT(info+info_offset+9, rot_rect.angle);
 			
 			info_offset+=10;
+			count++;
 		}
 	}
-	outlet_anything(m_dataout, gensym("info"), m_contours.size()*10+2, info);
+	SETFLOAT(info, (float) count);
+	if (count) outlet_anything(m_dataout, gensym("info"), count*10+2, info);
 	
 	if (info) delete info;
 	info = NULL;
