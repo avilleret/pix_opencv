@@ -34,7 +34,7 @@ CPPEXTERN_NEW(pix_opencv_contours_convexhull2)
 /////////////////////////////////////////////////////////
 pix_opencv_contours_convexhull2 :: pix_opencv_contours_convexhull2() : m_area_threshold(30)
 { 
-	m_contourout = outlet_new(this->x_obj, 0);
+	//~ m_contourout = outlet_new(this->x_obj, 0);
 	m_dataout = outlet_new(this->x_obj, 0);
 	
 	post("build on %s at %s", __DATE__, __TIME__);
@@ -91,11 +91,11 @@ void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 	//~ cv::drawContours(imgMat2, m_contours, -1, cv::Scalar(128,255,255), 3);
 
 	t_atom*info;
-	info = new t_atom[(int) m_contours.size()*10+2];
+	info = new t_atom[(int) m_contours.size()*14+2];
 	// info : 6x(contour_nb) matrix
 	// info for each contour : area, rotrect corner (8 float), angle
 	int count(0);
-	SETFLOAT(info+1, 10.);
+	SETFLOAT(info+1, 14.);
 	int info_offset(2);
 
 	
@@ -113,8 +113,8 @@ void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 				SETFLOAT(ap+offset+1,(float) (*ite).y/image.ysize);
 				offset+=2;
 			}
-			outlet_anything(m_contourout, gensym("contour"), size, ap);
-			if(ap)delete[]ap;ap=NULL;
+			outlet_anything(m_dataout, gensym("contour"), size, ap);
+			if(ap)delete[]ap;ap=NULL;	
 			
 			SETFLOAT(info+info_offset, (float) cv::contourArea(*it));
 			
@@ -127,18 +127,18 @@ void pix_opencv_contours_convexhull2 :: processGrayImage(imageStruct &image)
 				SETFLOAT(info+info_offset+j*2+2, corners[j].y/image.ysize);
 			}
 
-			//~ SETFLOAT(info+info_offset+1, rot_rect.center.x/image.xsize);
-			//~ SETFLOAT(info+info_offset+2, rot_rect.center.y/image.ysize);
-			//~ SETFLOAT(info+info_offset+3, rot_rect.size.width/image.xsize);
-			//~ SETFLOAT(info+info_offset+4, rot_rect.size.height/image.xsize);
-			SETFLOAT(info+info_offset+9, rot_rect.angle);
+			SETFLOAT(info+info_offset+9, rot_rect.center.x/image.xsize);
+			SETFLOAT(info+info_offset+10, rot_rect.center.y/image.ysize);
+			SETFLOAT(info+info_offset+11, rot_rect.size.width/image.xsize);
+			SETFLOAT(info+info_offset+12, rot_rect.size.height/image.xsize);
+			SETFLOAT(info+info_offset+13, rot_rect.angle);
 			
-			info_offset+=10;
+			info_offset+=14;
 			count++;
 		}
 	}
 	SETFLOAT(info, (float) count);
-	if (count) outlet_anything(m_dataout, gensym("info"), count*10+2, info);
+	if (count) outlet_anything(m_dataout, gensym("info"), count*14+2, info);
 	
 	if (info) delete info;
 	info = NULL;
