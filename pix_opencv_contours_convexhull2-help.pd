@@ -1,0 +1,69 @@
+#N canvas 525 395 1125 493 10;
+#X obj 472 38 cnv 15 220 250 empty empty empty 20 12 0 14 -228992 -66577
+0;
+#X obj 587 215 cnv 15 100 60 empty empty empty 20 12 0 14 -195568 -66577
+0;
+#N canvas 0 0 450 300 gemwin 0;
+#X obj 132 136 gemwin;
+#X obj 67 89 outlet;
+#X obj 67 10 inlet;
+#X obj 67 41 route create;
+#X msg 67 70 set destroy;
+#X msg 142 68 set create;
+#X msg 198 112 destroy;
+#X msg 132 112 create \, 1;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 3 0 7 0;
+#X connect 3 1 5 0;
+#X connect 3 1 6 0;
+#X connect 4 0 1 0;
+#X connect 5 0 1 0;
+#X connect 6 0 0 0;
+#X connect 7 0 0 0;
+#X restore 592 254 pd gemwin;
+#X msg 592 235 destroy;
+#X text 588 214 Create window:;
+#X obj 11 56 cnv 15 450 100 empty empty empty 20 12 0 14 -233017 -66577
+0;
+#X obj 12 207 cnv 15 450 130 empty empty empty 20 12 0 14 -233017 -66577
+0;
+#X text 13 212 Inlets:;
+#X obj 12 167 cnv 15 450 30 empty empty empty 20 12 0 14 -195568 -66577
+0;
+#X text 21 166 Arguments:;
+#X text 31 224 Inlet 1: gemlist;
+#X text 13 281 Outlets:;
+#X text 25 294 Outlet 1: gemlist;
+#X text 478 20 Example:;
+#X obj 487 57 gemhead;
+#X obj 487 167 pix_opencv_contours_convexhull2;
+#X text 37 5 Synopsis: [pix_opencv_contours_convexhull2];
+#X text 25 304 Outlet 2: contours output;
+#X text 25 314 Outlet 3: info output;
+#X text 58 21 Class: pix_opencv;
+#X text 11 60 Description: finds contours;
+#X text 67 176 none;
+#X text 31 234 Inlet 1: message: area [float];
+#X text 31 244 Inlet 1: message: epsilon [float];
+#X obj 487 237 pix_texture;
+#X obj 487 257 rectangle 4 3;
+#X text 37 75 [pix_opencv_contours_convexhull2] finds contours in incomming
+image \, simplifies it according to the epsilon value and outputs contours
+with area greater than area value on second outlet;
+#X text 494 295 see also :;
+#X obj 493 312 pix_opencv_contours_convexhull;
+#X obj 487 144 pix_gray;
+#X obj 514 96 pix_image bonhomme.jpg;
+#X obj 487 117 pix_buf;
+#X obj 487 76 t b a;
+#X connect 2 0 3 0;
+#X connect 3 0 2 0;
+#X connect 14 0 32 0;
+#X connect 15 0 24 0;
+#X connect 24 0 25 0;
+#X connect 29 0 15 0;
+#X connect 30 0 31 0;
+#X connect 31 0 29 0;
+#X connect 32 0 31 0;
+#X connect 32 1 30 0;
