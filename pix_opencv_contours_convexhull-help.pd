@@ -1,4 +1,4 @@
-#N canvas 656 349 1125 496 10;
+#N canvas 652 361 1125 496 10;
 #X obj 472 38 cnv 15 220 250 empty empty empty 20 12 0 14 -228992 -66577
 0;
 #X obj 11 56 cnv 15 450 100 empty empty empty 20 12 0 14 -233017 -66577
@@ -11,7 +11,6 @@
 #X text 21 166 Arguments:;
 #X text 13 281 Outlets:;
 #X text 478 20 Example:;
-#X obj 487 240 pix_opencv_contours_convexhull2;
 #X text 37 5 Synopsis: [pix_opencv_contours_convexhull2];
 #X text 25 304 Outlet 2: contours output;
 #X text 25 314 Outlet 3: info output;
@@ -24,8 +23,6 @@
 #X text 37 75 [pix_opencv_contours_convexhull2] finds contours in incomming
 image \, simplifies it according to the epsilon value and outputs contours
 with area greater than area value on second outlet;
-#X text 494 375 see also :;
-#X obj 493 392 pix_opencv_contours_convexhull;
 #X obj 487 171 pix_gray;
 #X obj 487 141 pix_buf;
 #N canvas 900 297 919 782 drawcontours 0;
@@ -399,13 +396,13 @@ with area greater than area value on second outlet;
 #X obj 487 57 gemhead 1;
 #X msg 542 214 epsilon \$1;
 #X floatatom 542 197 5 0 0 0 - - -;
-#X obj 789 24 loadbang;
+#X obj 625 121 loadbang;
 #X obj 541 171 rectangle 5.333 4;
 #X obj 514 116 t a a;
 #X obj 514 96 pix_image dessin.tif;
 #X msg 617 214 area \$1;
 #X floatatom 617 197 5 0 0 0 - - -;
-#X msg 879 48 10;
+#X msg 710 143 10;
 #X obj 354 215 cnv 15 100 60 empty empty empty 20 12 0 14 -195568 -66577
 0;
 #N canvas 1 86 450 300 gemwin 0;
@@ -431,26 +428,27 @@ with area greater than area value on second outlet;
 #X text 355 214 Create window:;
 #X text 31 224 Inlet 1: binarized image;
 #X text 25 294 Outlet 1: input gemlist;
-#X msg 794 46 2;
+#X msg 625 141 2;
 #X obj 670 261 route info contour;
-#X connect 8 1 43 0;
-#X connect 17 0 30 0;
-#X connect 21 0 8 0;
-#X connect 22 0 21 0;
-#X connect 25 0 22 0;
-#X connect 25 1 32 0;
-#X connect 25 2 23 1;
-#X connect 26 0 25 0;
-#X connect 27 0 8 0;
-#X connect 28 0 27 0;
-#X connect 29 0 42 0;
-#X connect 31 0 22 0;
-#X connect 31 1 17 0;
+#X obj 487 240 pix_opencv_contours_convexhull;
+#X connect 16 0 27 0;
+#X connect 18 0 41 0;
+#X connect 19 0 18 0;
+#X connect 22 0 19 0;
+#X connect 22 1 29 0;
+#X connect 22 2 20 1;
+#X connect 23 0 22 0;
+#X connect 24 0 41 0;
+#X connect 25 0 24 0;
+#X connect 26 0 39 0;
+#X connect 28 0 19 0;
+#X connect 28 1 16 0;
+#X connect 29 0 28 0;
+#X connect 30 0 41 0;
+#X connect 31 0 30 0;
 #X connect 32 0 31 0;
-#X connect 33 0 8 0;
-#X connect 34 0 33 0;
+#X connect 34 0 35 0;
 #X connect 35 0 34 0;
-#X connect 37 0 38 0;
-#X connect 38 0 37 0;
-#X connect 42 0 28 0;
-#X connect 43 1 23 0;
+#X connect 39 0 25 0;
+#X connect 40 1 20 0;
+#X connect 41 1 40 0;

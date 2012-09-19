@@ -13,8 +13,8 @@ LOG
 
 -----------------------------------------------------------------*/
 
-#ifndef INCLUDE_PIX_OPENCV_CONTOURS_CONVEXHULL2_H_
-#define INCLUDE_PIX_OPENCV_CONTOURS_CONVEXHULL2_H_
+#ifndef INCLUDE_PIX_OPENCV_CONTOURS_CONVEXHULL_H_
+#define INCLUDE_PIX_OPENCV_CONTOURS_CONVEXHULL_H_
 
 #ifndef _EiC
 #include "cv.h"
@@ -25,7 +25,7 @@ LOG
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
 CLASS
-    pix_opencv_contours_convexhull2
+    pix_opencv_contours_convexhull
     
 	detects contours and send them out
 	
@@ -35,21 +35,21 @@ KEYWORDS
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-class GEM_EXTERN pix_opencv_contours_convexhull2 : public GemPixObj
+class GEM_EXTERN pix_opencv_contours_convexhull : public GemPixObj
 {
-    CPPEXTERN_HEADER(pix_opencv_contours_convexhull2, GemPixObj)
+    CPPEXTERN_HEADER(pix_opencv_contours_convexhull, GemPixObj)
 
     public:
 
 	    //////////
 	    // Constructor
-    	pix_opencv_contours_convexhull2();
+    	pix_opencv_contours_convexhull();
     	
     protected:
     	
    	//////////
    	// Destructor
-   	virtual ~pix_opencv_contours_convexhull2();
+   	virtual ~pix_opencv_contours_convexhull();
 
    	//////////
    	// Do the processing
