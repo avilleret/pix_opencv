@@ -1,9 +1,19 @@
-#N canvas 227 24 1228 719 10;
-#X obj 583 433 cnv 15 550 120 empty empty empty 20 12 0 14 -24198 -66577
+#N canvas 259 316 996 571 10;
+#X obj -64 52 cnv 15 430 350 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X obj 715 -18 gemhead;
-#X obj 596 579 pix_texture;
-#X obj 33 40 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
+#X obj -64 6 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
+0;
+#X text -55 10 Arguments:;
+#X obj -65 -90 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
+0;
+#X text -34 26 none;
+#X obj 372 -157 cnv 15 540 560 empty empty empty 20 12 0 14 -228992
+-66577 0;
+#X obj 525 238 cnv 15 380 120 empty empty empty 20 12 0 14 -24198 -66577
+0;
+#X obj 530 -150 gemhead;
+#X obj 531 365 pix_texture;
+#X obj 685 161 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
 0;
 #N canvas 0 22 454 304 gemwin 0;
 #X obj 67 89 outlet;
@@ -35,30 +45,30 @@
 #X connect 9 0 6 0;
 #X connect 10 0 7 0;
 #X connect 10 2 9 0;
-#X restore 43 84 pd gemwin;
-#X msg 43 66 destroy;
-#X obj 444 578 pix_texture;
-#X obj 596 371 separator;
-#X obj 727 9 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1 -1
-;
-#X obj 784 184 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
+#X restore 695 205 pd gemwin;
+#X msg 695 187 destroy;
+#X obj 379 365 pix_texture;
+#X obj 531 196 separator;
+#X obj 542 -131 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
+-1;
+#X obj 599 44 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
 -1 -1;
-#X floatatom 766 149 5 0 10000 1 frame# - -;
-#X obj 727 38 openpanel;
-#X msg 727 58 open \$1;
-#X obj 715 167 pix_film;
-#X msg 733 101 auto \$1;
-#X obj 733 83 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1 1
-;
-#X text 41 46 Create window and render;
-#X msg 596 109 colorspace RGBA;
-#X msg 750 124 colorspace Grey;
-#X obj 596 34 loadbang;
-#X obj 595 342 pix_separator;
-#X obj 444 374 separator;
-#X obj 444 345 pix_separator;
-#X obj 444 409 translateXYZ -2 0 0;
-#X obj 596 406 translateXYZ 2 0 0;
+#X floatatom 581 9 5 0 10000 1 frame# - -;
+#X obj 542 -102 openpanel;
+#X msg 542 -82 open \$1;
+#X obj 530 27 pix_film;
+#X msg 548 -39 auto \$1;
+#X obj 548 -57 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
+1;
+#X text 693 167 Create window and render;
+#X msg 605 -39 colorspace RGBA;
+#X msg 612 -16 colorspace Grey;
+#X obj 605 -79 loadbang;
+#X obj 531 178 pix_separator;
+#X obj 379 196 separator;
+#X obj 379 177 pix_separator;
+#X obj 379 214 translateXYZ -2 0 0;
+#X obj 531 214 translateXYZ 2 0 0;
 #N canvas 0 22 450 300 vswitch 0;
 #X obj 144 263 outlet;
 #X obj 36 26 inlet;
@@ -87,88 +97,89 @@
 #X connect 11 0 8 0;
 #X connect 11 1 9 0;
 #X connect 11 1 6 0;
-#X restore 444 207 pd vswitch;
-#X obj 521 207 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 1
-1;
-#X obj 444 -23 gemhead;
-#X msg 478 60 device 0;
-#X msg 469 36 dialog;
-#X obj 444 165 pix_video;
-#X obj 444 599 square 2;
-#X obj 596 601 square 2;
-#X obj 596 526 pix_opencv_findchessboardcorners;
-#X text 25 137 pix_opencv_findchessboardcorners :: Search inner corners
-coordinates of a known chessboard pattern;
-#X text 22 173 It is useful to calibration severals cameras togehter
-or camera(s) and video beamer(s)...;
-#X obj 444 314 pix_gray;
-#X msg 492 111 driver 0;
-#X obj 817 582 print;
-#X obj 514 280 spigot;
-#X obj 514 314 pix_rgba;
-#X obj 444 280 spigot 1;
-#X obj 598 237 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-1;
-#X text 615 237 switch gray/color;
-#X text 830 558 print out raw corners coordinates...;
-#X obj 650 472 pack 6 7;
-#X floatatom 650 452 5 0 0 0 - - -;
-#X floatatom 703 452 5 0 0 0 - - -;
-#X msg 488 86 device /dev/video0;
-#X msg 650 492 patternSize \$1 \$2;
-#X text 784 493 pattern size (number of inner corners in each direction)
+#X restore 379 67 pd vswitch;
+#X obj 456 67 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0 1
 ;
-#X obj 598 257 == 0;
-#X obj 444 236 pix_resize 640 480;
-#X obj 521 185 loadbang;
-#X connect 1 0 13 0;
-#X connect 2 0 32 0;
-#X connect 4 0 5 0;
-#X connect 5 0 4 0;
-#X connect 6 0 31 0;
-#X connect 7 0 24 0;
-#X connect 8 0 11 0;
-#X connect 9 0 10 0;
-#X connect 10 0 13 1;
-#X connect 11 0 12 0;
-#X connect 12 0 13 0;
-#X connect 13 0 25 1;
-#X connect 13 2 9 0;
-#X connect 14 0 13 0;
-#X connect 15 0 14 0;
-#X connect 17 0 13 0;
-#X connect 17 0 30 0;
-#X connect 18 0 13 0;
-#X connect 19 0 17 0;
-#X connect 19 0 15 0;
-#X connect 20 0 7 0;
-#X connect 21 0 23 0;
-#X connect 22 0 21 0;
-#X connect 23 0 6 0;
-#X connect 24 0 33 0;
-#X connect 25 0 52 0;
-#X connect 26 0 25 2;
-#X connect 27 0 30 0;
-#X connect 28 0 30 0;
-#X connect 29 0 30 0;
-#X connect 30 0 25 0;
-#X connect 33 0 2 0;
-#X connect 33 1 38 0;
-#X connect 36 0 22 0;
-#X connect 36 0 20 0;
-#X connect 37 0 30 0;
-#X connect 39 0 40 0;
-#X connect 40 0 20 0;
-#X connect 40 0 22 0;
-#X connect 41 0 36 0;
-#X connect 42 0 39 1;
-#X connect 42 0 51 0;
-#X connect 45 0 49 0;
-#X connect 46 0 45 0;
-#X connect 47 0 45 1;
-#X connect 48 0 30 0;
-#X connect 49 0 33 0;
-#X connect 51 0 41 1;
-#X connect 52 0 41 0;
-#X connect 52 0 39 0;
-#X connect 53 0 26 0;
+#X obj 379 -150 gemhead;
+#X msg 413 -80 device 0;
+#X msg 404 -104 dialog;
+#X obj 379 25 pix_video;
+#X obj 379 386 square 2;
+#X obj 531 387 square 2;
+#X obj 531 331 pix_opencv_findchessboardcorners;
+#X text -57 -82 pix_opencv_findchessboardcorners :: Search inner corners
+coordinates of a known chessboard pattern;
+#X text -55 61 It is useful to calibration severals cameras togehter
+or camera(s) and video beamer(s)...;
+#X obj 379 149 pix_gray;
+#X msg 427 -29 driver 0;
+#X obj 720 383 print;
+#X obj 449 130 spigot;
+#X obj 449 149 pix_rgba;
+#X obj 379 130 spigot 1;
+#X obj 482 108 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X text 499 108 switch gray/color;
+#X text 683 363 print out raw corners coordinates...;
+#X obj 545 267 pack 6 7;
+#X floatatom 545 247 5 0 0 0 - - -;
+#X floatatom 598 247 5 0 0 0 - - -;
+#X msg 423 -54 device /dev/video0;
+#X msg 545 287 patternSize \$1 \$2;
+#X text 555 307 pattern size (number of inner corners in each direction)
+;
+#X obj 424 109 == 0;
+#X obj 379 86 pix_resize 640 480;
+#X obj 456 45 loadbang;
+#X text -58 -110 pix_opencv_findchessboardcorners :;
+#X connect 7 0 19 0;
+#X connect 8 0 38 0;
+#X connect 10 0 11 0;
+#X connect 11 0 10 0;
+#X connect 12 0 37 0;
+#X connect 13 0 30 0;
+#X connect 14 0 17 0;
+#X connect 15 0 16 0;
+#X connect 16 0 19 1;
+#X connect 17 0 18 0;
+#X connect 18 0 19 0;
+#X connect 19 0 31 1;
+#X connect 19 2 15 0;
+#X connect 20 0 19 0;
+#X connect 21 0 20 0;
+#X connect 23 0 19 0;
+#X connect 23 0 36 0;
+#X connect 24 0 19 0;
+#X connect 25 0 23 0;
+#X connect 25 0 21 0;
+#X connect 26 0 13 0;
+#X connect 27 0 29 0;
+#X connect 28 0 27 0;
+#X connect 29 0 12 0;
+#X connect 30 0 39 0;
+#X connect 31 0 58 0;
+#X connect 32 0 31 2;
+#X connect 33 0 36 0;
+#X connect 34 0 36 0;
+#X connect 35 0 36 0;
+#X connect 36 0 31 0;
+#X connect 39 0 8 0;
+#X connect 39 1 44 0;
+#X connect 42 0 28 0;
+#X connect 42 0 26 0;
+#X connect 43 0 36 0;
+#X connect 45 0 46 0;
+#X connect 46 0 26 0;
+#X connect 46 0 28 0;
+#X connect 47 0 42 0;
+#X connect 48 0 45 1;
+#X connect 48 0 57 0;
+#X connect 51 0 55 0;
+#X connect 52 0 51 0;
+#X connect 53 0 51 1;
+#X connect 54 0 36 0;
+#X connect 55 0 39 0;
+#X connect 57 0 47 1;
+#X connect 58 0 47 0;
+#X connect 58 0 45 0;
+#X connect 59 0 32 0;
