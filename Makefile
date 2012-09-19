@@ -61,6 +61,7 @@ distro: clean all
 blobtrack:
 	g++ $(CPPFLAGS) $(INCLUDES) -o pix_opencv_blobtrack.o -c pix_opencv_blobtrack.cpp
 	g++ $(LDFLAGS) -o pix_opencv_blobtrack.$(EXTENSION) pix_opencv_blobtrack.o $(LIBS)
+	rm pix_opencv_blobtrack.o
 
 template:
 	g++ $(CPPFLAGS) $(INCLUDES) -o pix_opencv_template.o -c pix_opencv_template.cpp
