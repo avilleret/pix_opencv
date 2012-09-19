@@ -64,8 +64,8 @@ class GEM_EXTERN pix_opencv_contours_convexhull : public GemPixObj
 
     private:
     
-    //~ t_outlet *m_contourout; // contour outlet
-    t_outlet *m_dataout; // info outlet
+    t_outlet *m_dataout_middle; // contour outlet
+    t_outlet *m_dataout_right; // info outlet
     std::vector<std::vector<cv::Point> > m_contours;	
     double m_area_threshold;	// min area for contour
     double m_epsilon;

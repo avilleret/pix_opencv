@@ -34,9 +34,9 @@ CPPEXTERN_NEW(pix_opencv_contours_convexhull)
 /////////////////////////////////////////////////////////
 pix_opencv_contours_convexhull :: pix_opencv_contours_convexhull() : m_area_threshold(30)
 { 
-	//~ m_contourout = outlet_new(this->x_obj, 0);
-	m_dataout = outlet_new(this->x_obj, 0);
-	
+	m_dataout_middle = outlet_new(this->x_obj, 0);
+	m_dataout_right = outlet_new(this->x_obj, 0);
+
 	//~ post("build on %s at %s", __DATE__, __TIME__);
 }
 
@@ -92,32 +92,15 @@ void pix_opencv_contours_convexhull :: processGrayImage(imageStruct &image)
 
 	t_atom*info;
 	info = new t_atom[(int) m_contours.size()*14+2];
-	// info : 6x(contour_nb) matrix
-	// info for each contour : area, rotrect corner (8 float), angle
+	// info : 14x(contour_nb) matrix
+	// info for each contour : area, rotrect corner (8 float), rotrect center, rotrect size, rotation angle
 	int count(0);
 	SETFLOAT(info+1, 14.);
 	int info_offset(2);
-
 	
 	for( std::vector<std::vector<cv::Point> >::iterator it = m_contours.begin(); it != m_contours.end(); ++it ) {
 		if (!it->empty() && it->size() > 2) {
-			int size = 2+it->size()*2;
-			t_atom*ap = new t_atom[size];
-			SETFLOAT(ap, static_cast<t_float>(it->size()));
-			SETFLOAT(ap+1, 2.0);
-			
-			int offset(2);
-			
-			for ( std::vector<cv::Point>::iterator ite=it->begin(); ite!=it->end(); ++ite){
-				SETFLOAT(ap+offset,(float) (*ite).x/image.xsize);
-				SETFLOAT(ap+offset+1,(float) (*ite).y/image.ysize);
-				offset+=2;
-			}
-			outlet_anything(m_dataout, gensym("contour"), size, ap);
-			if(ap)delete[]ap;ap=NULL;	
-			
 			SETFLOAT(info+info_offset, (float) cv::contourArea(*it));
-			
 			
 			cv::RotatedRect rot_rect = cv::minAreaRect(*it);
 			cv::Point2f corners[4];
@@ -138,7 +121,28 @@ void pix_opencv_contours_convexhull :: processGrayImage(imageStruct &image)
 		}
 	}
 	SETFLOAT(info, (float) count);
-	if (count) outlet_anything(m_dataout, gensym("info"), count*14+2, info);
+	if (count) outlet_anything(m_dataout_right, gensym("info"), count*14+2, info);
+	else outlet_list(m_dataout_right, gensym("info"), 1, 0);
+	
+	for( std::vector<std::vector<cv::Point> >::iterator it = m_contours.begin(); it != m_contours.end(); ++it ) {
+		if (!it->empty() && it->size() > 2) {
+			int size = 2+it->size()*2;
+			t_atom*ap = new t_atom[size];
+			SETFLOAT(ap, static_cast<t_float>(it->size()));
+			SETFLOAT(ap+1, 2.0);
+			
+			int offset(2);
+			
+			for ( std::vector<cv::Point>::iterator ite=it->begin(); ite!=it->end(); ++ite){
+				SETFLOAT(ap+offset,(float) (*ite).x/image.xsize);
+				SETFLOAT(ap+offset+1,(float) (*ite).y/image.ysize);
+				offset+=2;
+			}
+			outlet_anything(m_dataout_middle, gensym("contour"), size, ap);
+			if(ap)delete[]ap;ap=NULL;	
+			
+		}
+	}
 	
 	if (info) delete info;
 	info = NULL;
@@ -163,12 +167,12 @@ void pix_opencv_contours_convexhull :: epsilonMess(double arg)
 	m_epsilon = arg > 0 ? arg : 3.;
 	t_atom data_out;
 	SETFLOAT(&data_out, (float) m_epsilon);
-	outlet_anything( m_dataout, gensym("epsilon"), 1, &data_out);
+	outlet_anything( m_dataout_right, gensym("epsilon"), 1, &data_out);
 }
 void pix_opencv_contours_convexhull :: areaMess(double arg)
 {
 	m_area_threshold = arg > 0 ? arg : 30.;
 	t_atom data_out;
 	SETFLOAT(&data_out, (float) m_area_threshold);
-	outlet_anything( m_dataout, gensym("area"), 1, &data_out);
+	outlet_anything( m_dataout_right, gensym("area"), 1, &data_out);
 }
