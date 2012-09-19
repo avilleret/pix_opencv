@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-#N canvas 713 348 1125 496 10;
-=======
-#N canvas 650 367 1125 496 10;
->>>>>>> 0170034c03e9e2849613e9de7e15887a1e648279
+#N canvas 711 354 1125 496 10;
 #X obj 472 38 cnv 15 220 250 empty empty empty 20 12 0 14 -228992 -66577
 0;
 #X obj 11 56 cnv 15 450 100 empty empty empty 20 12 0 14 -233017 -66577
@@ -380,8 +376,6 @@ with area greater than area value on second outlet;
 #X connect 5 0 10 0;
 #X connect 6 1 8 0;
 #X connect 7 0 0 0;
-<<<<<<< HEAD
-#X connect 8 0 20 0;
 #X connect 9 0 20 0;
 #X connect 10 0 36 0;
 #X connect 11 0 10 1;
@@ -427,13 +421,9 @@ with area greater than area value on second outlet;
 #X text 31 353 <contour area> <rotrect corners coordinates (8 floats)>
 <rotrect center position (2 floats)> <rotrect size (2 floats)> <angle>
 ;
-=======
-#X restore 359 254 pd gemwin;
 #X msg 359 235 create;
 #X text 355 214 Create window:;
 #X text 31 224 Inlet 1: binarized image;
->>>>>>> 0170034c03e9e2849613e9de7e15887a1e648279
-#X text 25 294 Outlet 1: input gemlist;
 #X text 25 304 Outlet 2: data output;
 #X text 21 343 info;
 #X text 21 393 contour;
@@ -461,6 +451,3 @@ with area greater than area value on second outlet;
 #X connect 31 0 32 0;
 #X connect 32 0 31 0;
 #X connect 35 0 22 0;
-#X connect 36 1 44 0;
-#X connect 36 2 45 0;
-#X connect 45 0 37 0;
