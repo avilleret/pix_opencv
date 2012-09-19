@@ -1,10 +1,44 @@
-#N canvas 690 128 1106 660 10;
-#X obj 182 329 cnv 15 400 180 empty empty empty 20 12 0 14 -4034 -66577
+#N canvas 84 222 1188 810 10;
+#X obj 20 33 cnv 15 430 580 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X obj 145 -162 gemhead;
-#X obj 192 525 pix_texture;
-#X obj 356 -216 cnv 15 220 70 empty empty empty 20 12 0 14 -195568
+#X obj 20 -13 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
+0;
+#X text 29 -9 Arguments:;
+#X obj 19 -109 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
+0;
+#X text 24 -145 Class: pix_opencv;
+#X text 39 -100 Description: pix_opencv_calibration is an object allowing
+camera less calibration. you need to move a checkboard in front of
+the camera during the calibration part.;
+#X text 25 -161 Synopsis: [pix_opencv_calibration];
+#X text 37 37 getting started with camera calibration :;
+#X text 65 123 3 Check calibration toggle to start and move the chessboard
+in front of the camera (or move the camera in front of your screen).
+Your computer may slow down during searching chessboard corners. When
+all corners are found it takes a snapshot (and the image will be negative)
+;
+#X text 65 103 2 Plug a supported camera and start rendering;
+#X text 66 73 1 Print the chessboard ona rigid paperboard (or just
+show it on the screen);
+#X text 65 194 4 When enought chessboard have been found (20 by default)
+it computes transformation matrix and map to undistord the image;
+#X text 65 244 5 Then all incoming images are undistord \, you can
+save the transformation and distorsion matrix to files to load it next
+times;
+#X text 31 287 for more information about this calibration see :;
+#X text 41 327 - A flexible new technique for camera calibration \,
+Zhang \, 1998 \, Microsoft Research;
+#X text 41 307 - Learning Opencv \, Bradski and Kaehler \, 2008 \,
+O'Reilly;
+#X text 50 11 none;
+#X obj 455 -188 cnv 15 720 800 empty empty empty 20 12 0 14 -228992
 -66577 0;
+#X obj 615 374 cnv 15 400 160 empty empty empty 20 12 0 14 -4034 -66577
+0;
+#X obj 815 -160 gemhead;
+#X obj 619 569 pix_texture;
+#X obj 795 538 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
+0;
 #N canvas 3 81 454 304 gemwin 0;
 #X obj 67 89 outlet;
 #X obj 67 10 inlet;
@@ -35,93 +69,80 @@
 #X connect 9 0 10 0;
 #X connect 9 2 8 0;
 #X connect 10 0 6 0;
-#X restore 366 -170 pd gemwin;
-#X msg 366 -190 destroy;
-#X obj -232 499 pix_texture;
-#X obj 192 251 separator;
-#X obj 157 -135 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
+#X restore 805 584 pd gemwin;
+#X msg 805 564 destroy;
+#X obj 485 570 pix_texture;
+#X obj 619 216 separator;
+#X obj 827 -133 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
 -1;
-#X obj 214 40 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
+#X obj 884 42 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
 -1 -1;
-#X floatatom 196 5 5 0 10000 1 frame# - -;
-#X obj 157 -106 openpanel;
-#X msg 157 -86 open \$1;
-#X obj 145 23 pix_film;
-#X msg 163 -43 auto \$1;
-#X obj 163 -61 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
+#X floatatom 866 7 5 0 10000 1 frame# - -;
+#X obj 827 -104 openpanel;
+#X msg 827 -84 open \$1;
+#X obj 815 25 pix_film;
+#X msg 833 -41 auto \$1;
+#X obj 833 -59 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
 1;
-#X text 364 -210 Create window and render;
-#X msg 258 -60 colorspace RGBA;
-#X msg 363 -60 colorspace RGB;
-#X msg 467 -60 colorspace Grey;
-#X obj 258 -88 loadbang;
-#X obj 192 222 pix_separator;
-#X obj -232 252 separator;
-#X obj -232 223 pix_separator;
-#N canvas 0 22 450 300 vswitch 0;
-#X obj 144 263 outlet;
+#X text 803 544 Create window and render;
+#X msg 928 -58 colorspace RGBA;
+#X msg 942 -35 colorspace RGB;
+#X msg 957 -13 colorspace Grey;
+#X obj 928 -86 loadbang;
+#X obj 619 197 pix_separator;
+#X obj 485 217 separator;
+#X obj 485 198 pix_separator;
+#N canvas 1 184 299 199 vswitch 0;
+#X obj 36 128 outlet;
 #X obj 36 26 inlet;
-#X obj 260 29 inlet;
-#X obj 36 133 spigot;
-#X obj 260 141 spigot;
-#X obj 119 64 loadbang;
-#X msg 83 93 0;
-#X msg 113 93 1;
-#X msg 296 104 0;
-#X msg 326 104 1;
-#X obj 399 34 inlet;
-#X obj 399 67 select 0;
-#X connect 1 0 3 0;
-#X connect 2 0 4 0;
-#X connect 3 0 0 0;
-#X connect 4 0 0 0;
-#X connect 5 0 7 0;
-#X connect 5 0 8 0;
-#X connect 6 0 3 1;
-#X connect 7 0 3 1;
-#X connect 8 0 4 1;
-#X connect 9 0 4 1;
-#X connect 10 0 11 0;
-#X connect 11 0 7 0;
-#X connect 11 0 8 0;
-#X connect 11 1 9 0;
-#X connect 11 1 6 0;
-#X restore -232 52 pd vswitch;
-#X obj -136 53 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0
-1;
-#X obj -232 19 pix_video;
-#X obj -232 -169 gemhead;
-#X msg -213 -103 dimen 640 480;
-#X msg -215 -128 dimen 320 240;
-#X text 224 397 load distorsion coefficients and intrinsic matrix;
-#X msg -186 -33 driver v4l2;
-#X msg -202 -80 driver dc1394 \, dimen 640 480 \, colorspace grey;
-#X msg -177 -12 driver dc1394;
-#X obj 192 469 pix_opencv_calibration;
-#X obj -232 160 pix_grey;
-#X obj -232 289 translateXYZ 0 -2 0;
-#X obj 192 285 translateXYZ 0 2 0;
-#X obj -232 525 rectangle 2.666 2;
-#X obj 192 546 rectangle 2.666 2;
-#X msg 225 416 loadDist \$1;
-#X msg 321 417 loadIntra \$1;
-#X msg 225 376 writeDist \$1;
-#X msg 321 377 writeIntra \$1;
-#X text 224 357 write distorsion coefficients and intrinsic matrix
+#X obj 130 26 inlet;
+#X obj 175 27 inlet;
+#X obj 81 61 == 0;
+#X obj 36 83 spigot 1;
+#X obj 130 84 spigot 0;
+#X connect 1 0 5 0;
+#X connect 2 0 6 0;
+#X connect 3 0 4 0;
+#X connect 3 0 6 1;
+#X connect 4 0 5 1;
+#X connect 5 0 0 0;
+#X connect 6 0 0 0;
+#X restore 485 67 pd vswitch;
+#X obj 581 68 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0 1
 ;
-#X obj 353 49 cnv 15 500 240 empty empty empty 20 12 0 14 -4034 -66577
+#X obj 485 34 pix_video;
+#X obj 485 -160 gemhead;
+#X msg 504 -88 dimen 640 480;
+#X msg 502 -113 dimen 320 240;
+#X text 681 432 load distorsion coefficients and intrinsic matrix;
+#X msg 531 -18 driver v4l2;
+#X msg 515 -65 driver dc1394 \, dimen 640 480 \, colorspace grey;
+#X msg 540 3 driver dc1394;
+#X obj 619 494 pix_opencv_calibration;
+#X obj 485 165 pix_grey;
+#X obj 485 236 translateXYZ 0 -2 0;
+#X obj 619 236 translateXYZ 0 2 0;
+#X obj 485 590 rectangle 2.666 2;
+#X obj 619 590 rectangle 2.666 2;
+#X msg 682 451 loadDist \$1;
+#X msg 698 471 loadIntra \$1;
+#X msg 652 391 writeDist \$1;
+#X msg 663 413 writeIntra \$1;
+#X text 651 372 write distorsion coefficients and intrinsic matrix
+;
+#X obj 746 117 cnv 15 420 240 empty empty empty 20 12 0 14 -4034 -66577
 0;
-#X obj 361 60 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X obj 754 128 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X msg 361 80 calibration \$1;
-#X msg 361 124 view \$1;
-#X text 400 102 number of view to take during calibration;
-#X floatatom 361 106 5 0 0 0 - - -;
-#X obj 361 165 pack f f;
-#X msg 361 185 patternSize \$1 \$2;
-#X floatatom 361 147 5 0 0 0 - - -;
-#X floatatom 414 147 5 0 0 0 - - -;
-#X text 451 143 number of inner corners on the chessboard;
+#X msg 754 148 calibration \$1;
+#X msg 754 192 view \$1;
+#X text 793 170 number of view to take during calibration;
+#X floatatom 754 174 5 0 0 0 - - -;
+#X obj 754 233 pack f f;
+#X msg 754 253 patternSize \$1 \$2;
+#X floatatom 754 215 5 0 0 0 - - -;
+#X floatatom 807 215 5 0 0 0 - - -;
+#X text 844 211 number of inner corners on the chessboard;
 #N canvas 130 67 612 325 advance-options 0;
 #X msg 55 161 findChessFlag \$1 \$2 \$3;
 #X obj 68 91 t b f;
@@ -150,116 +171,88 @@
 #X connect 4 0 2 0;
 #X connect 5 0 1 0;
 #X connect 6 0 3 0;
-#X restore 360 247 pd advance-options;
-#X floatatom 361 206 5 0 0 0 - - -;
-#X msg 361 224 wait \$1;
-#X text 399 205 number of frame to wait between two takes during calibration
+#X restore 753 315 pd advance-options;
+#X floatatom 754 274 5 0 0 0 - - -;
+#X msg 754 292 wait \$1;
+#X text 792 273 number of frame to wait between two takes during calibration
 ;
-#X text 380 60 start callibration;
-#X text -168 -242 pix_opencv_calibration is an object allowing camera
-calibration. you need to move a checkboard in front of the camera during
-the calibration part.;
-#X obj -112 160 pix_rgba;
-#X obj -232 125 spigot 1;
-#X text -119 51 switch source (camera / film);
-#X obj -136 73 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0
-1;
-#X text -119 71 switch color mode ( grey / rgba );
-#X msg 243 444 loadDist XCD-V60_4mm-dist;
-#X msg 414 446 loadIntra XCD-V60_4mm-intra;
-#X msg -193 -56 device 1;
-#X obj -164 100 == 0;
-#X obj -112 124 spigot 0;
-#X obj -108 375 cnv 15 200 50 empty empty empty 20 12 0 14 -4034 -66577
-0;
-#N canvas 602 331 764 438 how-to 0;
-#X text -93 -194 getting started with camera calibration :;
-#X text -65 -108 3 Check calibration toggle to start and move the chessboard
-in front of the camera (or move the camera in front of your screen).
-Your computer may slow down during searching chessboard corners. When
-all corners are found it takes a snapshot (and the image will be negative)
+#X text 773 128 start callibration;
+#X obj 544 166 pix_rgba;
+#X obj 485 140 spigot 1;
+#X text 598 66 switch source (camera / film);
+#X obj 530 95 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0 1
 ;
-#X text -65 -128 2 Plug a supported camera and start rendering;
-#X text -64 -158 1 Print the chessboard ona rigid paperboard (or just
-show it on the screen);
-#X text -65 -37 4 When enought chessboard have been found (20 by default)
-it computes transformation matrix and map to undistord the image;
-#X text -65 13 5 Then all incoming images are undistord \, you can
-save the transformation and distorsion matrix to files to load it next
-times;
-#X text -99 96 for more information about this calibration see :;
-#X text -89 146 - A flexible new technique for camera calibration \,
-Zhang \, 1998 \, Microsoft Research;
-#X text -89 116 - Learning Opencv \, Bradski and Kaehler \, 2008 \,
-O'Reilly;
-#X restore -78 391 pd how-to calibrate;
-#X msg 360 267 reset;
-#X text 404 266 reset corrections;
-#X obj 321 491 print;
-#X text 357 491 print some infos;
-#X connect 1 0 13 0;
-#X connect 2 0 39 0;
-#X connect 4 0 5 0;
-#X connect 5 0 4 0;
-#X connect 6 0 38 0;
-#X connect 7 0 37 0;
-#X connect 8 0 11 0;
-#X connect 9 0 10 0;
-#X connect 10 0 13 1;
-#X connect 11 0 12 0;
-#X connect 12 0 13 0;
-#X connect 13 0 24 1;
-#X connect 13 2 9 0;
-#X connect 14 0 13 0;
-#X connect 15 0 14 0;
-#X connect 17 0 13 0;
-#X connect 17 0 26 0;
-#X connect 18 0 13 0;
-#X connect 19 0 13 0;
-#X connect 20 0 17 0;
-#X connect 20 0 15 0;
-#X connect 21 0 7 0;
-#X connect 22 0 36 0;
+#X text 547 93 switch color mode ( grey / rgba );
+#X msg 524 -41 device 1;
+#X obj 530 118 == 0;
+#X obj 544 140 spigot 0;
+#X msg 753 335 reset;
+#X text 797 334 reset corrections;
+#X obj 748 516 print;
+#X text 784 516 print some infos;
+#X obj 635 351 t a;
+#X connect 19 0 31 0;
+#X connect 20 0 57 0;
+#X connect 22 0 23 0;
 #X connect 23 0 22 0;
-#X connect 24 0 63 0;
-#X connect 24 0 71 0;
-#X connect 25 0 24 2;
-#X connect 26 0 24 0;
-#X connect 27 0 26 0;
-#X connect 28 0 26 0;
-#X connect 29 0 26 0;
-#X connect 31 0 26 0;
-#X connect 32 0 26 0;
-#X connect 33 0 26 0;
-#X connect 34 0 2 0;
-#X connect 34 1 76 0;
-#X connect 35 0 23 0;
-#X connect 35 0 21 0;
-#X connect 36 0 6 0;
-#X connect 37 0 34 0;
-#X connect 40 0 34 0;
-#X connect 41 0 34 0;
-#X connect 42 0 34 0;
-#X connect 43 0 34 0;
-#X connect 46 0 47 0;
-#X connect 47 0 34 0;
-#X connect 48 0 34 0;
-#X connect 50 0 48 0;
-#X connect 51 0 52 0;
-#X connect 52 0 34 0;
-#X connect 53 0 51 0;
-#X connect 54 0 51 1;
-#X connect 56 0 34 0;
-#X connect 57 0 58 0;
-#X connect 58 0 34 0;
-#X connect 62 0 23 0;
-#X connect 62 0 21 0;
-#X connect 63 0 35 0;
-#X connect 65 0 70 0;
-#X connect 65 0 71 1;
-#X connect 67 0 34 0;
-#X connect 68 0 34 0;
-#X connect 69 0 26 0;
-#X connect 70 0 63 1;
-#X connect 71 0 62 0;
-#X connect 74 0 34 0;
+#X connect 24 0 56 0;
+#X connect 25 0 55 0;
+#X connect 26 0 29 0;
+#X connect 27 0 28 0;
+#X connect 28 0 31 1;
+#X connect 29 0 30 0;
+#X connect 30 0 31 0;
+#X connect 31 0 42 1;
+#X connect 31 2 27 0;
+#X connect 32 0 31 0;
+#X connect 33 0 32 0;
+#X connect 35 0 31 0;
+#X connect 35 0 44 0;
+#X connect 36 0 31 0;
+#X connect 37 0 31 0;
+#X connect 38 0 35 0;
+#X connect 38 0 33 0;
+#X connect 39 0 25 0;
+#X connect 40 0 54 0;
+#X connect 41 0 40 0;
+#X connect 42 0 80 0;
+#X connect 42 0 86 0;
+#X connect 43 0 42 2;
+#X connect 44 0 42 0;
+#X connect 45 0 44 0;
+#X connect 46 0 44 0;
+#X connect 47 0 44 0;
+#X connect 49 0 44 0;
+#X connect 50 0 44 0;
+#X connect 51 0 44 0;
+#X connect 52 0 20 0;
+#X connect 52 1 89 0;
+#X connect 53 0 41 0;
+#X connect 53 0 39 0;
+#X connect 54 0 24 0;
+#X connect 55 0 52 0;
+#X connect 58 0 52 0;
+#X connect 59 0 52 0;
+#X connect 60 0 52 0;
+#X connect 61 0 52 0;
+#X connect 64 0 65 0;
+#X connect 65 0 91 0;
+#X connect 66 0 91 0;
+#X connect 68 0 66 0;
+#X connect 69 0 70 0;
+#X connect 70 0 91 0;
+#X connect 71 0 69 0;
+#X connect 72 0 69 1;
+#X connect 74 0 91 0;
+#X connect 75 0 76 0;
+#X connect 76 0 91 0;
+#X connect 79 0 41 0;
+#X connect 79 0 39 0;
+#X connect 80 0 53 0;
+#X connect 82 0 85 0;
+#X connect 82 0 86 1;
+#X connect 84 0 44 0;
+#X connect 85 0 80 1;
+#X connect 86 0 79 0;
+#X connect 87 0 91 0;
+#X connect 91 0 52 0;

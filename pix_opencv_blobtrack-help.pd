@@ -1,23 +1,23 @@
-#N canvas 936 158 837 568 10;
-#X obj 27 190 cnv 15 430 300 empty empty empty 20 12 0 14 -233017 -66577
+#N canvas 261 284 834 488 10;
+#X obj 27 240 cnv 15 430 230 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X obj 27 146 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
+#X obj 27 196 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
 0;
-#X text 36 150 Arguments:;
-#X obj 27 50 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
+#X text 36 200 Arguments:;
+#X obj 27 100 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X obj 463 50 cnv 15 320 500 empty empty empty 20 12 0 14 -228992 -66577
+#X obj 463 50 cnv 15 320 420 empty empty empty 20 12 0 14 -228992 -66577
 0;
-#X text 70 9 Synopsis: [pix_opencv_blobtrack];
-#X text 91 28 Class: pix_opencv;
-#X text 37 53 Description: all-in-one blobtracker;
-#X text 48 76 [pix_opencv_blobtrack] implements a blobtracking pipeline.
+#X text 70 59 Synopsis: [pix_opencv_blobtrack];
+#X text 91 78 Class: pix_opencv;
+#X text 37 103 Description: all-in-one blobtracker;
+#X text 48 126 [pix_opencv_blobtrack] implements a blobtracking pipeline.
 This is made by a foreground detector \, a blob detector \, a blob
 tracker and a trajectory post processor.;
-#X text 50 163 none;
+#X text 50 213 none;
 #X obj 470 256 cnv 15 250 120 empty empty empty 20 12 0 14 -4034 -66577
 0;
-#X obj 676 483 cnv 15 100 60 empty empty empty 20 12 0 14 -195568 -66577
+#X obj 676 403 cnv 15 100 60 empty empty empty 20 12 0 14 -195568 -66577
 0;
 #N canvas 1 98 450 300 gemwin 0;
 #X obj 132 136 gemwin;
@@ -43,9 +43,9 @@ tracker and a trajectory post processor.;
 #X connect 8 0 0 0;
 #X connect 9 0 10 0;
 #X connect 10 0 0 0;
-#X restore 681 522 pd gemwin;
-#X msg 681 503 destroy;
-#X text 677 482 Create window:;
+#X restore 681 442 pd gemwin;
+#X msg 681 423 destroy;
+#X text 677 402 Create window:;
 #X obj 474 404 pix_texture;
 #X obj 474 70 gemhead;
 #X msg 540 85 auto 1;
@@ -143,7 +143,7 @@ tracker and a trajectory post processor.;
 #X obj 474 213 pix_rgba;
 #X obj 491 267 r \$0-properties;
 #X text 484 193 input format : rgba or grey;
-#N canvas 701 179 544 482 properties 0;
+#N canvas 699 185 544 482 properties 0;
 #X msg 290 314 monitorStage \$1;
 #X msg 4 21 getModule;
 #X msg 4 41 getModule fg;
@@ -184,15 +184,15 @@ bt CC \, setModule btpp none \, setModule bta none;
 #X connect 17 0 15 0;
 #X connect 18 0 17 0;
 #X connect 21 0 16 0;
-#X restore 598 269 pd properties;
+#X restore 630 262 pd properties;
 #X obj 474 110 pix_film;
-#X text 481 136 the bigger the image is \, the more CPU expensive the
+#X text 479 136 the bigger the image is \, the more CPU expensive the
 algo will be;
-#X text 36 192 Inlet 1 accepts a lot of messages \, here are the most
+#X text 36 242 Inlet 1 accepts a lot of messages \, here are the most
 usefull ones \, see [pd properties] for details.;
-#X text 46 222 getModule : get information about loaded modules.;
-#X text 46 242 setModule : set algorythm to use in each module.;
-#X text 46 262 monitoringStage : set the location where output image
+#X text 46 272 getModule : get information about loaded modules.;
+#X text 46 292 setModule : set algorythm to use in each module.;
+#X text 46 312 monitoringStage : set the location where output image
 is taken (input \, foreground mask or input with tracking information)
 ;
 #X obj 600 91 openpanel;
