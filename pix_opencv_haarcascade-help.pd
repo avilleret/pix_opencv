@@ -1,67 +1,67 @@
-#N canvas 532 22 1115 987 10;
-#X obj 613 540 cnv 15 650 250 empty empty empty 20 12 0 14 -24198 -66577
+#N canvas 428 140 1265 709 10;
+#X obj 5 12 cnv 15 430 500 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X floatatom 792 876 5 0 0 0 - - -;
-#X floatatom 827 876 5 0 0 0 - - -;
-#X floatatom 864 876 5 0 0 0 - - -;
-#X floatatom 935 876 5 0 0 0 - - -;
-#X floatatom 970 876 5 0 0 0 - - -;
-#X floatatom 1007 876 5 0 0 0 - - -;
-#X floatatom 1073 878 5 0 0 0 - - -;
-#X floatatom 1108 878 5 0 0 0 - - -;
-#X obj 616 765 pix_opencv_haarcascade;
-#X obj 702 544 openpanel;
-#X obj 779 822 route 0 1 2 3 4;
-#X text 779 894 Xcenter Ycenter Radius;
-#X text 924 893 Xcenter Ycenter Radius;
-#X obj 789 847 unpack 0 0 0;
-#X obj 932 847 unpack 0 0 0;
-#X obj 1070 849 unpack 0 0 0;
-#X floatatom 1148 877 5 0 0 0 - - -;
-#X text 1067 894 Xcenter Ycenter Radius;
-#X msg 642 545 load \$1;
-#X text 792 546 Load a trained cascade classifier from XML file;
-#X obj 772 544 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#X obj 5 -34 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
+0;
+#X text 14 -30 Arguments:;
+#X obj 5 -129 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
+0;
+#X text 35 -10 none;
+#X obj 441 -187 cnv 15 810 700 empty empty empty 20 12 0 14 -228992
+-66577 0;
+#X obj 595 165 cnv 15 650 300 empty empty empty 20 12 0 14 -24198 -66577
+0;
+#X floatatom 727 448 5 0 0 0 - - -;
+#X floatatom 762 448 5 0 0 0 - - -;
+#X floatatom 799 448 5 0 0 0 - - -;
+#X obj 598 370 pix_opencv_haarcascade;
+#X obj 684 169 openpanel;
+#X obj 727 410 route 0 1 2 3 4;
+#X text 840 449 Xcenter Ycenter Radius;
+#X obj 727 429 unpack 0 0 0;
+#X msg 624 170 load \$1;
+#X text 774 171 Load a trained cascade classifier from XML file;
+#X obj 754 169 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#X floatatom 809 641 5 0 0 0 - - -;
-#X floatatom 763 612 5 0 0 0 - - -;
-#X msg 662 578 mode \$1;
-#X obj 723 578 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X floatatom 791 266 5 0 0 0 - - -;
+#X floatatom 745 237 5 0 0 0 - - -;
+#X msg 644 203 mode \$1;
+#X obj 705 203 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X msg 672 611 min_size \$1;
-#X msg 686 638 min_neighbors \$1;
-#X text 847 630 Minimum number (minus 1) of neighbor rectangles that
+#X msg 654 236 min_size \$1;
+#X msg 668 263 min_neighbors \$1;
+#X text 829 255 Minimum number (minus 1) of neighbor rectangles that
 makes up an object (default 2);
-#X msg 715 671 scale_factor \$1;
-#X floatatom 833 671 5 0 0 0 - - -;
-#X text 877 670 The factor by which the search window is scaled between
+#X msg 697 296 scale_factor \$1;
+#X floatatom 815 296 5 0 0 0 - - -;
+#X text 852 290 The factor by which the search window is scaled between
 the subsequent scans (default 1.1);
-#X text 879 822 For each object detected;
-#X floatatom 686 796 5 0 0 0 - - -;
-#X text 725 796 number of objects detected;
-#X text 804 613 Minimum size of object (default 30);
-#X msg 743 700 ftolerance \$1;
-#X floatatom 833 701 5 0 0 0 - - -;
-#X msg 748 724 clear;
-#X text 874 708 temporarily ( default 5 );
-#X text 874 696 number of frames where an object can disappear;
-#X text 793 725 clear markers history;
-#X text 745 575 Mode of operation. Currently the only flag that may
+#X text 825 411 For each object detected;
+#X floatatom 662 391 5 0 0 0 - - -;
+#X text 701 391 number of objects detected;
+#X text 786 238 Minimum size of object (default 30);
+#X msg 725 325 ftolerance \$1;
+#X floatatom 815 326 5 0 0 0 - - -;
+#X msg 730 349 clear;
+#X text 856 333 temporarily ( default 5 );
+#X text 856 321 number of frames where an object can disappear;
+#X text 775 350 clear markers history;
+#X text 727 200 Mode of operation. Currently the only flag that may
 be specified is CV_HAAR_DO_CANNY_PRUNING ( 0 );
-#X text 50 179 This object considers a contour to be analyzed any group
+#X text 16 22 This object considers a contour to be analyzed any group
 of white pixels in a black background \, for this reason you will find
 useful to use pix_threshold to obtain a correct input for pix_opencv_contours_boundingrect.
 ;
-#X text 51 232 pix_opencv_contours_convexhull works detecting the bigest
+#X text 17 75 pix_opencv_contours_convexhull works detecting the bigest
 white area in the input image \, sometimes you will need to use pix_opencv_morphology
 to transform the contours of the shape to be analyzed..;
-#X text 51 143 pix_opencv_contours_convexhull :: Finds convexhull of
-the bigest contour of a binary image.;
-#X obj 735 64 gemhead;
-#X obj 616 862 pix_texture;
-#X obj 616 881 square 2;
-#X obj 53 60 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
-0;
+#X text 13 -120 pix_opencv_contours_convexhull :: Finds convexhull
+of the bigest contour of a binary image.;
+#X obj 633 -174 gemhead;
+#X obj 598 469 pix_texture;
+#X obj 598 488 square 2;
+#X obj 1025 432 cnv 15 220 70 empty empty empty 20 12 0 14 -195568
+-66577 0;
 #N canvas 0 22 454 304 gemwin 0;
 #X obj 67 89 outlet;
 #X obj 67 10 inlet;
@@ -92,134 +92,113 @@ the bigest contour of a binary image.;
 #X connect 9 0 6 0;
 #X connect 10 0 7 0;
 #X connect 10 2 9 0;
-#X restore 63 104 pd gemwin;
-#X msg 63 86 create;
-#X obj 464 858 pix_texture;
-#X obj 464 886 square 2;
-#X obj 616 391 separator;
-#X obj 747 91 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
+#X restore 1035 476 pd gemwin;
+#X msg 1035 458 create;
+#X obj 446 470 pix_texture;
+#X obj 446 489 square 2;
+#X obj 598 106 separator;
+#X obj 645 -147 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
 -1;
-#X obj 804 266 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
+#X obj 702 28 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
 -1 -1;
-#X floatatom 786 231 5 0 10000 1 frame# - -;
-#X obj 747 120 openpanel;
-#X msg 747 140 open \$1;
-#X obj 735 249 pix_film;
-#X msg 753 183 auto \$1;
-#X obj 753 165 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
+#X floatatom 684 -7 5 0 10000 1 frame# - -;
+#X obj 645 -118 openpanel;
+#X msg 645 -98 open \$1;
+#X obj 633 11 pix_film;
+#X msg 651 -55 auto \$1;
+#X obj 651 -73 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
 1;
-#X text 61 66 Create window and render;
-#X msg 848 166 colorspace RGBA;
-#X msg 953 166 colorspace RGB;
-#X msg 1057 166 colorspace Grey;
-#X obj 848 138 loadbang;
-#X obj 615 362 pix_separator;
-#X obj 464 394 separator;
-#X obj 464 365 pix_separator;
-#X obj 464 429 translateXYZ -2 0 0;
-#X obj 616 426 translateXYZ 2 0 0;
-#N canvas 0 22 450 300 vswitch 0;
-#X obj 144 263 outlet;
+#X text 1033 438 Create window and render;
+#X msg 746 -72 colorspace RGBA;
+#X msg 764 -52 colorspace RGB;
+#X msg 783 -33 colorspace Grey;
+#X obj 746 -100 loadbang;
+#X obj 598 87 pix_separator;
+#X obj 446 109 separator;
+#X obj 446 90 pix_separator;
+#X obj 446 128 translateXYZ -2 0 0;
+#X obj 598 125 translateXYZ 2 0 0;
+#N canvas 1 83 450 300 vswitch 0;
+#X obj 36 237 outlet;
 #X obj 36 26 inlet;
 #X obj 260 29 inlet;
-#X obj 36 133 spigot;
-#X obj 260 141 spigot;
-#X obj 119 64 loadbang;
-#X msg 83 93 0;
-#X msg 113 93 1;
-#X msg 296 104 0;
-#X msg 326 104 1;
 #X obj 399 34 inlet;
-#X obj 399 67 select 0;
-#X connect 1 0 3 0;
-#X connect 2 0 4 0;
-#X connect 3 0 0 0;
+#X obj 36 133 spigot 1;
+#X obj 260 141 spigot 0;
+#X obj 81 108 == 0;
+#X connect 1 0 4 0;
+#X connect 2 0 5 0;
+#X connect 3 0 6 0;
+#X connect 3 0 5 1;
 #X connect 4 0 0 0;
-#X connect 5 0 7 0;
-#X connect 5 0 8 0;
-#X connect 6 0 3 1;
-#X connect 7 0 3 1;
-#X connect 8 0 4 1;
-#X connect 9 0 4 1;
-#X connect 10 0 11 0;
-#X connect 11 0 7 0;
-#X connect 11 0 8 0;
-#X connect 11 1 9 0;
-#X connect 11 1 6 0;
-#X restore 554 308 pd vswitch;
-#X obj 622 308 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0
-1;
-#X obj 498 247 pix_video;
-#X obj 498 59 gemhead;
-#X msg 537 172 device 0;
-#X msg 546 203 driver 1;
-#X msg 523 118 dialog;
-#X msg 528 148 device /dev/dv1394-0;
-#X obj 616 459 pix_resize 320 240;
-#X obj 555 334 pix_rgba;
-#X connect 9 0 47 0;
-#X connect 9 1 33 0;
-#X connect 9 2 11 0;
-#X connect 10 0 19 0;
-#X connect 11 0 14 0;
-#X connect 11 1 15 0;
-#X connect 11 2 16 0;
-#X connect 14 0 1 0;
-#X connect 14 1 2 0;
-#X connect 14 2 3 0;
-#X connect 15 0 4 0;
-#X connect 15 1 5 0;
-#X connect 15 2 6 0;
-#X connect 16 0 7 0;
-#X connect 16 1 8 0;
-#X connect 16 2 17 0;
-#X connect 19 0 9 0;
-#X connect 21 0 10 0;
-#X connect 22 0 27 0;
-#X connect 23 0 26 0;
-#X connect 24 0 9 0;
-#X connect 25 0 24 0;
-#X connect 26 0 9 0;
-#X connect 27 0 9 0;
-#X connect 29 0 9 0;
-#X connect 30 0 29 0;
-#X connect 36 0 9 0;
-#X connect 37 0 36 0;
-#X connect 38 0 9 0;
-#X connect 46 0 60 0;
-#X connect 47 0 48 0;
-#X connect 50 0 51 0;
-#X connect 51 0 50 0;
+#X connect 5 0 0 0;
+#X connect 6 0 4 1;
+#X restore 446 41 pd vswitch;
+#X obj 514 41 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0 1
+;
+#X obj 446 9 pix_video;
+#X obj 446 -179 gemhead;
+#X msg 485 -66 device 0;
+#X msg 494 -35 driver 1;
+#X msg 471 -120 dialog;
+#X msg 476 -90 device /dev/dv1394-0;
+#X obj 598 144 pix_resize 320 240;
+#X obj 446 60 pix_rgba;
+#X connect 10 0 43 0;
+#X connect 10 1 29 0;
+#X connect 10 2 12 0;
+#X connect 11 0 15 0;
+#X connect 12 0 14 0;
+#X connect 14 0 7 0;
+#X connect 14 1 8 0;
+#X connect 14 2 9 0;
+#X connect 15 0 10 0;
+#X connect 17 0 11 0;
+#X connect 18 0 23 0;
+#X connect 19 0 22 0;
+#X connect 20 0 10 0;
+#X connect 21 0 20 0;
+#X connect 22 0 10 0;
+#X connect 23 0 10 0;
+#X connect 25 0 10 0;
+#X connect 26 0 25 0;
+#X connect 32 0 10 0;
+#X connect 33 0 32 0;
+#X connect 34 0 10 0;
+#X connect 42 0 56 0;
+#X connect 43 0 44 0;
+#X connect 46 0 47 0;
+#X connect 47 0 46 0;
+#X connect 48 0 49 0;
+#X connect 50 0 68 0;
+#X connect 51 0 54 0;
 #X connect 52 0 53 0;
-#X connect 54 0 72 0;
-#X connect 55 0 58 0;
-#X connect 56 0 57 0;
-#X connect 57 0 60 1;
-#X connect 58 0 59 0;
-#X connect 59 0 60 0;
-#X connect 60 0 73 1;
-#X connect 60 2 56 0;
-#X connect 61 0 60 0;
-#X connect 62 0 61 0;
-#X connect 64 0 60 0;
-#X connect 64 0 75 0;
-#X connect 65 0 60 0;
-#X connect 66 0 60 0;
-#X connect 67 0 64 0;
-#X connect 67 0 62 0;
-#X connect 68 0 54 0;
-#X connect 69 0 71 0;
-#X connect 70 0 69 0;
-#X connect 71 0 52 0;
-#X connect 72 0 81 0;
-#X connect 73 0 82 0;
-#X connect 74 0 73 2;
-#X connect 75 0 73 0;
-#X connect 76 0 75 0;
-#X connect 77 0 75 0;
-#X connect 78 0 75 0;
-#X connect 79 0 75 0;
-#X connect 80 0 75 0;
-#X connect 81 0 9 0;
-#X connect 82 0 70 0;
-#X connect 82 0 68 0;
+#X connect 53 0 56 1;
+#X connect 54 0 55 0;
+#X connect 55 0 56 0;
+#X connect 56 0 69 1;
+#X connect 56 2 52 0;
+#X connect 57 0 56 0;
+#X connect 58 0 57 0;
+#X connect 60 0 56 0;
+#X connect 60 0 71 0;
+#X connect 61 0 56 0;
+#X connect 62 0 56 0;
+#X connect 63 0 60 0;
+#X connect 63 0 58 0;
+#X connect 64 0 50 0;
+#X connect 65 0 67 0;
+#X connect 66 0 65 0;
+#X connect 67 0 48 0;
+#X connect 68 0 77 0;
+#X connect 69 0 78 0;
+#X connect 70 0 69 2;
+#X connect 71 0 69 0;
+#X connect 72 0 71 0;
+#X connect 73 0 71 0;
+#X connect 74 0 71 0;
+#X connect 75 0 71 0;
+#X connect 76 0 71 0;
+#X connect 77 0 10 0;
+#X connect 78 0 66 0;
+#X connect 78 0 64 0;

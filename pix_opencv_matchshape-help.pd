@@ -1,47 +1,47 @@
-#N canvas 218 147 974 485 10;
-#X obj 482 4 cnv 15 120 450 empty empty empty 20 12 0 14 -228992 -66577
+#N canvas 216 165 968 473 10;
+#X obj 477 6 cnv 15 480 460 empty empty empty 20 12 0 14 -228992 -66577
 0;
 #X obj 20 75 cnv 15 450 200 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X obj 21 326 cnv 15 450 110 empty empty empty 20 12 0 14 -233017 -66577
+#X obj 21 326 cnv 15 450 140 empty empty empty 20 12 0 14 -233017 -66577
 0;
 #X text 22 331 Inlets:;
 #X obj 21 286 cnv 15 450 30 empty empty empty 20 12 0 14 -195568 -66577
 0;
 #X text 30 285 Arguments:;
 #X text 22 400 Outlets:;
-#X obj 496 39 cnv 15 460 310 empty empty empty 20 12 0 14 -24198 -66577
+#X obj 491 41 cnv 15 460 310 empty empty empty 20 12 0 14 -24198 -66577
 0;
-#X obj 506 324 pix_opencv_matchshape;
-#X obj 506 12 gemhead;
-#X obj 506 375 pix_texture;
-#X obj 506 396 rectangle 4 3;
-#X msg 575 101 contour 4 2 0 0 0 1 1 1 1 0;
-#X msg 561 237 method \$1;
-#X floatatom 561 215 5 0 0 0 - - -;
-#X msg 585 151 template 4 2 0 0 0 1 1 1 1 0;
-#X msg 595 171 template 4 2 2 0 4 1 1 1 1 0;
-#X msg 565 81 contour 6 2 0 0 0 1 1 1 1 0 -0.5 -0.5;
-#X floatatom 561 265 5 0 0 0 - - -;
-#X msg 561 285 threshold \$1;
-#X msg 555 62 contour 4 2 2 0 4 1 1 1 1 0;
-#X obj 629 355 route match_vec template_vec;
-#X obj 629 405 unpack;
-#X text 636 388 found corresponding contour;
-#X floatatom 629 433 5 0 0 0 - - -;
-#X floatatom 664 433 5 0 0 0 - - -;
-#X text 628 446 id;
-#X text 664 446 absolute difference from template;
-#X floatatom 711 376 5 0 0 0 - - -;
-#X text 745 373 number of loaded contour;
-#X text 598 211 method to compare shape (1 \, 2 or 3 \, please refer
+#X obj 501 326 pix_opencv_matchshape;
+#X obj 501 14 gemhead;
+#X obj 501 377 pix_texture;
+#X obj 501 398 rectangle 4 3;
+#X msg 570 103 contour 4 2 0 0 0 1 1 1 1 0;
+#X msg 556 239 method \$1;
+#X floatatom 556 217 5 0 0 0 - - -;
+#X msg 580 153 template 4 2 0 0 0 1 1 1 1 0;
+#X msg 590 173 template 4 2 2 0 4 1 1 1 1 0;
+#X msg 560 83 contour 6 2 0 0 0 1 1 1 1 0 -0.5 -0.5;
+#X floatatom 556 267 5 0 0 0 - - -;
+#X msg 556 287 threshold \$1;
+#X msg 550 64 contour 4 2 2 0 4 1 1 1 1 0;
+#X obj 624 357 route match_vec template_vec;
+#X obj 624 407 unpack;
+#X text 631 390 found corresponding contour;
+#X floatatom 624 435 5 0 0 0 - - -;
+#X floatatom 659 435 5 0 0 0 - - -;
+#X text 623 448 id;
+#X text 659 448 absolute difference from template;
+#X floatatom 706 378 5 0 0 0 - - -;
+#X text 740 375 number of loaded contour;
+#X text 593 213 method to compare shape (1 \, 2 or 3 \, please refer
 to OpenCV doc for details);
 #X text 37 193 This external uses cv::matchShapes function. Documentation
 is here : http://docs.opencv.org/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html?highlight=matchshapes#matchshapes
 ;
-#X text 593 264 threshold behind wich a shape is recognized;
-#X text 580 133 template message add a template to library;
-#X text 554 44 contour message compare the contour to each loaded contour
+#X text 588 266 threshold behind wich a shape is recognized;
+#X text 575 135 template message add a template to library;
+#X text 549 46 contour message compare the contour to each loaded contour
 ;
 #X text 37 103 [pix_opencv_matchshape] compares input images or input
 contours to a library of images (or contours). It sends out the id
