@@ -1,4 +1,4 @@
-
+updated for Linux on 2012-09-12
 
 
 get the source version through svn :
@@ -9,13 +9,12 @@ cd pure-data/trunk/externals/pix_opencv
 ===== GNU/Linux ===== 
 
 (actually only tested in GNU/Linux Ubuntu)
+this new version requiered OpenCV 2.3, available with apt-get since 12.04
 
-first install opencv development packages,
-on ubuntu :
+apt-get install libopencv-dev
 
-apt-get install libcv-dev
-apt-get install libcvaux-dev
-apt-get install libhighgui-dev
+for other systems, you must build the lib from source, see this :
+http://opencv.willowgarage.com/wiki/InstallGuide
 
 get the _SOURCES_ of the pd you are using
 and of the GEM that you are loading
