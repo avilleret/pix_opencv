@@ -17,22 +17,22 @@
 // based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org ) (pix_opencv)
 // Template for pix_opencv class
 
-#include "pix_opencv_contours_convexhull.h"
+#include "pix_opencv_contours.h"
 #include <stdio.h>
 #include <RTE/MessageCallbacks.h>
 
 
-CPPEXTERN_NEW(pix_opencv_contours_convexhull)
+CPPEXTERN_NEW(pix_opencv_contours)
 
 /////////////////////////////////////////////////////////
 //
-// pix_opencv_contours_convexhull
+// pix_opencv_contours
 //
 /////////////////////////////////////////////////////////
 // Constructor
 //
 /////////////////////////////////////////////////////////
-pix_opencv_contours_convexhull :: pix_opencv_contours_convexhull() : m_area_threshold(30)
+pix_opencv_contours :: pix_opencv_contours() : m_area_threshold(30)
 { 
 	m_dataout_middle = outlet_new(this->x_obj, 0);
 	m_dataout_right = outlet_new(this->x_obj, 0);
@@ -44,7 +44,7 @@ pix_opencv_contours_convexhull :: pix_opencv_contours_convexhull() : m_area_thre
 // Destructor
 //
 /////////////////////////////////////////////////////////
-pix_opencv_contours_convexhull :: ~pix_opencv_contours_convexhull()
+pix_opencv_contours :: ~pix_opencv_contours()
 { 
 }
 
@@ -52,20 +52,20 @@ pix_opencv_contours_convexhull :: ~pix_opencv_contours_convexhull()
 // processImage
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_contours_convexhull :: processRGBAImage(imageStruct &image)
+void pix_opencv_contours :: processRGBAImage(imageStruct &image)
 { 
-	error( "pix_opencv_contours_convexhull : rgba format not supported" );
+	error( "pix_opencv_contours : rgba format not supported" );
 }
 
-void pix_opencv_contours_convexhull :: processRGBImage(imageStruct &image) {
-	error( "pix_opencv_contours_convexhull : rgb format not supported");
+void pix_opencv_contours :: processRGBImage(imageStruct &image) {
+	error( "pix_opencv_contours : rgb format not supported");
 }
 
-void pix_opencv_contours_convexhull :: processYUVImage(imageStruct &image) {
-	error( "pix_opencv_contours_convexhull : yuv format not supported" );
+void pix_opencv_contours :: processYUVImage(imageStruct &image) {
+	error( "pix_opencv_contours : yuv format not supported" );
 }
     	
-void pix_opencv_contours_convexhull :: processGrayImage(imageStruct &image)
+void pix_opencv_contours :: processGrayImage(imageStruct &image)
 { 
 	if ( image.xsize < 0 || image.ysize < 0 ) return;
 
@@ -152,7 +152,7 @@ void pix_opencv_contours_convexhull :: processGrayImage(imageStruct &image)
 // static member function
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_contours_convexhull :: obj_setupCallback(t_class *classPtr)
+void pix_opencv_contours :: obj_setupCallback(t_class *classPtr)
 {
 	CPPEXTERN_MSG1(classPtr, "epsilon",	epsilonMess, 		double);		    		  	  
 	CPPEXTERN_MSG1(classPtr, "area",	areaMess, 			double);		    		  	  
@@ -162,14 +162,14 @@ void pix_opencv_contours_convexhull :: obj_setupCallback(t_class *classPtr)
 // messages handling
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_contours_convexhull :: epsilonMess(double arg)
+void pix_opencv_contours :: epsilonMess(double arg)
 {
 	m_epsilon = arg > 0 ? arg : 3.;
 	t_atom data_out;
 	SETFLOAT(&data_out, (float) m_epsilon);
 	outlet_anything( m_dataout_right, gensym("epsilon"), 1, &data_out);
 }
-void pix_opencv_contours_convexhull :: areaMess(double arg)
+void pix_opencv_contours :: areaMess(double arg)
 {
 	m_area_threshold = arg > 0 ? arg : 30.;
 	t_atom data_out;

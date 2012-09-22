@@ -1,4 +1,4 @@
-#N canvas 747 664 837 384 10;
+#N canvas 745 670 837 384 10;
 #X obj 313 153 gemhead;
 #X obj 313 198 pix_image;
 #X msg 374 162 open pattern.png;
@@ -31,17 +31,17 @@ in order to detect corners;
 #X text 334 16 move the chessboard in the subprocess wiev it shouldn't
 move in the 05_perspective_correction window;
 #X obj 577 105 nbx 5 14 -1e+37 1e+37 0 1 empty empty posX 0 -8 0 10
--262144 -1 -1 -0.12 256;
+-262144 -1 -1 0.01 256;
 #X obj 637 105 nbx 5 14 -1e+37 1e+37 0 1 empty empty posY 0 -8 0 10
 -262144 -1 -1 -0.77 256;
 #X obj 609 177 nbx 5 14 -1e+37 1e+37 0 1 empty empty scale 0 -8 0 10
--262144 -1 -1 2.52 256;
+-262144 -1 -1 2.22 256;
 #X obj 547 142 nbx 5 14 -1e+37 1e+37 0 1 empty empty rotX 0 -8 0 10
--262144 -1 -1 26 256;
+-262144 -1 -1 26.62 256;
 #X obj 607 142 nbx 5 14 -1e+37 1e+37 0 1 empty empty rotY 0 -8 0 10
--262144 -1 -1 -29 256;
+-262144 -1 -1 12.15 256;
 #X obj 667 141 nbx 5 14 -1e+37 1e+37 0 1 empty empty rotZ 0 -8 0 10
--262144 -1 -1 101 256;
+-262144 -1 -1 -157.27 256;
 #X connect 0 0 1 0;
 #X connect 1 0 3 0;
 #X connect 2 0 1 0;
