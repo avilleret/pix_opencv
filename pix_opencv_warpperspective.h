@@ -4,6 +4,7 @@ LOG
 
     Compute homography between 2 sets on points and apply transformation to input image
 
+
     Copyright (c) 1997-1999 Mark Danks. mark@danks.org
     Copyright (c) Günther Geiger. geiger@epy.co.at
     Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM. zmoelnig@iem.kug.ac.at
@@ -12,6 +13,7 @@ LOG
     WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
 
 -----------------------------------------------------------------*/
+
 // pix_opencv_warpperspective by Antoine Villeret - 2011/13
 
 #ifndef INCLUDE_PIX_OPENCV_WARPPERSPECTIVE_H_
@@ -19,6 +21,7 @@ LOG
 
 #ifndef _EiC
 #include "opencv2/opencv.hpp"
+
 #endif
 
 #include "Base/GemPixObj.h"
@@ -63,6 +66,7 @@ class GEM_EXTERN pix_opencv_warpperspective : public GemPixObj
 		void	srcMatrixMess (int argc, t_atom *argv);
 		void	dstMatrixMess (int argc, t_atom *argv);
         void    invertMess    (int argc, t_atom *argv);
+
 		void	findhomography();
 
 		// to detect changes in the image size
@@ -86,6 +90,7 @@ class GEM_EXTERN pix_opencv_warpperspective : public GemPixObj
 		static void  dstMatrixMessCallback(void *data, t_symbol *s, int argc, t_atom *argv);
         static void  invertMessCallback(void *data, t_symbol *s, int argc, t_atom *argv);
         
+
 		/////////
 		// IplImage needed
     	IplImage 	*rgb, *tmp, *gray;

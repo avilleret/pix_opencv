@@ -122,7 +122,6 @@ void pix_opencv_findchessboardcorners :: processRGBAImage(imageStruct &image)
 		}
 		outlet_list( m_dataout, 0, pattern_size.width * pattern_size.height*2, coord_list );
 	}
-    //~ printf("process RGBA image done\n");
 }
 
 void pix_opencv_findchessboardcorners :: processRGBImage(imageStruct &image)
@@ -139,7 +138,6 @@ void pix_opencv_findchessboardcorners :: processYUVImage(imageStruct &image)
     	
 void pix_opencv_findchessboardcorners :: processGrayImage(imageStruct &image)
 { 
-	//~ printf("process gray image\n");
   if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!gray)) 
   {
 
@@ -159,7 +157,6 @@ void pix_opencv_findchessboardcorners :: processGrayImage(imageStruct &image)
     
     // no need to copy a lot of memory, just point to it...
     gray->imageData = (char*) image.data;    
-    
 	//~ printf("find corner...*/\n");
 	int found = cvFindChessboardCorners( gray, pattern_size, corners, &cornerCount, flags);
 	//~ printf(" found : %d\n",found);
@@ -188,7 +185,6 @@ void pix_opencv_findchessboardcorners :: processGrayImage(imageStruct &image)
 		}
 		outlet_list( m_dataout, 0, pattern_size.width * pattern_size.height*2, coord_list );
 	}
-    //~ printf("process gray image done\n");
 }
 
 /////////////////////////////////////////////////////////

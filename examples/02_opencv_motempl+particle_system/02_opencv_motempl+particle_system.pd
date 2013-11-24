@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 #N canvas 0 25 1259 669 10;
+=======
+#N canvas 3 80 1259 669 10;
+#X declare -path ../..;
+>>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
 #X obj 422 769 route -1 0 1 2 3 4;
 #X floatatom 425 849 5 0 0 0 - - -;
 #X floatatom 460 849 5 0 0 0 - - -;
@@ -213,13 +218,21 @@ want or also to a generalized solution.;
 0 1;
 #X obj 173 1422 spigot;
 #X obj 206 1396 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1
+<<<<<<< HEAD
 0 1;
+=======
+1 1;
+>>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
 #X text -174 1438 This example is the typical video projection to the
 floor following the movement of the people. So image to project must
 be just a black background with the particles.;
 #X obj 228 1395 loadbang;
 #X text 222 1296 show/hide analysis ->;
 #X text 39 1394 show/hide original image ->;
+<<<<<<< HEAD
+=======
+#X obj 735 273 declare -path ../..;
+>>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
 #X connect 0 0 13 0;
 #X connect 0 1 14 0;
 #X connect 0 2 15 0;

@@ -19,7 +19,6 @@ LOG
 #ifndef _EiC
 #include "opencv2/legacy/legacy.hpp"
 #include "opencv2/video/background_segm.hpp"
-
 #endif
 
 #include "Base/GemPixObj.h"

@@ -19,6 +19,7 @@ LOG
 #ifndef _EiC
 #include "opencv2/legacy/legacy.hpp"
 #include "opencv2/legacy/compat.hpp"
+
 #endif
 
 #include "Base/GemPixDualObj.h"

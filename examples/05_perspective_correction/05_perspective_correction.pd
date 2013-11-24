@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #N canvas 737 110 900 736 10;
+=======
+#N canvas 745 86 900 736 10;
+>>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
 #X declare -path ../../;
 #X obj 180 76 gemhead;
 #X obj 180 96 pix_share_read 666 640 480 1;
@@ -55,7 +59,11 @@ positives;
 #X obj 70 619 scaleXYZ 0.5 0.5 0;
 #X msg 113 517 5.3333 320;
 #X msg 189 517 4 240;
+<<<<<<< HEAD
 #N canvas 1 110 450 300 format 0;
+=======
+#N canvas 3 79 450 300 format 0;
+>>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
 #X obj 93 7 inlet;
 #X obj 118 140 outlet;
 #X msg 108 68 \$1 \$4 0 \$7 \$2 \$5 0 \$8 0 0 1 0 \$3 \$6 0 \$9;
@@ -140,7 +148,11 @@ matrix between srcMatrix and dstMatrix;
 #X text 502 594 pix_opencv_findchessboardcorners finds chessboard corners
 in the incomming image stream and send out corners coordinates as a
 list trought its second outlet;
+<<<<<<< HEAD
 #N canvas 737 406 715 644 generates_coords 0;
+=======
+#N canvas 743 388 715 644 generates_coords 1;
+>>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
 #X obj 58 2 inlet;
 #X obj 78 251 until;
 #X obj 78 358 f;
@@ -258,13 +270,22 @@ scrMatrix for pix_opencv_warpperspective;
 with pix_opencv_warpperspective and pix_opencv_findchessboardcorners
 ;
 #X text -18 0 declare path to be sure externals were found...;
+<<<<<<< HEAD
 #X text 354 95 <-- receive image from subprocess.pd;
 #X obj 224 198 pix_flip;
+=======
+#X text 508 440 use the other patch to move the chessboard;
+#X text 354 95 <-- receive image from subprocess.pd;
+#X obj 207 159 pix_flip;
+>>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
 #X text 102 162 the flip flag;
 #X text 102 172 this is a bug;
 #X text 184 159 -->;
 #X obj 180 136 t a a;
+<<<<<<< HEAD
 #X text 508 440 use subprocess patch to move the chessboard;
+=======
+>>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
 #X connect 0 0 1 0;
 #X connect 1 0 13 0;
 #X connect 2 0 74 0;
@@ -280,7 +301,11 @@ with pix_opencv_warpperspective and pix_opencv_findchessboardcorners
 #X connect 11 0 10 0;
 #X connect 12 0 2 0;
 #X connect 12 0 70 0;
+<<<<<<< HEAD
 #X connect 13 0 91 0;
+=======
+#X connect 13 0 92 0;
+>>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
 #X connect 16 0 17 0;
 #X connect 16 1 18 0;
 #X connect 19 0 20 0;
@@ -323,4 +348,9 @@ with pix_opencv_warpperspective and pix_opencv_findchessboardcorners
 #X connect 75 0 74 1;
 #X connect 76 0 75 0;
 #X connect 76 0 73 1;
+<<<<<<< HEAD
 #X connect 91 0 2 0;
+=======
+#X connect 92 0 2 0;
+#X connect 92 1 88 0;
+>>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589

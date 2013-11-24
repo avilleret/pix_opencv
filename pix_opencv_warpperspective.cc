@@ -19,6 +19,7 @@
 
 
 
+
 #include "pix_opencv_warpperspective.h"
 #include <stdio.h>
 
@@ -150,7 +151,6 @@ void pix_opencv_warpperspective :: processGrayImage(imageStruct &image)
 
     // no need to copy a lot of memory, just point to it...
     gray->imageData = (char*) image.data;
-    
    	cvWarpPerspective(gray, tmp, mapMatrix, flags, cvScalar(0));
 	memcpy(image.data, tmp->imageData, image.xsize*image.ysize);
 	
@@ -186,16 +186,6 @@ void pix_opencv_warpperspective :: mapMatrixMess (int argc, t_atom *argv)
 	CV_MAT_ELEM( *mapMatrix, float, 1, 2 ) = argv[7].a_w.w_float;
 	CV_MAT_ELEM( *mapMatrix, float, 2, 2 ) = argv[8].a_w.w_float;
 	
-	/*
-    int j;
-	printf("---mapMatrix---\n");
-	for ( j = 0 ; j < 3 ; j++ ){
-		for( i=0 ; i<3 ; i++){
-			printf("%.2f,\t", CV_MAT_ELEM( *mapMatrix, float, i, j));
-		}
-		printf("\n");
-	}
-	*/
 }
 
 void pix_opencv_warpperspective :: srcMatrixMess (int argc, t_atom *argv)
@@ -278,15 +268,12 @@ void pix_opencv_warpperspective :: findhomography( )
 			error("srcMatrix and dstMatrix should have the same size to compute homography !");
 			return;
 		}
-			
 		cvFindHomography(srcMatrix, dstMatrix, mapMatrix, findmethod, 0, NULL);
-		
 		for ( j = 0 ; j < 3 ; j++ ){
 			for( i=0 ; i<3 ; i++){
 				SETFLOAT(&mapMatrixList[i+j*3], CV_MAT_ELEM( *mapMatrix, float, i, j));
 			}
 		}
-		
 		// send out mapMatrix
 		outlet_list( m_dataout, 0, 9, mapMatrixList);
 }
@@ -327,4 +314,3 @@ void pix_opencv_warpperspective :: invertMessCallback(void *data, t_symbol *s, i
 {
 		GetMyClass(data)->invertMess(argc, argv);
 }
-
