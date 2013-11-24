@@ -1,0 +1,73 @@
+#N canvas 745 670 837 384 10;
+#X obj 313 153 gemhead;
+#X obj 313 198 pix_image;
+#X msg 374 162 open pattern.png;
+#X obj 313 218 pix_texture;
+#X obj 374 142 loadbang;
+#X obj 313 288 translateXYZ;
+#X obj 313 308 rotateXYZ;
+#X obj -60 342 gemwin;
+#X obj 313 328 scaleXYZ;
+#X obj -61 72 t b a;
+#X obj -61 122 pix_grey;
+#X obj -61 53 gemhead 100;
+#X obj 313 238 pix_info ________;
+#X obj 313 348 rectangle 1 1;
+#X obj -61 142 pix_share_write 666 640 480 1;
+#X obj -60 222 loadbang;
+#X msg -33 264 \; pd dsp 1;
+#X obj -60 241 t b b;
+#X text 27 268 <- dsp must always be ON;
+#X text 44 278 inside a pd~;
+#X obj 327 264 /;
+#X text 351 264 <-- keep image ratio;
+#X obj -61 102 pix_snap 0 0 640 480;
+#X msg -18 342 destroy;
+#X msg -60 311 reset \, color 1 1 1 \, title subprocess \, dimen 640
+480 \, create \, 1;
+#X text -60 32 readback and send to host;
+#X text 334 54 the chessboard should be big enougth and not too warp
+in order to detect corners;
+#X text 334 16 move the chessboard in the subprocess wiev it shouldn't
+move in the 05_perspective_correction window;
+#X obj 577 105 nbx 5 14 -1e+37 1e+37 0 1 empty empty posX 0 -8 0 10
+-262144 -1 -1 0.01 256;
+#X obj 637 105 nbx 5 14 -1e+37 1e+37 0 1 empty empty posY 0 -8 0 10
+-262144 -1 -1 -0.77 256;
+#X obj 609 177 nbx 5 14 -1e+37 1e+37 0 1 empty empty scale 0 -8 0 10
+-262144 -1 -1 2.22 256;
+#X obj 547 142 nbx 5 14 -1e+37 1e+37 0 1 empty empty rotX 0 -8 0 10
+-262144 -1 -1 26.62 256;
+#X obj 607 142 nbx 5 14 -1e+37 1e+37 0 1 empty empty rotY 0 -8 0 10
+-262144 -1 -1 12.15 256;
+#X obj 667 141 nbx 5 14 -1e+37 1e+37 0 1 empty empty rotZ 0 -8 0 10
+-262144 -1 -1 -157.27 256;
+#X connect 0 0 1 0;
+#X connect 1 0 3 0;
+#X connect 2 0 1 0;
+#X connect 3 0 12 0;
+#X connect 4 0 2 0;
+#X connect 5 0 6 0;
+#X connect 6 0 8 0;
+#X connect 8 0 13 0;
+#X connect 9 0 22 0;
+#X connect 9 1 22 0;
+#X connect 10 0 14 0;
+#X connect 11 0 9 0;
+#X connect 12 0 5 0;
+#X connect 12 1 20 0;
+#X connect 12 2 20 1;
+#X connect 15 0 17 0;
+#X connect 17 0 24 0;
+#X connect 17 1 16 0;
+#X connect 20 0 13 1;
+#X connect 22 0 10 0;
+#X connect 23 0 7 0;
+#X connect 24 0 7 0;
+#X connect 28 0 5 1;
+#X connect 29 0 5 2;
+#X connect 30 0 8 2;
+#X connect 30 0 8 1;
+#X connect 31 0 6 1;
+#X connect 32 0 6 2;
+#X connect 33 0 6 3;
