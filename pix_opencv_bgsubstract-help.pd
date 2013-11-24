@@ -1,0 +1,158 @@
+#N canvas 253 422 985 540 10;
+#X obj 17 17 cnv 15 430 320 empty empty empty 20 12 0 14 -233017 -66577
+0;
+#X obj 17 -29 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
+0;
+#X text 26 -25 Arguments:;
+#X obj 17 -124 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
+0;
+#X text 22 -162 Class: pix_opencv;
+#X text 47 -5 none;
+#X obj 459 -182 cnv 15 510 520 empty empty empty 20 12 0 14 -228992
+-66577 0;
+#X obj 611 168 cnv 15 280 80 empty empty empty 20 12 0 14 -24198 -66577
+0;
+#X floatatom 744 211 5 0 0 0 - - -;
+#X obj 615 228 pix_opencv_bgsubstract;
+#X msg 627 172 set;
+#X text 663 172 set the background;
+#X text 741 195 threshold (default 13);
+#X text 22 84 This object takes an image as a background reference
+and the compare each incomming frame with that. On the output you get
+a bw image \, black pixels are considered as background and white poixels
+as foreground.;
+#X text 27 -107 pix_opencv_bgsubstract :: A simple background substract
+and binarization object.;
+#X text 22 37 It is useful if you want to detect objects that are in
+front of an static background and you want to isolate the foreground
+silhouete of the foreground objects.;
+#X text 22 145 pix_opencv_bgsubstract works comparing color values
+of each pixel \, so it can fail if the foreground object has the same
+color that the background \, and also if the light conditions or the
+shadows changes since you SET the background image.;
+#X obj 641 -173 gemhead;
+#X obj 615 255 pix_texture;
+#X obj 615 274 square 2;
+#X obj 741 259 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
+0;
+#N canvas 0 22 454 304 gemwin 0;
+#X obj 67 89 outlet;
+#X obj 67 10 inlet;
+#X obj 65 41 route create;
+#X msg 67 70 set destroy;
+#X msg 182 68 set create;
+#N canvas 87 154 247 179 Gem.init 0;
+#X obj 118 46 loadbang;
+#X msg 118 81 reset;
+#X obj 118 113 outlet;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X restore 289 80 pd Gem.init;
+#X obj 162 241 gemwin;
+#X msg 161 188 create \, 1;
+#X msg 237 189 destroy;
+#X msg 283 161 frame 25;
+#X obj 164 126 t b b b;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 2 0 10 0;
+#X connect 2 1 4 0;
+#X connect 2 1 8 0;
+#X connect 3 0 0 0;
+#X connect 4 0 0 0;
+#X connect 7 0 6 0;
+#X connect 8 0 6 0;
+#X connect 9 0 6 0;
+#X connect 10 0 7 0;
+#X connect 10 2 9 0;
+#X restore 751 303 pd gemwin;
+#X msg 751 285 destroy;
+#X obj 464 253 pix_texture;
+#X obj 464 272 square 2;
+#X obj 615 121 separator;
+#X obj 653 -146 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
+-1;
+#X obj 710 29 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
+-1 -1;
+#X floatatom 692 -6 5 0 10000 1 frame# - -;
+#X obj 653 -117 openpanel;
+#X msg 653 -97 open \$1;
+#X obj 641 12 pix_film;
+#X msg 659 -54 auto \$1;
+#X obj 659 -72 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
+1;
+#X text 749 265 Create window and render;
+#X msg 754 -71 colorspace RGBA;
+#X msg 765 -52 colorspace RGB;
+#X msg 772 -32 colorspace Grey;
+#X obj 754 -99 loadbang;
+#X obj 615 100 pix_separator;
+#X obj 464 121 separator;
+#X obj 464 101 pix_separator;
+#X obj 464 141 translateXYZ -2 0 0;
+#X obj 615 141 translateXYZ 2 0 0;
+#N canvas 1 168 274 215 vswitch 0;
+#X obj 36 138 outlet;
+#X obj 36 26 inlet;
+#X obj 100 29 inlet;
+#X obj 149 29 inlet;
+#X obj 149 67 == 0;
+#X obj 36 101 spigot 1;
+#X obj 100 101 spigot 0;
+#X connect 1 0 5 0;
+#X connect 2 0 6 0;
+#X connect 3 0 4 0;
+#X connect 4 0 5 1;
+#X connect 5 0 0 0;
+#X connect 6 0 0 0;
+#X restore 464 58 pd vswitch;
+#X obj 532 58 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0 1
+;
+#X obj 464 10 pix_video;
+#X obj 464 -175 gemhead;
+#X msg 503 -65 device 0;
+#X msg 512 -34 driver 1;
+#X msg 489 -119 dialog;
+#X msg 494 -89 device /dev/dv1394-0;
+#X obj 464 78 pix_rgba;
+#X text 24 219 written by Yves Degoyon ( ydegoyon@gmail.com );
+#X text 23 -178 Synopsis: [pix_opencv_bgsubstract];
+#X connect 8 0 9 1;
+#X connect 9 0 18 0;
+#X connect 10 0 9 0;
+#X connect 17 0 31 0;
+#X connect 18 0 19 0;
+#X connect 21 0 22 0;
+#X connect 22 0 21 0;
+#X connect 23 0 24 0;
+#X connect 25 0 43 0;
+#X connect 26 0 29 0;
+#X connect 27 0 28 0;
+#X connect 28 0 31 1;
+#X connect 29 0 30 0;
+#X connect 30 0 31 0;
+#X connect 31 0 44 1;
+#X connect 31 2 27 0;
+#X connect 32 0 31 0;
+#X connect 33 0 32 0;
+#X connect 35 0 31 0;
+#X connect 35 0 46 0;
+#X connect 36 0 31 0;
+#X connect 37 0 31 0;
+#X connect 38 0 35 0;
+#X connect 38 0 33 0;
+#X connect 39 0 25 0;
+#X connect 40 0 42 0;
+#X connect 41 0 40 0;
+#X connect 42 0 23 0;
+#X connect 43 0 9 0;
+#X connect 44 0 52 0;
+#X connect 45 0 44 2;
+#X connect 46 0 44 0;
+#X connect 47 0 46 0;
+#X connect 48 0 46 0;
+#X connect 49 0 46 0;
+#X connect 50 0 46 0;
+#X connect 51 0 46 0;
+#X connect 52 0 41 0;
+#X connect 52 0 39 0;

@@ -1,0 +1,168 @@
+#N canvas 624 471 1101 564 10;
+#X obj 5 20 cnv 15 430 350 empty empty empty 20 12 0 14 -233017 -66577
+0;
+#X obj 5 -26 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
+0;
+#X text 14 -22 Arguments:;
+#X obj 5 -121 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
+0;
+#X text 35 -2 none;
+#X obj 447 -179 cnv 15 650 550 empty empty empty 20 12 0 14 -228992
+-66577 0;
+#X obj 589 143 cnv 15 500 180 empty empty empty 20 12 0 14 -24198 -66577
+0;
+#X obj 678 148 hradio 15 1 0 5 empty empty empty 0 -8 0 10 -262144
+-1 -1 0;
+#X text 761 147 save an histogram at position nth ( 0 <= n <= 80 )
+;
+#X floatatom 682 279 5 0 0 0 - - -;
+#X obj 744 204 unpack f f f f f;
+#X text 837 239 nearest to 1 is the winner;
+#X text 718 280 closest histogram (winner);
+#X obj 744 232 vsl 15 37 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X obj 767 232 vsl 15 37 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X obj 790 232 vsl 15 37 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X obj 813 232 vsl 15 37 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X text 836 228 matching measure with stored histograms;
+#X obj 603 173 pix_opencv_hist_compare;
+#X obj 688 -169 gemhead;
+#X obj 603 331 pix_texture;
+#X obj 603 350 square 2;
+#X obj 869 289 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
+0;
+#N canvas 0 22 454 304 gemwin 0;
+#X obj 67 89 outlet;
+#X obj 67 10 inlet;
+#X obj 65 41 route create;
+#X msg 67 70 set destroy;
+#X msg 182 68 set create;
+#N canvas 87 154 247 179 Gem.init 0;
+#X obj 118 46 loadbang;
+#X msg 118 81 reset;
+#X obj 118 113 outlet;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X restore 289 80 pd Gem.init;
+#X obj 162 241 gemwin;
+#X msg 161 188 create \, 1;
+#X msg 237 189 destroy;
+#X msg 283 161 frame 25;
+#X obj 164 126 t b b b;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 2 0 10 0;
+#X connect 2 1 4 0;
+#X connect 2 1 8 0;
+#X connect 3 0 0 0;
+#X connect 4 0 0 0;
+#X connect 7 0 6 0;
+#X connect 8 0 6 0;
+#X connect 9 0 6 0;
+#X connect 10 0 7 0;
+#X connect 10 2 9 0;
+#X restore 879 333 pd gemwin;
+#X msg 879 315 create;
+#X obj 451 331 pix_texture;
+#X obj 451 352 square 2;
+#X obj 603 105 separator;
+#X obj 700 -142 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
+-1;
+#X obj 757 33 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
+-1 -1;
+#X floatatom 739 -2 5 0 10000 1 frame# - -;
+#X obj 700 -113 openpanel;
+#X msg 700 -93 open \$1;
+#X obj 688 16 pix_film;
+#X msg 706 -50 auto \$1;
+#X obj 706 -68 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
+1;
+#X text 877 295 Create window and render;
+#X msg 801 -67 colorspace RGBA;
+#X msg 812 -46 colorspace RGB;
+#X msg 824 -25 colorspace Grey;
+#X obj 801 -95 loadbang;
+#X obj 603 86 pix_separator;
+#X obj 451 106 separator;
+#X obj 451 87 pix_separator;
+#X obj 603 123 translateXYZ 2 0 0;
+#N canvas 1 83 450 300 vswitch 0;
+#X obj 36 214 outlet;
+#X obj 36 26 inlet;
+#X obj 260 29 inlet;
+#X obj 399 34 inlet;
+#X obj 36 133 spigot 1;
+#X obj 260 141 spigot 0;
+#X obj 81 111 == 0;
+#X connect 1 0 4 0;
+#X connect 2 0 5 0;
+#X connect 3 0 6 0;
+#X connect 3 0 5 1;
+#X connect 4 0 0 0;
+#X connect 5 0 0 0;
+#X connect 6 0 4 1;
+#X restore 451 38 pd vswitch;
+#X obj 519 38 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0 1
+;
+#X obj 451 -174 gemhead;
+#X msg 490 -61 device 0;
+#X msg 499 -30 driver 1;
+#X msg 476 -115 dialog;
+#X msg 481 -85 device /dev/dv1394-0;
+#X text 13 27 record histograms of specific situations;
+#X text 15 39 the object will recognize the situations if they occur
+again;
+#X text 15 53 Written by Lluis Gomez i Bigorda ( lluisgomez@hangar.org
+);
+#X text 14 -114 pix_opencv_hist_compare : image recognition using histograms
+;
+#X obj 451 58 pix_rgba;
+#X obj 451 14 pix_video;
+#X obj 451 124 translateXYZ -2 0 0;
+#X connect 7 0 18 1;
+#X connect 10 0 13 0;
+#X connect 10 1 14 0;
+#X connect 10 2 15 0;
+#X connect 10 3 16 0;
+#X connect 18 0 20 0;
+#X connect 18 1 9 0;
+#X connect 18 2 10 0;
+#X connect 19 0 33 0;
+#X connect 20 0 21 0;
+#X connect 23 0 24 0;
+#X connect 24 0 23 0;
+#X connect 25 0 26 0;
+#X connect 27 0 44 0;
+#X connect 28 0 31 0;
+#X connect 29 0 30 0;
+#X connect 30 0 33 1;
+#X connect 31 0 32 0;
+#X connect 32 0 33 0;
+#X connect 33 0 45 1;
+#X connect 33 2 29 0;
+#X connect 34 0 33 0;
+#X connect 35 0 34 0;
+#X connect 37 0 33 0;
+#X connect 37 0 57 0;
+#X connect 38 0 33 0;
+#X connect 39 0 33 0;
+#X connect 40 0 37 0;
+#X connect 40 0 35 0;
+#X connect 41 0 27 0;
+#X connect 42 0 58 0;
+#X connect 43 0 42 0;
+#X connect 44 0 18 0;
+#X connect 45 0 56 0;
+#X connect 46 0 45 2;
+#X connect 47 0 57 0;
+#X connect 48 0 57 0;
+#X connect 49 0 57 0;
+#X connect 50 0 57 0;
+#X connect 51 0 57 0;
+#X connect 56 0 43 0;
+#X connect 56 0 41 0;
+#X connect 57 0 45 0;
+#X connect 58 0 25 0;

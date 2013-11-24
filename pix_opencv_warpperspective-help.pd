@@ -1,0 +1,119 @@
+#N canvas 616 396 980 660 10;
+#X obj 24 25 gemhead;
+#X obj 411 543 gemwin;
+#X msg 411 509 create \, 1;
+#X msg 492 509 destroy;
+#X obj 24 565 pix_texture;
+#X obj 203 571 print;
+#X obj 24 591 rectangle 4 3;
+#X obj 24 4 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
+;
+#X obj 24 539 pix_opencv_warpperspective;
+#X msg 76 367 mapMatrix 1 0 0 0 1 0 0 0 1;
+#X text 75 348 you can also set the map matrix directly;
+#X msg 76 387 mapMatrix 0.5 0 0 0 0.5 0 0 0 1;
+#X text 281 366 identity;
+#X text 302 388 scale by 0.5;
+#X msg 76 407 mapMatrix 0 1 0 1 0 0 0 0 2;
+#X text 275 409 rotation by 90deg and scale by 0.5;
+#X obj 24 93 pix_video;
+#X obj 24 133 pix_flip;
+#N canvas 1 105 936 545 wrap_perspective_GPU 0;
+#X obj 251 443 mesh_square 10 10;
+#X obj 301 277 /;
+#X obj 351 278 /;
+#X obj 301 233 loadbang;
+#X obj 251 356 GEMglMultTransposeMatrixf;
+#X obj 251 414 translateXYZ 1 1 0;
+#X obj 251 299 scaleXYZ 0.003 0.003 0;
+#X obj 251 376 scaleXYZ 639 479 0;
+#X obj 251 212 translateXYZ -5.33333 -4 0;
+#X obj 251 395 scaleXYZ 0.5 0.5 0;
+#X msg 301 255 5.3333 320;
+#X msg 377 255 4 240;
+#X msg 423 330 \$1 \$4 0 \$7 \$2 \$5 0 \$8 0 0 1 0 \$3 \$6 0 \$9;
+#X text 46 22 wrap_persective can be easilly computed by the GPU in
+order to boost performace;
+#X obj 251 188 spigot;
+#X obj 290 138 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 39 105 t a a;
+#X obj 39 190 spigot 1;
+#X obj 92 164 == 0;
+#X obj 39 253 rectangle 4 3;
+#X obj 39 233 pix_texture;
+#X obj 39 211 pix_opencv_warpperspective;
+#X text 306 137 switch CPU / GPU;
+#X text 454 256 Since the matrice is computed for somthing that range
+from 0 to 639 in X \, and from 0 to 479 in Y \, one have to convert
+(scale / translate) the primitive coordinate to fit the transformation
+matrix.;
+#X obj 41 62 inlet;
+#X connect 1 0 6 1;
+#X connect 2 0 6 2;
+#X connect 3 0 10 0;
+#X connect 3 0 11 0;
+#X connect 4 0 7 0;
+#X connect 5 0 0 0;
+#X connect 6 0 4 0;
+#X connect 7 0 9 0;
+#X connect 8 0 6 0;
+#X connect 9 0 5 0;
+#X connect 10 0 1 0;
+#X connect 11 0 2 0;
+#X connect 12 0 4 1;
+#X connect 14 0 8 0;
+#X connect 15 0 14 1;
+#X connect 15 0 18 0;
+#X connect 16 0 17 0;
+#X connect 16 1 14 0;
+#X connect 17 0 21 0;
+#X connect 18 0 17 1;
+#X connect 20 0 19 0;
+#X connect 21 0 20 0;
+#X connect 21 1 12 0;
+#X connect 24 0 16 0;
+#X restore 161 604 pd wrap_perspective_GPU;
+#X msg 43 233 dstMatrix 0 0 0 1 1 1 1 0;
+#X msg 59 281 srcMatrix 0 0 0 1 1 1 1 0;
+#X text 203 234 destination matrix;
+#X text 103 261 source matrix;
+#X text 229 279 the same as dst lead to identity map matrix;
+#X msg 71 306 srcMatrix 1 0 1 1 2 1 2 0;
+#X text 234 299 translation also lead to identity map matrix while
+translation is not a perspective transformation;
+#X text 126 327 TODO more src examples...;
+#X text 112 88 pix_opencv_warpperspective computes the perspective
+transformation between dstMatrix and srcMatrix and corrects the image
+image according to this perspective transformation;
+#X text 111 129 the trasnsformation matrix is also sent through the
+right outlet to be applied in OpenGL for example;
+#X text 114 159 the transformation matrix could also be set by mapMatrix
+message to apply the transformation;
+#X text 112 25 see examples/05-perspective_correction for an example
+of the use of pix_opencv_warpperspective with pix_opencv_findchessboardcorners
+to correct perspective;
+#X obj 24 112 pix_grey;
+#X msg 123 480 invert \$1;
+#X obj 123 452 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X text 140 450 invert transformation matrix (same as swaping src and
+dst matrix);
+#X connect 0 0 16 0;
+#X connect 2 0 1 0;
+#X connect 3 0 1 0;
+#X connect 4 0 6 0;
+#X connect 7 0 0 0;
+#X connect 8 0 4 0;
+#X connect 8 1 5 0;
+#X connect 9 0 8 0;
+#X connect 11 0 8 0;
+#X connect 14 0 8 0;
+#X connect 16 0 31 0;
+#X connect 17 0 8 0;
+#X connect 19 0 8 0;
+#X connect 20 0 8 0;
+#X connect 24 0 8 0;
+#X connect 31 0 17 0;
+#X connect 32 0 8 0;
+#X connect 33 0 32 0;
