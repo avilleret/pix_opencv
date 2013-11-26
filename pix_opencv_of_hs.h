@@ -19,7 +19,6 @@ LOG
 #ifndef _EiC
 #include "opencv2/legacy/legacy.hpp"
 #include "opencv2/video/tracking.hpp"
-
 #endif
 
 #include "Base/GemPixObj.h"
