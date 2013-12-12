@@ -76,8 +76,7 @@ private:
   void outputBlob();
   void resetMess();
   
-  t_outlet *m_dataout_middle; // contour outlet
-  t_outlet *m_dataout_right; // info outlet
+  t_outlet *m_dataout_right; // cvblob outlet
   
   unsigned int m_repeat_point;
   double m_area_threshold;	// min area for contour
@@ -87,7 +86,7 @@ private:
   std::vector<Blob>  m_trackedBlobs;
   std::vector<Blob>  m_inputBlobs;
 
-  int m_enable_contours, m_enable_hulls, m_enable_defects, m_hierarchy_level, m_mode, m_taboutput, m_tabinput;
+  int m_mode, m_taboutput, m_tabinput;
   
   int IdCounter;
   

@@ -15,6 +15,7 @@
 //
 /////////////////////////////////////////////////////////
 // based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org ) (pix_opencv)
+// and on some code from CCV : http://ccv.nuigroup.com/ (the tracker it self)
 // pix_opencv_trackKnn extract and simplify contours of incomming image
 // by Antoine Villeret - 2012
 
@@ -33,20 +34,13 @@ CPPEXTERN_NEW(pix_opencv_trackKnn)
 // Constructor
 //
 /////////////////////////////////////////////////////////
-pix_opencv_trackKnn :: pix_opencv_trackKnn() :   m_repeat_point(1), \
-                                                m_area_threshold(30), \
-                        m_epsilon(2), \
-                        m_enable_contours(1), \
-                        m_enable_hulls(1), \
-                        m_enable_defects(1), \
-                        m_hierarchy_level(-1), \
+pix_opencv_trackKnn :: pix_opencv_trackKnn() :   \
                         m_taboutput(0), \
                         IdCounter(0), \
                         m_x_arrayname(NULL), \
                         m_y_arrayname(NULL), \
                         m_z_arrayname(NULL)
 { 
-  m_dataout_middle = outlet_new(this->x_obj, 0);
   m_dataout_right = outlet_new(this->x_obj, 0);
 
   //~ post("build on %s at %s", __DATE__, __TIME__);
@@ -129,7 +123,6 @@ void pix_opencv_trackKnn :: cvblobMess(t_symbol *s, int argc, t_atom* argv){
   
   int blob_number = (int) atom_getfloatarg(0,argc,argv);
   int blob_atom_size = (int) atom_getfloatarg(1, argc, argv);
-  printf("blob number : %d, atom size : %d\n", blob_number, blob_atom_size);
   
   if ( blob_number * blob_atom_size != argc - 2 ){
     error("cvblob matrix have a wrong size %d != %d x %d", argc -2, blob_number, blob_atom_size);
@@ -137,7 +130,6 @@ void pix_opencv_trackKnn :: cvblobMess(t_symbol *s, int argc, t_atom* argv){
   }
   
   m_inputBlobs.clear();
-  printf("blobnumber : %d, blob_atom_size %d\n",blob_number, blob_atom_size);
   for ( int i = 0; i < blob_number ; i++){
     Blob blob;
     blob.id=-1;
@@ -147,7 +139,6 @@ void pix_opencv_trackKnn :: cvblobMess(t_symbol *s, int argc, t_atom* argv){
     blob.centroid.y=atom_getfloatarg(j+1,argc,argv);
     
     m_inputBlobs.push_back(blob);
-    printf("parse blob %d : %.2f %.2f\n",j, blob.centroid.x, blob.centroid.y);
   }
   
   doTracking();
@@ -156,7 +147,6 @@ void pix_opencv_trackKnn :: cvblobMess(t_symbol *s, int argc, t_atom* argv){
 void pix_opencv_trackKnn :: doTracking()
 {
     // find an Id
-  printf("sizes : inputBlob : %ld\ttrackedblobs : %ld\n", m_inputBlobs.size(), m_trackedBlobs.size());
   for(unsigned int i=0; i<m_trackedBlobs.size(); i++)
   {
     
@@ -168,7 +158,6 @@ void pix_opencv_trackKnn :: doTracking()
     * there was no corresponding blob
     *****************************************************************/
     int winner = trackKnn(i, 3, 0.);
-    printf("track #%d correspond to input blob #%d\n", i,winner);
 
     if(winner==-1) //track has died, mark it for deletion
     {
@@ -347,7 +336,6 @@ void pix_opencv_trackKnn :: doTracking()
   {
     if(m_inputBlobs[i].id==-1)
     {
-          printf("new blob detected, add it to the tracker\n");
 
       //add new track
       m_inputBlobs[i].id=IdCounter;
@@ -367,7 +355,7 @@ void pix_opencv_trackKnn :: doTracking()
       
       m_inputBlobs[i].color = scolor;
       m_trackedBlobs.push_back(m_inputBlobs[i]);
-      printf("blob added\n");
+
       //~numEnter++;
       //~if (numEnter > 20)
       //~{
@@ -473,15 +461,12 @@ void pix_opencv_trackKnn :: outputBlob(){
       SETFLOAT(&apt[6], m_trackedBlobs[i].area); // area in pixels
     }
     
-    printf("outlet something\n");
     outlet_anything(m_dataout_right, gensym("cvblob"), blob_atom_size, blob_atom);
     if (blob_atom){
-      printf("desallocate\n");
       delete blob_atom;
       blob_atom=NULL;
     }
   }
-  printf("end of outputBlob()\n");
 }
 
 int pix_opencv_trackKnn :: trackKnn(unsigned int blob_index, unsigned int k, double thresh = 0)
