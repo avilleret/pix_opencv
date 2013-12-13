@@ -328,6 +328,10 @@ void pix_opencv_contours :: outputBlobs(imageStruct &image){
     int blob_atom_size = 2+blob_num*blobMatrixWidth;
     
     t_atom* blob_atom = new t_atom[blob_atom_size];
+    for ( int i = 0; i < blob_atom_size; i++){
+      SETFLOAT(blob_atom+i,0);
+    }
+    
     SETFLOAT(blob_atom+1, blobMatrixWidth);
     
     int count(0);
@@ -351,7 +355,7 @@ void pix_opencv_contours :: outputBlobs(imageStruct &image){
         
         SETFLOAT(apt, count); // set Id
         count++;
-        SETFLOAT(apt+1,  rot_rect.center.x/image.xsize); // rotrect center
+        SETFLOAT(apt+1, rot_rect.center.x/image.xsize); // rotrect center
         SETFLOAT(apt+2, rot_rect.center.y/image.ysize);
         SETFLOAT(apt+3, rot_rect.size.width/image.xsize); // blob size
         SETFLOAT(apt+4, rot_rect.size.height/image.xsize);
