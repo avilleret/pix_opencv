@@ -134,9 +134,19 @@ void pix_opencv_trackKnn :: cvblobMess(t_symbol *s, int argc, t_atom* argv){
     Blob blob;
     blob.id=-1;
     int j = i*blob_atom_size+2;
-    if ( blob_atom_size > 2 ) j+=1; // if there is more than 2 element per blob, assume, the first is Id
-    blob.centroid.x=atom_getfloatarg(j,argc,argv);
-    blob.centroid.y=atom_getfloatarg(j+1,argc,argv);
+    if ( blob_atom_size < 3 ) j--; // if there is more than 2 element per blob, assume, the first is Id
+    blob.centroid.x=atom_getfloatarg(j+1,argc,argv);
+    blob.centroid.y=atom_getfloatarg(j+2,argc,argv);
+    
+    if ( blob_atom_size > 2 ){ // if we pass more than just x and y coordinates, assume the same data order than pix_opencv_contours outputs
+        blob.angleBoundingRect.size.width=atom_getfloatarg(j+3,argc,argv);
+        blob.angleBoundingRect.size.height=atom_getfloatarg(j+4,argc,argv);
+        blob.angle=atom_getfloatarg(j+5,argc,argv);
+        blob.area=atom_getfloatarg(j+6,argc,argv);
+        
+        blob.nPts=atom_getfloatarg(j+15,argc,argv);
+        blob.length=atom_getfloatarg(j+16,argc,argv);
+    }
     
     m_inputBlobs.push_back(blob);
   }
@@ -443,7 +453,7 @@ void pix_opencv_trackKnn :: outputBlob(){
     
   } else {
     unsigned int blob_num=m_trackedBlobs.size();
-    unsigned int blobMatrixWidth=7;
+    unsigned int blobMatrixWidth=17;
     unsigned int blob_atom_size = 2+blob_num*blobMatrixWidth;
     
     t_atom* blob_atom = new t_atom[blob_atom_size];
@@ -455,10 +465,24 @@ void pix_opencv_trackKnn :: outputBlob(){
       SETFLOAT(&apt[0], m_trackedBlobs[i].id);
       SETFLOAT(&apt[1], m_trackedBlobs[i].centroid.x);
       SETFLOAT(&apt[2], m_trackedBlobs[i].centroid.y);
-      SETFLOAT(&apt[3], m_trackedBlobs[i].boundingRect.width);
-      SETFLOAT(&apt[4], m_trackedBlobs[i].boundingRect.height);
+      SETFLOAT(&apt[3], m_trackedBlobs[i].angleBoundingRect.size.width);
+      SETFLOAT(&apt[4], m_trackedBlobs[i].angleBoundingRect.size.height);
       SETFLOAT(&apt[5], 1); // state
       SETFLOAT(&apt[6], m_trackedBlobs[i].area); // area in pixels
+      
+      t_atom* apt2 = apt+7;
+      cv::Point2f corners[4];
+      m_trackedBlobs[i].angleBoundingRect.points(corners);
+            
+      // blob rot rect 4 corners
+      for (int j=0;j<4;j++) {
+        SETFLOAT(apt2, corners[j].x);
+        SETFLOAT(apt2+1, corners[j].y);
+        apt2+=2;
+      }
+
+      SETFLOAT(apt+15,  m_trackedBlobs[i].nPts); // number of points in segment
+      SETFLOAT(apt+16, (float) m_trackedBlobs[i].length); 
     }
     
     outlet_anything(m_dataout_right, gensym("cvblob"), blob_atom_size, blob_atom);
