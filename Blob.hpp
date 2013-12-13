@@ -30,7 +30,7 @@ public:
   float				downTime;
   float				lastTimeTimeWasChecked;
   cv::Rect      boundingRect;
-  cv::Rect      angleBoundingRect;
+  cv::RotatedRect      angleBoundingRect;
   cv::Point2f   centroid, lastCentroid, D;
   bool				simulated;
   bool                hole;
