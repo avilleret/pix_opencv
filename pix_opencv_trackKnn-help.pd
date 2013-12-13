@@ -1,4 +1,4 @@
-#N canvas 819 219 789 554 10;
+#N canvas 715 154 789 554 10;
 #X obj 483 42 cnv 15 300 500 empty empty empty 20 12 0 14 -228992 -66577
 0;
 #X obj 22 63 cnv 15 450 200 empty empty empty 20 12 0 14 -233017 -66577
@@ -45,7 +45,7 @@ output;
 #X obj 498 64 gemhead 1;
 #X obj 565 39 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#N canvas 1016 357 709 722 cvblob 1;
+#N canvas 1014 357 709 722 cvblob 0;
 #X obj 279 316 gemlist;
 #X obj 279 296 t b a;
 #X obj 291 50 gemhead 70;
@@ -160,7 +160,7 @@ the ids of tracked features.;
 #X obj 498 106 pix_film;
 #X obj 631 76 bng 25 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
 -1;
-#N canvas 1 90 450 300 open&loop 0;
+#N canvas 1 95 450 300 open&loop 0;
 #X obj -107 89 openpanel;
 #X msg -130 131 open \$1 \, auto 1;
 #X obj -131 89 t b;
@@ -184,7 +184,7 @@ technique. This help shows how to use it with a contour based tracker.
 ;
 #X text 41 346 Inlet 1: message: reset : clear the internal memory
 \, reset the counter;
-#N canvas 1 105 450 358 find_blobs 1;
+#N canvas 1 130 450 358 find_blobs 0;
 #X msg 182 191 epsilon \$1;
 #X floatatom 182 174 5 0 0 0 - - -, f 5;
 #X obj 223 132 loadbang;
@@ -231,6 +231,7 @@ technique. This help shows how to use it with a contour based tracker.
 #X connect 12 0 2 0;
 #X connect 13 0 12 0;
 #X restore 142 142 pd options;
+#X obj 244 74 inlet;
 #X connect 0 0 7 0;
 #X connect 1 0 0 0;
 #X connect 2 0 6 0;
@@ -246,6 +247,7 @@ technique. This help shows how to use it with a contour based tracker.
 #X connect 10 1 12 0;
 #X connect 11 0 8 0;
 #X connect 13 0 7 0;
+#X connect 14 0 8 2;
 #X restore 498 213 pd find_blobs;
 #X obj 498 458 pix_texture;
 #X obj 498 478 rectangle 5.333 4;
@@ -254,6 +256,7 @@ coordinates (8 floats)> <rotrect center position (2 floats)> <rotrect
 size (2 floats)> <angle in degrees> <number of points> <contour length>
 0 0 0 0;
 #X text 23 422 cvblob;
+#X floatatom 573 192 5 0 0 1 binarization_threshold - -, f 5;
 #X connect 11 0 12 0;
 #X connect 12 0 11 0;
 #X connect 18 0 27 0;
@@ -269,3 +272,4 @@ size (2 floats)> <angle in degrees> <number of points> <contour length>
 #X connect 33 0 32 0;
 #X connect 36 0 32 0;
 #X connect 37 0 38 0;
+#X connect 41 0 36 1;
