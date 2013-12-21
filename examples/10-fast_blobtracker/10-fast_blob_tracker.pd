@@ -1,17 +1,24 @@
-#N canvas 622 268 567 432 10;
+#N canvas 616 283 966 610 10;
 #X declare -path ../..;
-#X obj 144 114 pix_video;
-#X obj 144 94 gemhead;
+#X obj 106 90 cnv 15 100 25 empty empty 1 20 12 0 14 -4034 -66577 0
+;
+#X obj 106 132 cnv 15 280 60 empty empty 2 20 12 0 14 -4034 -66577
+0;
+#X obj 106 217 cnv 15 360 120 empty empty 3 20 12 0 14 -4034 -66577
+0;
+#X obj 106 390 cnv 15 210 60 empty empty 4 20 12 0 14 -4034 -66577
+0;
+#X obj 144 94 pix_video;
+#X obj 144 54 gemhead;
 #X obj 282 44 declare -path ../..;
-#X obj 144 181 pix_opencv_contours;
-#X obj 144 251 pix_opencv_trackKnn;
-#X obj 144 273 pix_texture;
+#X obj 144 284 pix_opencv_contours;
+#X obj 144 404 pix_opencv_trackKnn;
+#X obj 144 506 pix_texture;
 #X obj 39 59 gemwin;
 #X msg 39 17 create \, 1;
 #X msg 46 38 destroy;
-#X obj 144 295 rectangle 4 3;
-#X floatatom 227 93 5 0 0 0 - - -, f 5;
-#N canvas 624 293 709 722 cvblob 1;
+#X obj 144 528 rectangle 4 3;
+#N canvas 622 298 709 722 cvblob 0;
 #X obj 279 316 gemlist;
 #X obj 279 296 t b a;
 #X obj 291 50 gemhead 70;
@@ -113,29 +120,46 @@ of value per blob);
 #X connect 41 0 2 0;
 #X connect 42 0 12 1;
 #X connect 42 0 12 2;
-#X restore 309 297 pd cvblob;
-#X obj 144 136 pix_gray;
-#X msg 293 156 cvblobOutput 1;
-#X msg 51 156 area \$1;
-#X obj 144 157 pix_opencv_threshold;
-#X obj 255 202 route count;
-#X obj 261 134 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 128 256;
-#X obj 51 136 nbx 5 14 -1e+37 1e+37 0 1 empty empty empty 0 -8 0 10
--262144 -1 -1 100 256;
-#X connect 0 0 12 0;
-#X connect 1 0 0 0;
-#X connect 3 0 4 0;
-#X connect 3 2 16 0;
-#X connect 4 0 5 0;
-#X connect 4 2 11 0;
-#X connect 5 0 9 0;
-#X connect 7 0 6 0;
-#X connect 8 0 6 0;
-#X connect 12 0 15 0;
-#X connect 13 0 3 0;
-#X connect 14 0 3 0;
-#X connect 15 0 3 0;
-#X connect 16 1 4 0;
-#X connect 17 0 15 2;
-#X connect 18 0 14 0;
+#X restore 255 429 pd cvblob;
+#X obj 144 149 pix_gray;
+#X msg 160 252 area \$1;
+#X obj 144 170 pix_opencv_threshold;
+#X obj 255 305 route count;
+#X obj 261 147 nbx 5 14 -1e+37 1e+37 0 1 empty empty luminance_threshold
+0 -8 0 10 -262144 -1 -1 214 256;
+#X obj 160 232 nbx 5 14 -1e+37 1e+37 0 1 empty empty area_threshold
+0 -8 0 10 -262144 -1 -1 100 256;
+#X obj 253 229 loadbang;
+#X text 519 110 This example shows how to make a simple tracking algorithm.
+;
+#X text 534 134 1 First take a video source (here a video source like
+a webcam);
+#X text 534 164 2 process it to extract features of interessed \, here
+I use a very simple (and not so accurate) gray convertion and thresholding
+based on luminance. This is the binarisation stage.;
+#X msg 253 252 cvblobOutput 1 \, hierarchy_level 0;
+#X text 534 224 3 find blob contours. Select only blob greater than
+an area threshold. Also we only get the outer contour (not the inner
+holes) of the shape thanks to the [hierarchy_level 0( message.;
+#X text 534 284 4 the found blobs are send to [pix_opencv_trackKnn]
+to sort there id according to the Knn algorithm.;
+#X text 532 322 To complete this process we could add a Kalmann filter
+to forseen tracking data in case of hiding or somethign else.;
+#X text 515 522 Antoine Villeret - 2013;
+#X connect 4 0 15 0;
+#X connect 5 0 4 0;
+#X connect 7 0 8 0;
+#X connect 7 2 18 0;
+#X connect 8 0 9 0;
+#X connect 8 1 14 0;
+#X connect 9 0 13 0;
+#X connect 11 0 10 0;
+#X connect 12 0 10 0;
+#X connect 15 0 17 0;
+#X connect 16 0 7 0;
+#X connect 17 0 7 0;
+#X connect 18 1 8 0;
+#X connect 19 0 17 2;
+#X connect 20 0 16 0;
+#X connect 21 0 25 0;
+#X connect 25 0 7 0;
