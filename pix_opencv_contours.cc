@@ -495,7 +495,7 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
       {
         if (n >= vecxsize || n>=vecysize || n>=veczsize)
         {
-          error("array are not wide engouth");
+          error("array are not wide enough");
           break;
         }
         
