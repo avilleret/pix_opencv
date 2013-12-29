@@ -49,3 +49,10 @@ The include must contain the following :
   - puredata include (pd-extended) or src (vanilla) folder : path\to\pd\src or path\to\pd-extended\include
   - Gem include folder : path\to\Gem
   - OpenCV include path, wich is ususally $(OPENCV_DIR)\..\..\include if you setup OPENCV_DIR according to Windows quickstart guide on opencv.org.
+  
+5. to build pix_opencv_facetracker :
+  git submodules init
+  cd Facetrakcer
+  make 
+  cd ..
+  make facetracker

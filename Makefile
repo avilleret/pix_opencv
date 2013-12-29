@@ -6,7 +6,42 @@ LIBRARY_NAME = pix_opencv
 # add your .cc source files, one object per file, to the SOURCES
 # variable, help files will be included automatically, and for GUI
 # objects, the matching .tcl file too
-SOURCES = pix_opencv_edge.cc pix_opencv_laplace.cc pix_opencv_morphology.cc pix_opencv_distrans.cc pix_opencv_motempl.cc pix_opencv_haarcascade.cc pix_opencv_contours_boundingrect.cc pix_opencv_bgsubstract.cc pix_opencv_contours_convexity.cc pix_opencv_dft.cc pix_opencv_lk.cc pix_opencv_hist_compare.cc pix_opencv_knear.cc pix_opencv_threshold.cc pix_opencv_floodfill.cc pix_opencv_athreshold.cc pix_opencv_bgstats.cc pix_opencv_camshift.cc pix_opencv_hu_compare.cc pix_opencv_pgh_compare.cc pix_opencv_hough_circles.cc pix_opencv_hough_lines.cc pix_opencv_hu_moments.cc pix_opencv_contours_convexhull.cc pix_opencv_colorfilt.cc pix_opencv_of_bm.cc pix_opencv_of_hs.cc pix_opencv_of_lk.cc pix_opencv_calibration.cc pix_opencv_warpperspective.cc pix_opencv_findchessboardcorners.cc pix_opencv_blobtrack.cc pix_opencv_contours.cc pix_opencv_matchshape.cc pix_opencv_opticalflow.cc pix_opencv_trackKnn.cc
+SOURCES = pix_opencv_edge.cc \
+				  pix_opencv_laplace.cc \
+				  pix_opencv_morphology.cc \
+				  pix_opencv_distrans.cc \
+				  pix_opencv_motempl.cc \
+				  pix_opencv_haarcascade.cc \
+				  pix_opencv_contours_boundingrect.cc \
+				  pix_opencv_bgsubstract.cc \
+				  pix_opencv_contours_convexity.cc \
+				  pix_opencv_dft.cc \
+				  pix_opencv_lk.cc \
+				  pix_opencv_hist_compare.cc \
+				  pix_opencv_knear.cc \
+				  pix_opencv_threshold.cc \
+				  pix_opencv_floodfill.cc \
+				  pix_opencv_athreshold.cc \
+				  pix_opencv_bgstats.cc \
+				  pix_opencv_camshift.cc \
+				  pix_opencv_hu_compare.cc \
+				  pix_opencv_pgh_compare.cc \
+				  pix_opencv_hough_circles.cc \
+				  pix_opencv_hough_lines.cc \
+				  pix_opencv_hu_moments.cc \
+				  pix_opencv_contours_convexhull.cc \
+				  pix_opencv_colorfilt.cc \
+				  pix_opencv_of_bm.cc \
+				  pix_opencv_of_hs.cc \
+				  pix_opencv_of_lk.cc \
+				  pix_opencv_calibration.cc \
+				  pix_opencv_warpperspective.cc \
+				  pix_opencv_findchessboardcorners.cc \
+				  pix_opencv_blobtrack.cc \
+				  pix_opencv_contours.cc \
+				  pix_opencv_matchshape.cc \
+				  pix_opencv_opticalflow.cc
+				  #~pix_opencv_trackKnn.cc
 
 # list all pd objects (i.e. myobject.pd) files here, and their helpfiles will
 # be included automatically
@@ -35,12 +70,13 @@ UNITTESTS =
 #
 #------------------------------------------------------------------------------#
 
-ALL_CFLAGS = -I"$(PD_INCLUDE)"  `pkg-config --cflags opencv`
+ALL_CFLAGS = -I"$(PD_INCLUDE)"  `pkg-config --cflags opencv` -IFaceTracker/include/
 CFLAGS_linux = `pkg-config --cflags Gem` `pkg-config --cflags pd` 
 CFLAGS_macosx = -I$(PD_PATH)/include/Gem -I$(PD_PATH)/include
 ALL_LDFLAGS =  
 SHARED_LDFLAGS =
-ALL_LIBS = `pkg-config --libs opencv`
+FACETRACKER_LIBS += FaceTracker/src/lib/CLM.o  FaceTracker/src/lib/FCheck.o  FaceTracker/src/lib/FDet.o  FaceTracker/src/lib/IO.o  FaceTracker/src/lib/Patch.o  FaceTracker/src/lib/PAW.o  FaceTracker/src/lib/PDM.o  FaceTracker/src/lib/Tracker.o
+ALL_LIBS += `pkg-config --libs opencv`
 
 #------------------------------------------------------------------------------#
 #
@@ -276,7 +312,16 @@ SHARED_TCL_LIB = $(wildcard lib$(LIBRARY_NAME).tcl)
 
 .PHONY = install libdir_install single_install install-doc install-examples install-manual install-unittests clean distclean dist etags $(LIBRARY_NAME)
 
-all: $(SOURCES:.cc=.$(EXTENSION)) $(SHARED_LIB)
+all: facetracker $(SOURCES:.cc=.$(EXTENSION)) $(SHARED_LIB)
+
+facetracker: pix_opencv_facetracker.$(EXTENSION)
+
+pix_opencv_facetracker.$(EXTENSION): pix_opencv_facetracker.o
+	$(CC) $(ALL_LDFLAGS) -o "pix_opencv_facetracker.$(EXTENSION)" "pix_opencv_facetracker.o" $(FACETRACKER_LIBS) $(ALL_LIBS) $(SHARED_LIB)
+	chmod a-x "pix_opencv_facetracker.$(EXTENSION)"
+	
+pix_opencv_facetracker.o: pix_opencv_facetracker.cc
+	$(CXX) $(ALL_CFLAGS) -o pix_opencv_facetracker.o -c pix_opencv_facetracker.cc
 
 %.o: %.cc
 	$(CXX) $(ALL_CFLAGS) -o "$*.o" -c "$*.cc"
@@ -359,6 +404,10 @@ clean:
 	-rm -f -- $(LIBRARY_NAME).o
 	-rm -f -- $(LIBRARY_NAME).$(EXTENSION)
 	-rm -f -- $(SHARED_LIB)
+
+clean_facetracker:
+	-rm -f pix_opencv_facetracker.o
+	-rm -f pix_opencv_facetracker.$(EXTENSION)
 
 distclean: clean
 	-rm -f -- $(DISTBINDIR).tar.gz
