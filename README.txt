@@ -52,7 +52,7 @@ The include must contain the following :
   
 5. to build pix_opencv_facetracker :
   git submodules init
-  cd Facetrakcer
+  cd FaceTrakcer
   make 
   cd ..
   make facetracker
