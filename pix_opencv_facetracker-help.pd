@@ -1,4 +1,4 @@
-#N canvas 966 219 785 758 10;
+#N canvas 962 229 785 758 10;
 #X obj 473 46 cnv 15 300 500 empty empty empty 20 12 0 14 -228992 -66577
 0;
 #X obj 12 67 cnv 15 450 200 empty empty empty 20 12 0 14 -233017 -66577
@@ -61,15 +61,15 @@ by Jason Saragih and Kyle Macdonald to track face features.;
 #X floatatom 604 173 5 0 0 0 - - -, f 5;
 #X floatatom 688 173 5 0 0 0 - - -, f 5;
 #X msg 688 190 clamp \$1;
-#X msg 657 144 filter \$1;
-#X floatatom 657 127 5 0 0 0 - - -, f 5;
+#X msg 576 142 filter \$1;
+#X floatatom 576 125 5 0 0 0 - - -, f 5;
 #X text 31 443 Inlet 1: message filter : Maximum number of optimization
 steps to perform. default 5;
 #X text 31 413 Inlet 1: message clamp : shape model parameters clamping
 factor (in standard dev's). default 3;
 #X text 31 385 Inlet 1: message tolerance : convergence tolerance of
 optimization. default 0.01;
-#N canvas 1383 532 410 415 draw_contour_gemvertexbuffer 1;
+#N canvas 1379 542 410 415 draw_contour_gemvertexbuffer 1;
 #N canvas 1 90 548 451 mouse 0;
 #X obj 25 145 translateXYZ -0.5 -0.5 0;
 #X obj 25 122 scaleXYZ 10.6666 -8 1;
@@ -302,7 +302,7 @@ partial_draw 0 4;
 #X connect 10 0 6 0;
 #X connect 11 0 6 0;
 #X restore 38 198 pd nose_bridge;
-#N canvas 1 95 548 451 inner_mouse 1;
+#N canvas 984 207 548 451 inner_mouse 1;
 #X obj 25 145 translateXYZ -0.5 -0.5 0;
 #X obj 25 122 scaleXYZ 10.6666 -8 1;
 #X obj 25 97 alpha 0;
@@ -314,9 +314,9 @@ partial_draw 0 4;
 #X obj 221 182 route gem_state;
 #X obj 25 167 t a b b;
 #X obj 25 375 gemvertexbuffer 200;
-#X msg 81 253 draw lineloop \, colorG colorR \, colorA colorA \, partial_draw
-0 12;
 #X msg 45 191 position INNER_MOUTH;
+#X msg 81 253 draw lineloop \, colorG colorR \, colorA colorA \, partial_draw
+0 8;
 #X connect 0 0 8 0;
 #X connect 1 0 0 0;
 #X connect 2 0 1 0;
@@ -324,16 +324,16 @@ partial_draw 0 4;
 #X connect 3 0 7 0;
 #X connect 4 0 3 0;
 #X connect 5 0 6 0;
-#X connect 6 0 10 0;
+#X connect 6 0 11 0;
 #X connect 7 0 5 0;
 #X connect 8 0 9 0;
-#X connect 8 1 11 0;
+#X connect 8 1 10 0;
 #X connect 10 0 9 0;
 #X connect 11 0 9 0;
 #X restore 38 48 pd inner_mouse;
 #X restore 490 366 pd draw_contour_gemvertexbuffer;
 #X obj 488 313 rectangle 5.3333 4;
-#N canvas 1 200 450 300 settab 1;
+#N canvas 1 205 450 300 settab 0;
 #X obj 60 76 loadbang;
 #X obj 60 224 outlet;
 #X msg 73 178 settab OUTER_MOUTH MOUTH;
@@ -346,7 +346,7 @@ NOSE_BRIDGE \, settab NOSE_BASE NOSE_BASE \, settab INNER_MOUTH INNER_MOUTH
 #X connect 2 0 1 0;
 #X connect 3 0 1 0;
 #X restore 501 150 pd settab;
-#N canvas 120 696 450 349 fill_tables 1;
+#N canvas 118 701 450 349 fill_tables 0;
 #X obj 196 84 until;
 #X obj 196 106 f;
 #X obj 221 106 + 1;
@@ -389,6 +389,10 @@ NOSE_BRIDGE \, settab NOSE_BASE NOSE_BASE \, settab INNER_MOUTH INNER_MOUTH
 #X connect 11 0 0 0;
 #X restore 490 386 pd fill_tables;
 #X obj 488 219 pix_opencv_facetracker;
+#X text 27 137 supported features : LEFT_EYEBROW \, RIGHT_EYEBROW \,
+LEFT_EYE \, RIGHT_EYE \, LEFT_JAW \, RIGHT_JAW \, JAW \, OUTER_MOUTH
+\, INNER_MOUTH \, NOSE_BRIDGE \, NOSE_BASE \, FACE_OUTLINE \, ALL_FEATURES
+;
 #X connect 11 0 12 0;
 #X connect 12 0 11 0;
 #X connect 17 0 20 0;
