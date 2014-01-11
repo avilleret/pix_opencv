@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\win7\pd\externals\Gem\src;C:\Users\win7\pd\pd-vanilla\src;C:\Users\win7\Bibliothèques\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\win7\Bibliothèques\opencv\build\x86\vc10\lib;C:\Users\win7\pd\pd-vanilla\bin;C:\Users\win7\pd\externals\Gem;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\win7\pd\externals\Gem\src;C:\Users\win7\pd\pd-vanilla\src;C:\Users\win7\Bibliothèques\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\win7\Bibliothèques\opencv\build\x86\vc10\lib;C:\Users\win7\pd\pd-vanilla\bin;C:\Users\win7\pd\externals\Gem;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;PIX_OPENCV_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;PIX_OPENCV_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\pix_opencv_bgstats.cc" />
+    <ClCompile Include="..\..\pix_opencv_bgsubstract.cc" />
+    <ClCompile Include="..\..\pix_opencv_blobtrack.cc" />
+    <ClCompile Include="..\..\pix_opencv_camshift.cc" />
+    <ClCompile Include="..\..\pix_opencv_colorfilt.cc" />
+    <ClCompile Include="..\..\pix_opencv_contours_boundingrect.cc" />
+    <ClCompile Include="..\..\pix_opencv_contours_convexhull.cc" />
+    <ClCompile Include="..\..\pix_opencv_contours_convexity.cc" />
+    <ClCompile Include="..\..\pix_opencv_dft.cc" />
+    <ClCompile Include="..\..\pix_opencv_distrans.cc" />
+    <ClCompile Include="..\..\pix_opencv_edge.cc" />
+    <ClCompile Include="..\..\pix_opencv_findchessboardcorners.cc" />
+    <ClCompile Include="..\..\pix_opencv_floodfill.cc" />
+    <ClCompile Include="..\..\pix_opencv_haarcascade.cc" />
+    <ClCompile Include="..\..\pix_opencv_hist_compare.cc" />
+    <ClCompile Include="..\..\pix_opencv_hough_circles.cc" />
+    <ClCompile Include="..\..\pix_opencv_hough_lines.cc" />
+    <ClCompile Include="..\..\pix_opencv_hu_compare.cc" />
+    <ClCompile Include="..\..\pix_opencv_hu_moments.cc" />
+    <ClCompile Include="..\..\pix_opencv_knear.cc" />
+    <ClCompile Include="..\..\pix_opencv_laplace.cc" />
+    <ClCompile Include="..\..\pix_opencv_lk.cc" />
+    <ClCompile Include="..\..\pix_opencv_matchshape.cc" />
+    <ClCompile Include="..\..\pix_opencv_morphology.cc" />
+    <ClCompile Include="..\..\pix_opencv_motempl.cc" />
+    <ClCompile Include="..\..\pix_opencv_of_bm.cc" />
+    <ClCompile Include="..\..\pix_opencv_of_hs.cc" />
+    <ClCompile Include="..\..\pix_opencv_of_lk.cc" />
+    <ClCompile Include="..\..\pix_opencv_pgh_compare.cc" />
+    <ClCompile Include="..\..\pix_opencv_threshold.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\blobtrack.h" />
+    <ClInclude Include="..\..\pix_opencv_bgstats.h" />
+    <ClInclude Include="..\..\pix_opencv_bgsubstract.h" />
+    <ClInclude Include="..\..\pix_opencv_blobtrack.h" />
+    <ClInclude Include="..\..\pix_opencv_camshift.h" />
+    <ClInclude Include="..\..\pix_opencv_colorfilt.h" />
+    <ClInclude Include="..\..\pix_opencv_contours_boundingrect.h" />
+    <ClInclude Include="..\..\pix_opencv_contours_convexhull.h" />
+    <ClInclude Include="..\..\pix_opencv_contours_convexity.h" />
+    <ClInclude Include="..\..\pix_opencv_dft.h" />
+    <ClInclude Include="..\..\pix_opencv_distrans.h" />
+    <ClInclude Include="..\..\pix_opencv_edge.h" />
+    <ClInclude Include="..\..\pix_opencv_findchessboardcorners.h" />
+    <ClInclude Include="..\..\pix_opencv_floodfill.h" />
+    <ClInclude Include="..\..\pix_opencv_haarcascade.h" />
+    <ClInclude Include="..\..\pix_opencv_hist_compare.h" />
+    <ClInclude Include="..\..\pix_opencv_hough_circles.h" />
+    <ClInclude Include="..\..\pix_opencv_hough_lines.h" />
+    <ClInclude Include="..\..\pix_opencv_hu_compare.h" />
+    <ClInclude Include="..\..\pix_opencv_hu_moments.h" />
+    <ClInclude Include="..\..\pix_opencv_knear.h" />
+    <ClInclude Include="..\..\pix_opencv_laplace.h" />
+    <ClInclude Include="..\..\pix_opencv_lk.h" />
+    <ClInclude Include="..\..\pix_opencv_matchshape.h" />
+    <ClInclude Include="..\..\pix_opencv_morphology.h" />
+    <ClInclude Include="..\..\pix_opencv_motempl.h" />
+    <ClInclude Include="..\..\pix_opencv_of_bm.h" />
+    <ClInclude Include="..\..\pix_opencv_of_hs.h" />
+    <ClInclude Include="..\..\pix_opencv_of_lk.h" />
+    <ClInclude Include="..\..\pix_opencv_pgh_compare.h" />
+    <ClInclude Include="..\..\pix_opencv_threshold.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
