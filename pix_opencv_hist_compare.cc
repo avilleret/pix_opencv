@@ -194,8 +194,8 @@ void pix_opencv_hist_compare :: processRGBAImage(imageStruct &image)
   cvCalcHist( planes, hist, 0, 0 ); //Compute histogram
   cvNormalizeHist( hist, 1.0 );  //Normalize it
 
-  double tato[nbsaved];
-  t_atom datalist[nbsaved];
+  double* tato = new double[nbsaved];
+  t_atom* datalist = new t_atom[nbsaved];
   int nearest = -1;
   double max  =  0;
 
@@ -238,6 +238,9 @@ void pix_opencv_hist_compare :: processRGBAImage(imageStruct &image)
   }
 
   memcpy( image.data, rgba->imageData, image.xsize*image.ysize*4 );
+
+  if ( tato ) delete[] tato; tato=NULL;
+  if ( datalist ) delete[] datalist; datalist=NULL;
 
 }
 
@@ -326,8 +329,8 @@ void pix_opencv_hist_compare :: processRGBImage(imageStruct &image)
    cvCalcHist( planes, hist, 0, 0 ); //Compute histogram
    cvNormalizeHist( hist, 1.0 );  //Normalize it
 
-   double tato[nbsaved];
-   t_atom datalist[nbsaved];
+   double* tato = new double[nbsaved];
+   t_atom* datalist = new t_atom[nbsaved];
    int nearest = -1;
    double max  =  0;
 
@@ -370,7 +373,9 @@ void pix_opencv_hist_compare :: processRGBImage(imageStruct &image)
    }
 
    memcpy( image.data, rgb->imageData, image.xsize*image.ysize*3 );
-
+ 
+   if ( tato ) delete[] tato; tato=NULL;
+   if ( datalist ) delete[] datalist; datalist=NULL;
 }
 
 void pix_opencv_hist_compare :: processYUVImage(imageStruct &image)
@@ -464,8 +469,8 @@ void pix_opencv_hist_compare :: processGrayImage(imageStruct &image)
    cvCalcHist( planes, hist, 0, 0 ); //Compute histogram
    cvNormalizeHist( hist, 1.0 );  //Normalize it
 
-   double tato[nbsaved];
-   t_atom datalist[nbsaved];
+   double* tato = new double[nbsaved];
+   t_atom* datalist = new t_atom[nbsaved];
    int nearest = -1;
    double max  =  0;
 
@@ -509,6 +514,8 @@ void pix_opencv_hist_compare :: processGrayImage(imageStruct &image)
 
    memcpy( image.data, grey->imageData, image.xsize*image.ysize );
 
+  if ( tato ) delete[] tato; tato=NULL;
+  if ( datalist ) delete[] datalist; datalist=NULL;
 }
 
 /////////////////////////////////////////////////////////
