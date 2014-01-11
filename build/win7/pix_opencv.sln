@@ -73,6 +73,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pix_opencv_opticalflow", "p
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pix_opencv_surf", "pix_opencv_surf.vcxproj", "{1E0CBCC4-D022-4BC0-8423-716242162407}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pix_opencv_trackKnn", "pix_opencv_trackKnn.vcxproj", "{4D239CE6-3D67-411C-8A33-2BFC431E7A28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -221,6 +223,10 @@ Global
 		{786EF2B8-3B58-4943-822F-577AB9A1F9D7}.Release|Win32.Build.0 = Release|Win32
 		{1E0CBCC4-D022-4BC0-8423-716242162407}.Debug|Win32.ActiveCfg = Debug|Win32
 		{1E0CBCC4-D022-4BC0-8423-716242162407}.Release|Win32.ActiveCfg = Release|Win32
+		{4D239CE6-3D67-411C-8A33-2BFC431E7A28}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4D239CE6-3D67-411C-8A33-2BFC431E7A28}.Debug|Win32.Build.0 = Debug|Win32
+		{4D239CE6-3D67-411C-8A33-2BFC431E7A28}.Release|Win32.ActiveCfg = Release|Win32
+		{4D239CE6-3D67-411C-8A33-2BFC431E7A28}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
