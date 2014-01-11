@@ -153,7 +153,7 @@ void pix_opencv_haarcascade :: processRGBAImage(imageStruct &image)
             for ( im=0; im<MAX_MARKERS; im++ )
             {
               // check if the object is already known
-              if ( sqrt( pow(center.x - this->x_xmark[im], 2 ) + pow(center.y - this->x_ymark[im], 2 ) ) <= radius )
+              if ( sqrt( pow((double)center.x - this->x_xmark[im], 2 ) + pow((double)center.y - this->x_ymark[im], 2 ) ) <= radius )
               {
                  oi=im;
                  found=1;
@@ -268,7 +268,7 @@ void pix_opencv_haarcascade :: processRGBImage(imageStruct &image)
             for ( im=0; im<MAX_MARKERS; im++ )
             {
               // check if the object is already known
-              if ( sqrt( pow(center.x - this->x_xmark[im], 2 ) + pow(center.y - this->x_ymark[im], 2 ) ) <= radius )
+              if ( sqrt( pow((double)center.x - this->x_xmark[im], 2 ) + pow((double)center.y - this->x_ymark[im], 2 ) ) <= radius )
               {
                  oi=im;
                  found=1;
