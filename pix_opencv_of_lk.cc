@@ -137,7 +137,7 @@ void pix_opencv_of_lk :: processRGBAImage(imageStruct &image)
         dest.x = (int)(orig.x + cvGet2D(x_velx, py, px).val[0]);
         dest.y = (int)(orig.y + cvGet2D(x_vely, py, px).val[0]);
         angle = -atan2( (double) (dest.y-orig.y), (double) (dest.x-orig.x) );
-        hypotenuse = sqrt( pow(dest.y-orig.y, 2) + pow(dest.x-orig.x, 2) );
+        hypotenuse = sqrt( pow((double)dest.y-orig.y, 2) + pow((double)dest.x-orig.x, 2) );
 
         /* Now draw the tips of the arrow. I do some scaling so that the
         * tips look proportional to the main line of the arrow.
@@ -263,7 +263,7 @@ void pix_opencv_of_lk :: processRGBImage(imageStruct &image)
         dest.x = (int)(orig.x + cvGet2D(x_velx, py, px).val[0]);
         dest.y = (int)(orig.y + cvGet2D(x_vely, py, px).val[0]);
         angle = -atan2( (double) (dest.y-orig.y), (double) (dest.x-orig.x) );
-        hypotenuse = sqrt( pow(dest.y-orig.y, 2) + pow(dest.x-orig.x, 2) );
+        hypotenuse = sqrt( pow((double)dest.y-orig.y, 2) + pow((double)dest.x-orig.x, 2) );
 
         /* Now draw the tips of the arrow. I do some scaling so that the
         * tips look proportional to the main line of the arrow.
@@ -389,7 +389,7 @@ void pix_opencv_of_lk :: processGrayImage(imageStruct &image)
         dest.x = (int)(orig.x + cvGet2D(x_velx, py, px).val[0]);
         dest.y = (int)(orig.y + cvGet2D(x_vely, py, px).val[0]);
         angle = -atan2( (double) (dest.y-orig.y), (double) (dest.x-orig.x) );
-        hypotenuse = sqrt( pow(dest.y-orig.y, 2) + pow(dest.x-orig.x, 2) );
+        hypotenuse = sqrt( pow((double)dest.y-orig.y, 2) + pow((double)dest.x-orig.x, 2) );
 
         /* Now draw the tips of the arrow. I do some scaling so that the
         * tips look proportional to the main line of the arrow.
