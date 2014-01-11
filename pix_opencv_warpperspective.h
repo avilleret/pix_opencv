@@ -37,7 +37,7 @@ KEYWORDS
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-class GEM_EXTERN pix_opencv_warpperspective : public GemPixObj
+class GEM_EXPORT pix_opencv_warpperspective : public GemPixObj
 {
     CPPEXTERN_HEADER(pix_opencv_warpperspective, GemPixObj)
 

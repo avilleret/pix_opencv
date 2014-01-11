@@ -39,7 +39,7 @@ DESCRIPTION
    
 -----------------------------------------------------------------*/
 
-class GEM_EXTERN pix_opencv_hist_compare : public GemPixObj
+class GEM_EXPORT pix_opencv_hist_compare : public GemPixObj
 {
     CPPEXTERN_HEADER(pix_opencv_hist_compare, GemPixObj)
 

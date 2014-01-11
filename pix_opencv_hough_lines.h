@@ -38,7 +38,7 @@ DESCRIPTION
    
 -----------------------------------------------------------------*/
 
-class GEM_EXTERN pix_opencv_hough_lines : public GemPixObj
+class GEM_EXPORT pix_opencv_hough_lines : public GemPixObj
 {
     CPPEXTERN_HEADER(pix_opencv_hough_lines, GemPixObj)
 

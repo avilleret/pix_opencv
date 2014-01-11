@@ -36,7 +36,7 @@ KEYWORDS
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-class GEM_EXTERN pix_opencv_contours_convexhull : public GemPixObj
+class GEM_EXPORT pix_opencv_contours_convexhull : public GemPixObj
 {
     CPPEXTERN_HEADER(pix_opencv_contours_convexhull, GemPixObj)
 

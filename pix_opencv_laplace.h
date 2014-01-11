@@ -36,7 +36,7 @@ KEYWORDS
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-class GEM_EXTERN pix_opencv_laplace : public GemPixObj
+class GEM_EXPORT pix_opencv_laplace : public GemPixObj
 {
     CPPEXTERN_HEADER(pix_opencv_laplace, GemPixObj)
 

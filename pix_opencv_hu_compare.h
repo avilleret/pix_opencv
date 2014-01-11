@@ -31,7 +31,7 @@ CLASS
 
 -----------------------------------------------------------------*/
 
-class GEM_EXTERN pix_opencv_hu_compare : public GemPixDualObj
+class GEM_EXPORT pix_opencv_hu_compare : public GemPixDualObj
 {
     CPPEXTERN_HEADER(pix_opencv_hu_compare, GemPixDualObj)
 

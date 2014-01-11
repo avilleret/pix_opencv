@@ -34,7 +34,7 @@ KEYWORDS
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-class GEM_EXTERN pix_opencv_threshold : public GemPixObj
+class GEM_EXPORT pix_opencv_threshold : public GemPixObj
 {
     CPPEXTERN_HEADER(pix_opencv_threshold, GemPixObj)
 

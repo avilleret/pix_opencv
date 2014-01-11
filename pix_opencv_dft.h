@@ -35,7 +35,7 @@ KEYWORDS
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-class GEM_EXTERN pix_opencv_dft : public GemPixObj
+class GEM_EXPORT pix_opencv_dft : public GemPixObj
 {
     CPPEXTERN_HEADER(pix_opencv_dft, GemPixObj)
 

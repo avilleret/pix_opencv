@@ -35,7 +35,7 @@ KEYWORDS
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-class GEM_EXTERN pix_opencv_bgsubstract : public GemPixObj
+class GEM_EXPORT pix_opencv_bgsubstract : public GemPixObj
 {
     CPPEXTERN_HEADER(pix_opencv_bgsubstract, GemPixObj)
 

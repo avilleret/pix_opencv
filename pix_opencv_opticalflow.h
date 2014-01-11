@@ -58,7 +58,7 @@ DESCRIPTION
 static cv::Vec3b computeColor(float fx, float fy);
 inline bool isFlowCorrect(cv::Point2f u);
 
-class GEM_EXTERN pix_opencv_opticalflow : public GemPixObj
+class GEM_EXPORT pix_opencv_opticalflow : public GemPixObj
 {
   CPPEXTERN_HEADER(pix_opencv_opticalflow, GemPixObj)
 

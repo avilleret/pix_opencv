@@ -35,7 +35,7 @@ KEYWORDS
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-class GEM_EXTERN pix_opencv_morphology : public GemPixObj
+class GEM_EXPORT pix_opencv_morphology : public GemPixObj
 {
     CPPEXTERN_HEADER(pix_opencv_morphology, GemPixObj)
 
