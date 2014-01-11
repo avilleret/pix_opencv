@@ -176,7 +176,7 @@ void pix_opencv_contours_convexhull :: processRGBAImage(imageStruct &image)
         //cvDrawContours( rgb, contours, CV_RGB(255,0,0), CV_RGB(0,255,0), 2, 2, CV_AA, cvPoint(0,0)  );
 	outlet_float( m_nomdef, hullsize );
         
-    	t_atom rlist[hullsize*2];
+  	t_atom* rlist  = new t_atom[hullsize*2];
 	
 	int j=0;
         // Draw convex hull for current contour.        
@@ -204,6 +204,9 @@ void pix_opencv_contours_convexhull :: processRGBAImage(imageStruct &image)
 	SETFLOAT(&rlist[j], PointArray[hull[i]].x);
         SETFLOAT(&rlist[j+1], PointArray[hull[i]].y);
     	outlet_list( m_dataout, 0, hullsize*2, rlist );
+
+		if (rlist) delete rlist;
+		rlist = NULL;
         
           
         // Free memory.          
@@ -340,7 +343,7 @@ void pix_opencv_contours_convexhull :: processRGBImage(imageStruct &image)
         //cvDrawContours( rgb, contours, CV_RGB(255,0,0), CV_RGB(0,255,0), 2, 2, CV_AA, cvPoint(0,0)  );
 	outlet_float( m_nomdef, hullsize );
         
-    	t_atom rlist[hullsize*2];
+    	t_atom* rlist = new t_atom[hullsize*2];
 	
 	int j=0;
         // Draw convex hull for current contour.        
@@ -348,16 +351,19 @@ void pix_opencv_contours_convexhull :: processRGBImage(imageStruct &image)
         {
             cvLine(rgb, PointArray[hull[i]], 
                             PointArray[hull[i+1]],CV_RGB(0,0,255),1, CV_AA, 0 );
-	    SETFLOAT(&rlist[j], PointArray[hull[i]].x);
-            SETFLOAT(&rlist[j+1], PointArray[hull[i]].y);
+	    SETFLOAT(rlist+j, PointArray[hull[i]].x);
+            SETFLOAT(rlist+j+1, PointArray[hull[i]].y);
 	    j = j + 2;
         }
         cvLine(rgb, PointArray[hull[hullsize-1]],
                              PointArray[hull[0]],CV_RGB(0,0,255),1, CV_AA, 0 );
             
-	SETFLOAT(&rlist[j], PointArray[hull[i]].x);
-        SETFLOAT(&rlist[j+1], PointArray[hull[i]].y);
+	SETFLOAT(rlist+j, PointArray[hull[i]].x);
+        SETFLOAT(rlist+j+1, PointArray[hull[i]].y);
     	outlet_list( m_dataout, 0, hullsize*2, rlist );
+
+	if (rlist) delete rlist;
+    rlist = NULL;
         
           
         // Free memory.          
@@ -377,6 +383,8 @@ void pix_opencv_contours_convexhull :: processRGBImage(imageStruct &image)
 
     //cvShowImage(wndname, cedge);
     memcpy( image.data, rgb->imageData, image.xsize*image.ysize*3 );
+
+
 }
 
 void pix_opencv_contours_convexhull :: processYUVImage(imageStruct &image)
@@ -497,7 +505,7 @@ void pix_opencv_contours_convexhull :: processGrayImage(imageStruct &image)
     	    
 	outlet_float( m_nomdef, hullsize );
     	
-	t_atom rlist[hullsize*2];
+	t_atom* rlist = new t_atom[hullsize*2];
 	
 	int j=0;
         // Draw convex hull for current contour.        
@@ -505,16 +513,18 @@ void pix_opencv_contours_convexhull :: processGrayImage(imageStruct &image)
         {
             cvLine(rgb, PointArray[hull[i]], 
                             PointArray[hull[i+1]],CV_RGB(0,0,255),1, CV_AA, 0 );
-	    SETFLOAT(&rlist[j], PointArray[hull[i]].x);
-            SETFLOAT(&rlist[j+1], PointArray[hull[i]].y);
+	    SETFLOAT(rlist+j, PointArray[hull[i]].x);
+            SETFLOAT(rlist+j+1, PointArray[hull[i]].y);
 	    j = j + 2;
         }
         cvLine(rgb, PointArray[hull[hullsize-1]],
                              PointArray[hull[0]],CV_RGB(0,0,255),1, CV_AA, 0 );
             
-	SETFLOAT(&rlist[j], PointArray[hull[i]].x);
-        SETFLOAT(&rlist[j+1], PointArray[hull[i]].y);
+	SETFLOAT(rlist+j, PointArray[hull[i]].x);
+        SETFLOAT(rlist+j+1, PointArray[hull[i]].y);
     	outlet_list( m_dataout, 0, hullsize*2, rlist );
+		if(rlist) delete[] rlist;
+		rlist=NULL;
         
           
         // Free memory.          
