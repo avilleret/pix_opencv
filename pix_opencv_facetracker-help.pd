@@ -1,4 +1,4 @@
-#N canvas 962 229 785 758 10;
+#N canvas 950 259 785 758 10;
 #X obj 473 46 cnv 15 300 500 empty empty empty 20 12 0 14 -228992 -66577
 0;
 #X obj 12 67 cnv 15 450 200 empty empty empty 20 12 0 14 -233017 -66577
@@ -15,7 +15,7 @@
 #X text 67 287 none;
 #X obj 354 536 cnv 15 100 60 empty empty empty 20 12 0 14 -195568 -66577
 0;
-#N canvas 1 142 450 300 gemwin 0;
+#N canvas 1 162 450 300 gemwin 0;
 #X obj 132 156 gemwin;
 #X obj 67 89 outlet;
 #X obj 67 10 inlet;
@@ -23,8 +23,8 @@
 #X msg 67 70 set destroy;
 #X msg 142 68 set create;
 #X msg 198 112 destroy;
-#X msg 132 132 reset \, dimen 640 480 \, pos 10 640 \, create \, 1
-;
+#X msg 132 132 reset \, dimen 640 480 \, offset 10 640 \, create \,
+1;
 #X connect 2 0 3 0;
 #X connect 3 0 4 0;
 #X connect 3 0 7 0;
@@ -35,7 +35,7 @@
 #X connect 6 0 0 0;
 #X connect 7 0 0 0;
 #X restore 359 575 pd gemwin;
-#X msg 359 556 destroy;
+#X msg 359 556 create;
 #X text 355 535 Create window:;
 #X text 26 508 Outlet 1: gemlist output;
 #X text 17 730 bug \, feedback \, comment... on the pd-list;
@@ -69,8 +69,8 @@ steps to perform. default 5;
 factor (in standard dev's). default 3;
 #X text 31 385 Inlet 1: message tolerance : convergence tolerance of
 optimization. default 0.01;
-#N canvas 1379 542 410 415 draw_contour_gemvertexbuffer 1;
-#N canvas 1 90 548 451 mouse 0;
+#N canvas 1373 557 410 415 draw_contour_gemvertexbuffer 0;
+#N canvas 1 100 548 451 mouse 0;
 #X obj 25 145 translateXYZ -0.5 -0.5 0;
 #X obj 25 122 scaleXYZ 10.6666 -8 1;
 #X obj 25 97 alpha 0;
@@ -83,7 +83,7 @@ optimization. default 0.01;
 #X msg 44 191 position MOUTH;
 #X obj 25 167 t a b b;
 #X obj 25 375 gemvertexbuffer 200;
-#X msg 81 253 draw lineloop \, colorG colorR \, colorA colorA \, partial_draw
+#X msg 81 253 draw lineloop \, colorG colorR \, colorA colorA \, draw_range
 0 12;
 #X connect 0 0 9 0;
 #X connect 1 0 0 0;
@@ -99,7 +99,7 @@ optimization. default 0.01;
 #X connect 9 1 8 0;
 #X connect 11 0 10 0;
 #X restore 38 28 pd mouse;
-#N canvas 1 90 631 351 jaw 0;
+#N canvas 1 95 631 351 jaw 0;
 #X obj 128 124 translateXYZ -0.5 -0.5 0;
 #X obj 128 101 scaleXYZ 10.6666 -8 1;
 #X obj 128 76 alpha 0;
@@ -109,26 +109,26 @@ optimization. default 0.01;
 1;
 #X msg 156 170 position JAW;
 #X obj 128 304 gemvertexbuffer 200;
-#X msg 168 252 draw linestrip \, colorG colorR \, colorA colorA \,
-partial_draw 0 17;
 #X obj 264 182 route float;
 #X obj 264 204 sel 1;
 #X obj 264 161 route gem_state;
+#X msg 168 252 draw linestrip \, colorG colorR \, colorA colorA \,
+draw_range 0 17;
 #X connect 0 0 4 0;
 #X connect 1 0 0 0;
 #X connect 2 0 1 0;
 #X connect 3 0 2 0;
-#X connect 3 0 11 0;
+#X connect 3 0 10 0;
 #X connect 4 0 7 0;
 #X connect 4 1 6 0;
 #X connect 5 0 3 0;
 #X connect 6 0 7 0;
-#X connect 8 0 7 0;
-#X connect 9 0 10 0;
+#X connect 8 0 9 0;
+#X connect 9 0 11 0;
 #X connect 10 0 8 0;
-#X connect 11 0 9 0;
+#X connect 11 0 7 0;
 #X restore 38 78 pd jaw;
-#N canvas 1 105 631 351 left_eye 0;
+#N canvas 1 110 631 351 left_eye 0;
 #X obj 128 124 translateXYZ -0.5 -0.5 0;
 #X obj 128 101 scaleXYZ 10.6666 -8 1;
 #X obj 128 76 alpha 0;
@@ -141,7 +141,7 @@ partial_draw 0 17;
 #X obj 280 204 sel 1;
 #X obj 280 161 route gem_state;
 #X msg 156 170 position LEFT_EYE;
-#X msg 168 252 draw lineloop \, colorG colorR \, colorA colorA \, partial_draw
+#X msg 168 252 draw lineloop \, colorG colorR \, colorA colorA \, draw_range
 0 6;
 #X connect 0 0 4 0;
 #X connect 1 0 0 0;
@@ -157,7 +157,7 @@ partial_draw 0 17;
 #X connect 10 0 6 0;
 #X connect 11 0 6 0;
 #X restore 38 98 pd left_eye;
-#N canvas 1 110 631 351 right_eye 0;
+#N canvas 1 115 631 351 right_eye 0;
 #X obj 128 124 translateXYZ -0.5 -0.5 0;
 #X obj 128 101 scaleXYZ 10.6666 -8 1;
 #X obj 128 76 alpha 0;
@@ -169,24 +169,24 @@ partial_draw 0 17;
 #X obj 280 182 route float;
 #X obj 280 204 sel 1;
 #X obj 280 161 route gem_state;
-#X msg 168 252 draw lineloop \, colorG colorR \, colorA colorA \, partial_draw
-0 6;
 #X msg 156 170 position RIGHT_EYE;
+#X msg 168 252 draw lineloop \, colorG colorR \, colorA colorA \, draw_range
+0 6;
 #X connect 0 0 4 0;
 #X connect 1 0 0 0;
 #X connect 2 0 1 0;
 #X connect 3 0 2 0;
 #X connect 3 0 9 0;
 #X connect 4 0 6 0;
-#X connect 4 1 11 0;
+#X connect 4 1 10 0;
 #X connect 5 0 3 0;
 #X connect 7 0 8 0;
-#X connect 8 0 10 0;
+#X connect 8 0 11 0;
 #X connect 9 0 7 0;
 #X connect 10 0 6 0;
 #X connect 11 0 6 0;
 #X restore 38 118 pd right_eye;
-#N canvas 354 665 631 351 right_eyebrow 0;
+#N canvas 352 670 631 351 right_eyebrow 0;
 #X obj 128 124 translateXYZ -0.5 -0.5 0;
 #X obj 128 101 scaleXYZ 10.6666 -8 1;
 #X obj 128 76 alpha 0;
@@ -200,7 +200,7 @@ partial_draw 0 17;
 #X obj 318 155 route gem_state;
 #X msg 156 170 position RIGHT_EYEBROW;
 #X msg 168 252 draw linestrip \, colorG colorR \, colorA colorA \,
-partial_draw 0 5;
+draw_range 0 5;
 #X connect 0 0 4 0;
 #X connect 1 0 0 0;
 #X connect 2 0 1 0;
@@ -215,7 +215,7 @@ partial_draw 0 5;
 #X connect 10 0 6 0;
 #X connect 11 0 6 0;
 #X restore 38 138 pd right_eyebrow;
-#N canvas 598 684 631 351 right_eyebrow 0;
+#N canvas 596 689 631 351 right_eyebrow 0;
 #X obj 128 124 translateXYZ -0.5 -0.5 0;
 #X obj 128 101 scaleXYZ 10.6666 -8 1;
 #X obj 128 76 alpha 0;
@@ -227,24 +227,24 @@ partial_draw 0 5;
 #X obj 318 176 route float;
 #X obj 318 198 sel 1;
 #X obj 318 155 route gem_state;
-#X msg 168 252 draw linestrip \, colorG colorR \, colorA colorA \,
-partial_draw 0 5;
 #X msg 156 170 position LEFT_EYEBROW;
+#X msg 168 252 draw linestrip \, colorG colorR \, colorA colorA \,
+draw_range 0 5;
 #X connect 0 0 4 0;
 #X connect 1 0 0 0;
 #X connect 2 0 1 0;
 #X connect 3 0 2 0;
 #X connect 3 0 9 0;
 #X connect 4 0 6 0;
-#X connect 4 1 11 0;
+#X connect 4 1 10 0;
 #X connect 5 0 3 0;
 #X connect 7 0 8 0;
-#X connect 8 0 10 0;
+#X connect 8 0 11 0;
 #X connect 9 0 7 0;
 #X connect 10 0 6 0;
 #X connect 11 0 6 0;
 #X restore 38 158 pd right_eyebrow;
-#N canvas 596 689 631 351 nose_base 0;
+#N canvas 592 699 631 351 nose_base 0;
 #X obj 128 124 translateXYZ -0.5 -0.5 0;
 #X obj 128 101 scaleXYZ 10.6666 -8 1;
 #X obj 128 76 alpha 0;
@@ -256,24 +256,24 @@ partial_draw 0 5;
 #X obj 318 176 route float;
 #X obj 318 198 sel 1;
 #X obj 318 155 route gem_state;
-#X msg 168 252 draw linestrip \, colorG colorR \, colorA colorA \,
-partial_draw 0 5;
 #X msg 156 170 position NOSE_BASE;
+#X msg 168 252 draw linestrip \, colorG colorR \, colorA colorA \,
+draw_range 0 5;
 #X connect 0 0 4 0;
 #X connect 1 0 0 0;
 #X connect 2 0 1 0;
 #X connect 3 0 2 0;
 #X connect 3 0 9 0;
 #X connect 4 0 6 0;
-#X connect 4 1 11 0;
+#X connect 4 1 10 0;
 #X connect 5 0 3 0;
 #X connect 7 0 8 0;
-#X connect 8 0 10 0;
+#X connect 8 0 11 0;
 #X connect 9 0 7 0;
 #X connect 10 0 6 0;
 #X connect 11 0 6 0;
 #X restore 38 178 pd nose_base;
-#N canvas 594 694 631 351 nose_bridge 0;
+#N canvas 592 699 631 351 nose_bridge 0;
 #X obj 128 124 translateXYZ -0.5 -0.5 0;
 #X obj 128 101 scaleXYZ 10.6666 -8 1;
 #X obj 128 76 alpha 0;
@@ -287,7 +287,7 @@ partial_draw 0 5;
 #X obj 318 155 route gem_state;
 #X msg 156 170 position NOSE_BRIDGE;
 #X msg 168 252 draw linestrip \, colorG colorR \, colorA colorA \,
-partial_draw 0 4;
+draw_range 0 4;
 #X connect 0 0 4 0;
 #X connect 1 0 0 0;
 #X connect 2 0 1 0;
@@ -302,7 +302,7 @@ partial_draw 0 4;
 #X connect 10 0 6 0;
 #X connect 11 0 6 0;
 #X restore 38 198 pd nose_bridge;
-#N canvas 984 207 548 451 inner_mouse 1;
+#N canvas 980 217 548 451 inner_mouse 0;
 #X obj 25 145 translateXYZ -0.5 -0.5 0;
 #X obj 25 122 scaleXYZ 10.6666 -8 1;
 #X obj 25 97 alpha 0;
@@ -315,7 +315,8 @@ partial_draw 0 4;
 #X obj 25 167 t a b b;
 #X obj 25 375 gemvertexbuffer 200;
 #X msg 45 191 position INNER_MOUTH;
-#X msg 81 253 draw lineloop \, colorG colorR \, colorA colorA \, partial_draw
+#X floatatom 157 77 5 0 0 0 - - -, f 5;
+#X msg 81 253 draw lineloop \, colorG colorR \, colorA colorA \, draw_range
 0 8;
 #X connect 0 0 8 0;
 #X connect 1 0 0 0;
@@ -324,12 +325,13 @@ partial_draw 0 4;
 #X connect 3 0 7 0;
 #X connect 4 0 3 0;
 #X connect 5 0 6 0;
-#X connect 6 0 11 0;
+#X connect 6 0 12 0;
 #X connect 7 0 5 0;
 #X connect 8 0 9 0;
 #X connect 8 1 10 0;
 #X connect 10 0 9 0;
-#X connect 11 0 9 0;
+#X connect 11 0 1 1;
+#X connect 12 0 9 0;
 #X restore 38 48 pd inner_mouse;
 #X restore 490 366 pd draw_contour_gemvertexbuffer;
 #X obj 488 313 rectangle 5.3333 4;
