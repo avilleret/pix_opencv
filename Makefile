@@ -40,8 +40,8 @@ SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_blobtrack.cc \
 				  pix_opencv_contours.cc \
 				  pix_opencv_matchshape.cc \
-				  pix_opencv_opticalflow.cc
-				  #~pix_opencv_trackKnn.cc
+				  pix_opencv_opticalflow.cc \
+				  pix_opencv_trackKnn.cc
 
 # list all pd objects (i.e. myobject.pd) files here, and their helpfiles will
 # be included automatically
@@ -312,7 +312,7 @@ SHARED_TCL_LIB = $(wildcard lib$(LIBRARY_NAME).tcl)
 
 .PHONY = install libdir_install single_install install-doc install-examples install-manual install-unittests clean distclean dist etags $(LIBRARY_NAME)
 
-all: facetracker $(SOURCES:.cc=.$(EXTENSION)) $(SHARED_LIB)
+all: $(SOURCES:.cc=.$(EXTENSION)) $(SHARED_LIB)
 
 facetracker: pix_opencv_facetracker.$(EXTENSION)
 
