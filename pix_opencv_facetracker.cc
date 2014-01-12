@@ -233,7 +233,7 @@ void pix_opencv_facetracker :: processImage(imageStruct &image)
   }else m_fnum += 1;
   if(m_show){
     char text[256];
-    sprintf(text,"%d frames/sec",(int)round(m_fps));
+    sprintf(text,"%.2f frames/sec",(float)m_fps);
     cv::putText(im,text,cv::Point(10,20), CV_FONT_HERSHEY_SIMPLEX,0.5,CV_RGB(255,255,255));
   }
 }
@@ -247,9 +247,9 @@ void pix_opencv_facetracker :: obj_setupCallback(t_class *classPtr)
   CPPEXTERN_MSG0(classPtr, "reset", resetMess);
   CPPEXTERN_MSG1(classPtr, "show", showMess, int);
   CPPEXTERN_MSG2(classPtr, "settab",  tableMess, t_symbol*, t_symbol*);                  
-  CPPEXTERN_MSG1(classPtr, "tolerance", toleranceMess, float_t);
-  CPPEXTERN_MSG1(classPtr, "clamp", clampMess, float_t);
-  CPPEXTERN_MSG1(classPtr, "filter", filterMess, float_t);
+  CPPEXTERN_MSG1(classPtr, "tolerance", toleranceMess, float);
+  CPPEXTERN_MSG1(classPtr, "clamp", clampMess, float);
+  CPPEXTERN_MSG1(classPtr, "filter", filterMess, float);
 }
 
 void pix_opencv_facetracker :: resetMess(void){
