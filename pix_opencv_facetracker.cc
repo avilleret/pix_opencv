@@ -86,9 +86,12 @@ pix_opencv_facetracker :: pix_opencv_facetracker() :  m_fcheck(false), \
   
   for ( int i = 0; i<13 ; i++) m_arraysname[i]=NULL;
   
-  m_tracker.Load("model/face2.tracker");
-  m_tri = IO::LoadTri("model/face.tri");
-	m_con = IO::LoadCon("model/face.con"); 
+  t_canvas* canvas=canvas_getcurrent();
+  char *basename=canvas_getdir(canvas)->s_name;
+  
+  m_tracker.Load((std::string(basename) + "/model/face2.tracker").c_str());
+  m_tri = IO::LoadTri((std::string(basename) + "/model/face.tri").c_str());
+	m_con = IO::LoadCon((std::string(basename) + "/model/face.con").c_str()); 
 }
 
 /////////////////////////////////////////////////////////
