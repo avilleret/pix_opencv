@@ -73,6 +73,7 @@ UNITTESTS =
 ALL_CFLAGS = -I"$(PD_INCLUDE)"  `pkg-config --cflags opencv` -IFaceTracker/include/
 CFLAGS_linux = `pkg-config --cflags Gem` `pkg-config --cflags pd` 
 CFLAGS_macosx = -I$(PD_PATH)/include/Gem -I$(PD_PATH)/include
+FAT_FLAGS=-arch i386
 ALL_LDFLAGS =  
 SHARED_LDFLAGS =
 FACETRACKER_LIBS += FaceTracker/src/lib/CLM.o  FaceTracker/src/lib/FCheck.o  FaceTracker/src/lib/FDet.o  FaceTracker/src/lib/IO.o  FaceTracker/src/lib/Patch.o  FaceTracker/src/lib/PAW.o  FaceTracker/src/lib/PDM.o  FaceTracker/src/lib/Tracker.o
