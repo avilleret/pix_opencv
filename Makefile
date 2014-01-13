@@ -47,8 +47,8 @@ SOURCES = pix_opencv_edge.cc \
 # be included automatically
 PDOBJECTS =
 
-# example patches and related files, in the 'examples' subfolder
-EXAMPLES =
+# the surces examples folder itself (will be copied as is)
+EXAMPLES = examples
 
 # manuals and related files, in the 'manual' subfolder
 MANUAL =
@@ -425,6 +425,7 @@ libdir: all $(DISTBINDIR)
 	$(INSTALL_DATA) $(LIBRARY_NAME)-meta.pd  $(DISTBINDIR)
 	$(INSTALL_DATA) $(SOURCES) $(SHARED_SOURCE) $(SHARED_HEADER) $(DISTBINDIR)
 	$(INSTALL_DATA) $(HELPPATCHES) $(DISTBINDIR)
+	cp -r $(EXAMPLES) $(DISTBINDIR)
 	test -z "$(strip $(EXTRA_DIST))" || \
 		$(INSTALL_DATA) $(EXTRA_DIST)    $(DISTBINDIR)
 #	tar --exclude-vcs -czpf $(DISTBINDIR).tar.gz $(DISTBINDIR)
