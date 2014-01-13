@@ -277,7 +277,7 @@ void pix_opencv_trackKnn :: doTracking()
         if(m_trackedBlobs[i].id==m_inputBlobs[j].id)
         {
           //update track
-          Point tempLastCentroid = m_trackedBlobs[i].centroid; // assign the new centroid to the old
+          cv::Point tempLastCentroid = m_trackedBlobs[i].centroid; // assign the new centroid to the old
           m_trackedBlobs[i]=m_inputBlobs[j];
           m_trackedBlobs[i].lastCentroid = tempLastCentroid;
 
