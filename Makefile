@@ -42,13 +42,16 @@ SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_matchshape.cc \
 				  pix_opencv_opticalflow.cc \
 				  pix_opencv_trackKnn.cc
+				  
+#~HEADERS = blobtrack.h pix_opencv_athreshold.h pix_opencv_bgstats.h pix_opencv_bgsubstract.h pix_opencv_blobtrack.h pix_opencv_calibration.h pix_opencv_camshift.h pix_opencv_colorfilt.h pix_opencv_contours.h pix_opencv_contours_boundingrect.h pix_opencv_contours_convexhull.h pix_opencv_contours_convexity.h pix_opencv_dft.h pix_opencv_distrans.h pix_opencv_edge.h pix_opencv_findchessboardcorners.h pix_opencv_floodfill.h pix_opencv_haarcascade.h pix_opencv_hist_compare.h pix_opencv_hough_circles.h pix_opencv_hough_lines.h pix_opencv_hu_compare.h pix_opencv_hu_moments.h pix_opencv_knear.h pix_opencv_laplace.h pix_opencv_lk.h pix_opencv_matchshape.h pix_opencv_morphology.h pix_opencv_motempl.h pix_opencv_of_bm.h pix_opencv_of_hs.h pix_opencv_of_lk.h pix_opencv_pgh_compare.h pix_opencv_surf.h pix_opencv_threshold.h pix_opencv_warpperspective.h
+HEADERS = `ls -1 *.h *.hpp`
 
 # list all pd objects (i.e. myobject.pd) files here, and their helpfiles will
 # be included automatically
 PDOBJECTS =
 
-# the surces examples folder itself (will be copied as is)
-EXAMPLES = examples
+# the surces examples folder itself and some other data (will be copied as is)
+EXAMPLES = 00_opencv_haarcascade+pix_image 01_opencv_contrours_boundingrect+pmpd_ambient 02_opencv_motempl+particle_system 03_opencv_hist_compare+text_trigger 04_opencv_colorfilt+video_projector 05_perspective_correction 06_GPU_opticalflow 07_shape_extractor 08_GPU_morphology 09_vp_calibration 10-fast_blobtracker   
 
 # manuals and related files, in the 'manual' subfolder
 MANUAL =
@@ -57,7 +60,8 @@ MANUAL =
 # list them here.  This can be anything from header files, test patches,
 # documentation, etc.  README.txt and LICENSE.txt are required and therefore
 # automatically included
-EXTRA_DIST = dessin.tif blobtrack.h pix_opencv_athreshold.h pix_opencv_bgstats.h pix_opencv_bgsubstract.h pix_opencv_blobtrack.h pix_opencv_calibration.h pix_opencv_camshift.h pix_opencv_colorfilt.h pix_opencv_contours.h pix_opencv_contours_boundingrect.h pix_opencv_contours_convexhull.h pix_opencv_contours_convexity.h pix_opencv_dft.h pix_opencv_distrans.h pix_opencv_edge.h pix_opencv_findchessboardcorners.h pix_opencv_floodfill.h pix_opencv_haarcascade.h pix_opencv_hist_compare.h pix_opencv_hough_circles.h pix_opencv_hough_lines.h pix_opencv_hu_compare.h pix_opencv_hu_moments.h pix_opencv_knear.h pix_opencv_laplace.h pix_opencv_lk.h pix_opencv_matchshape.h pix_opencv_morphology.h pix_opencv_motempl.h pix_opencv_of_bm.h pix_opencv_of_hs.h pix_opencv_of_lk.h pix_opencv_pgh_compare.h pix_opencv_surf.h pix_opencv_threshold.h pix_opencv_warpperspective.h
+EXTRA_DIST = dessin.tif 
+EXTRA_DIST_FOLDER = model haarcascades
 
 # unit tests and related files here, in the 'unittests' subfolder
 UNITTESTS = 
@@ -424,12 +428,20 @@ $(DISTBINDIR):
 
 libdir: all $(DISTBINDIR)
 	$(INSTALL_DATA) $(LIBRARY_NAME)-meta.pd  $(DISTBINDIR)
-	$(INSTALL_DATA) $(SOURCES) $(SHARED_SOURCE) $(SHARED_HEADER) $(DISTBINDIR)
+	#~$(INSTALL_DATA) $(SOURCES) $(SHARED_SOURCE) $(SHARED_HEADER) $(DISTBINDIR)
 	$(INSTALL_DATA) $(HELPPATCHES) $(DISTBINDIR)
-	cp -r $(EXAMPLES) $(DISTBINDIR)
+	$(INSTALL_DATA) $(SOURCES:.cc=.$(EXTENSION)) $(DISTBINDIR)
+	test -z "$(strip $(EXAMPLES))" || \
+		test -e $(DISTBINDIR)/examples || \
+			mkdir $(DISTBINDIR)/examples
+		for file in $(EXAMPLES); do \
+			cp -r examples/$$file $(DISTBINDIR)/examples; \
+		done
 	test -z "$(strip $(EXTRA_DIST))" || \
 		$(INSTALL_DATA) $(EXTRA_DIST)    $(DISTBINDIR)
-#	tar --exclude-vcs -czpf $(DISTBINDIR).tar.gz $(DISTBINDIR)
+	test -z "$(strip $(EXTRA_DIST_FOLDER))" || \
+		cp -r $(EXTRA_DIST_FOLDER)    $(DISTBINDIR)
+	tar --exclude-vcs -czpf $(DISTBINDIR).tar.gz $(DISTBINDIR)
 
 $(DISTDIR):
 	$(INSTALL_DIR) $(DISTDIR)
@@ -444,6 +456,8 @@ dist: $(DISTDIR)
 	$(INSTALL_DATA) $(LIBRARY_NAME)-meta.pd  $(DISTDIR)
 	test -z "$(strip $(ALLSOURCES))" || \
 		$(INSTALL_DATA) $(ALLSOURCES)  $(DISTDIR)
+	test -z "$(strip $(HEADERS))" || \
+		$(INSTALL_DATA) $(HEADERS)  $(DISTDIR)
 	test -z "$(strip $(wildcard $(ALLSOURCES:.cc=.tcl)))" || \
 		$(INSTALL_DATA) $(wildcard $(ALLSOURCES:.cc=.tcl))  $(DISTDIR)
 	test -z "$(strip $(wildcard $(LIBRARY_NAME).cc))" || \
@@ -460,10 +474,12 @@ dist: $(DISTDIR)
 		$(INSTALL_DATA) $(HELPPATCHES) $(DISTDIR)
 	test -z "$(strip $(EXTRA_DIST))" || \
 		$(INSTALL_DATA) $(EXTRA_DIST)    $(DISTDIR)
+	test -z "$(strip $(EXTRA_DIST_FOLDER))" || \
+		cp -r $(EXTRA_DIST_FOLDER)    $(DISTDIR)/
 	test -z "$(strip $(EXAMPLES))" || \
 		$(INSTALL_DIR) $(DISTDIR)/examples && \
 		for file in $(EXAMPLES); do \
-			$(INSTALL_DATA) examples/$$file $(DISTDIR)/examples; \
+			cp -r examples/$$file $(DISTDIR)/examples; \
 		done
 	test -z "$(strip $(MANUAL))" || \
 		$(INSTALL_DIR) $(DISTDIR)/manual && \

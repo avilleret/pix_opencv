@@ -57,3 +57,13 @@ The include must contain the following :
   make 
   cd ..
   make facetracker
+
+6. Packaging
+6.1 To make a Distribuable source tarbal :
+  make dist
+	this archive is called "pix_opencv-VERSION"
+	this archive must contains all sources files and headers, the build mechanism, and all other files needed to build it
+6.2 To make a binary archive :
+  make libdir
+	this archive is called "pix_opencv-VERSION-TARGET"
+	this archive must contains binary of VERSION for TARGET architecture
