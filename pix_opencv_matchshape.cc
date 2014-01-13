@@ -133,7 +133,7 @@ void pix_opencv_matchshape :: contourMess(t_symbol*s, int argc, t_atom*argv)
 		tmp_contour.push_back(pt);
 	}
 	
-	double comp, min=99999999999;
+	double comp, min=INFINITY;
 	int id(0),i(0);
 	for ( vector<vector<cv::Point2f> >::iterator it=m_template_vec_vec.begin(); it!=m_template_vec_vec.end(); ++it){
 		comp = cv::matchShapes(tmp_contour, *it, m_method, 0.);
