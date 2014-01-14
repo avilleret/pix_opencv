@@ -18,7 +18,8 @@ LOG
 
 #ifndef _EiC
 #include "opencv2/legacy/legacy.hpp"
-
+#include "opencv2/nonfree/nonfree.hpp"
+#include "cv.h"
 #endif
 
 #include "Base/GemPixObj.h"
