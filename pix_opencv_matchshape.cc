@@ -21,6 +21,11 @@
 #include <stdio.h>
 #include <RTE/MessageCallbacks.h>
 
+#ifdef _MSC_VER
+#include <limits>
+#define INFINITY std::numeric_limits<float>::infinity()
+#endif
+
 using namespace std;
 
 
