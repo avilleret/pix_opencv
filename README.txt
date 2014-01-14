@@ -67,3 +67,8 @@ The include must contain the following :
   make libdir
 	this archive is called "pix_opencv-VERSION-TARGET"
 	this archive must contains binary of VERSION for TARGET architecture
+  
+7. Testing 
+  Open the pix_opencv_overview.pd patch.
+  Is shows an overview of all available externals.
+  And this test the creation of each external.

@@ -60,8 +60,10 @@ MANUAL =
 # list them here.  This can be anything from header files, test patches,
 # documentation, etc.  README.txt and LICENSE.txt are required and therefore
 # automatically included
-EXTRA_DIST = dessin.tif 
+OVERVIEW = pix_opencv_overview.pd
+EXTRA_DIST = dessin.tif $(OVERVIEW)
 EXTRA_DIST_FOLDER = model haarcascades
+
 
 # unit tests and related files here, in the 'unittests' subfolder
 UNITTESTS = 
@@ -426,9 +428,11 @@ distclean: clean
 $(DISTBINDIR):
 	$(INSTALL_DIR) $(DISTBINDIR)
 
-libdir: all $(DISTBINDIR)
+libdir: all $(DISTBINDIR) overview
 	$(INSTALL_DATA) $(LIBRARY_NAME)-meta.pd  $(DISTBINDIR)
-	#~$(INSTALL_DATA) $(SOURCES) $(SHARED_SOURCE) $(SHARED_HEADER) $(DISTBINDIR)
+	if [ -s pix_opencv_facetracker.$(EXTENSION) ] ; then \
+		$(INSTALL_DATA) pix_opencv_facetracker.$(EXTENSION) $(DISTBINDIR) ; \
+	fi;
 	$(INSTALL_DATA) $(HELPPATCHES) $(DISTBINDIR)
 	$(INSTALL_DATA) $(SOURCES:.cc=.$(EXTENSION)) $(DISTBINDIR)
 	test -z "$(strip $(EXAMPLES))" || \
@@ -456,6 +460,7 @@ dist: $(DISTDIR)
 	$(INSTALL_DATA) $(LIBRARY_NAME)-meta.pd  $(DISTDIR)
 	test -z "$(strip $(ALLSOURCES))" || \
 		$(INSTALL_DATA) $(ALLSOURCES)  $(DISTDIR)
+	$(INSTALL_DATA) pix_opencv_facetracker.cc  $(DISTDIR)
 	test -z "$(strip $(HEADERS))" || \
 		$(INSTALL_DATA) $(HEADERS)  $(DISTDIR)
 	test -z "$(strip $(wildcard $(ALLSOURCES:.cc=.tcl)))" || \
@@ -509,6 +514,14 @@ TAGS: $(wildcard $(PD_INCLUDE)/*.h) $(SOURCES) $(SHARED_SOURCE) $(SHARED_HEADER)
 	etags $(wildcard $(PD_INCLUDE)/*.h)
 	etags -a *.h $(SOURCES) $(SHARED_SOURCE) $(SHARED_HEADER)
 	etags -a --language=none --regex="/proc[ \t]+\([^ \t]+\)/\1/" *.tcl
+	
+overview:
+	echo "#N canvas 147 197 1566 760 10;" > $(OVERVIEW)
+	ID=0 ; \
+	for extern in $(SOURCES:.cc=""); do \
+			echo "#X obj `expr $$ID % 5 \* 200 + 100` `expr $$ID / 5 \* 20 + 40` $$extern;" >> $(OVERVIEW) && ID=`expr $$ID + 1` ; \
+		done
+	
 
 showsetup:
 	@echo "CC: $(CC)"
