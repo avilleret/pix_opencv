@@ -484,12 +484,12 @@ libdir: all $(DISTBINDIR) overview lib3rd
 	test -z "$(strip $(EXTRA_DIST))" || \
 		$(INSTALL_DATA) $(EXTRA_DIST)    $(DISTBINDIR)
 	test -z "$(strip $(EXTRA_DIST_FOLDER))" || \
-		cp -r $(EXTRA_DIST_FOLDER)    $(DISTBINDIR)
-	if [ $(OS) == windows ] ; then \
-		zip -r $(DISTBINDIR).zip $(DISTBINDIR) ; \
-	else \
-		tar --exclude-vcs -czpf $(DISTBINDIR).tar.gz $(DISTBINDIR) ; \
-	fi;
+    cp -r $(EXTRA_DIST_FOLDER)    $(DISTBINDIR)
+  ifeq ($(OS),windows)
+    zip -r $(DISTBINDIR).zip $(DISTBINDIR)
+  else
+		tar --exclude-vcs -czpf $(DISTBINDIR).tar.gz $(DISTBINDIR)
+  endif
 
 #copy 3rd party lib into DISTBINDIR
 lib3rd: $(DISTBINDIR)
