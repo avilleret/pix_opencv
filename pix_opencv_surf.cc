@@ -64,7 +64,8 @@ pix_opencv_surf :: pix_opencv_surf()
   rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
   gray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
   ogray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-
+  
+  cv::initModule_nonfree();
 }
 
 /////////////////////////////////////////////////////////

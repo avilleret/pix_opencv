@@ -41,9 +41,9 @@ SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_contours.cc \
 				  pix_opencv_matchshape.cc \
 				  pix_opencv_opticalflow.cc \
-				  pix_opencv_trackKnn.cc
+				  pix_opencv_trackKnn.cc \
+				  pix_opencv_surf.cc
 				  
-#~HEADERS = blobtrack.h pix_opencv_athreshold.h pix_opencv_bgstats.h pix_opencv_bgsubstract.h pix_opencv_blobtrack.h pix_opencv_calibration.h pix_opencv_camshift.h pix_opencv_colorfilt.h pix_opencv_contours.h pix_opencv_contours_boundingrect.h pix_opencv_contours_convexhull.h pix_opencv_contours_convexity.h pix_opencv_dft.h pix_opencv_distrans.h pix_opencv_edge.h pix_opencv_findchessboardcorners.h pix_opencv_floodfill.h pix_opencv_haarcascade.h pix_opencv_hist_compare.h pix_opencv_hough_circles.h pix_opencv_hough_lines.h pix_opencv_hu_compare.h pix_opencv_hu_moments.h pix_opencv_knear.h pix_opencv_laplace.h pix_opencv_lk.h pix_opencv_matchshape.h pix_opencv_morphology.h pix_opencv_motempl.h pix_opencv_of_bm.h pix_opencv_of_hs.h pix_opencv_of_lk.h pix_opencv_pgh_compare.h pix_opencv_surf.h pix_opencv_threshold.h pix_opencv_warpperspective.h
 HEADERS = `ls -1 *.h *.hpp`
 
 # list all pd objects (i.e. myobject.pd) files here, and their helpfiles will
