@@ -60,7 +60,7 @@ MANUAL =
 # list them here.  This can be anything from header files, test patches,
 # documentation, etc.  README.txt and LICENSE.txt are required and therefore
 # automatically included
-OVERVIEW = pix_opencv_overview.pd
+OVERVIEW = pix_opencv-overview.pd
 EXTRA_DIST = dessin.tif $(OVERVIEW)
 EXTRA_DIST_FOLDER = model haarcascades
 
@@ -275,7 +275,27 @@ ifeq (CYGWIN,$(findstring CYGWIN,$(UNAME)))
   CPU := $(shell uname -m)
   SOURCES += $(SOURCES_cygwin)
   EXTENSION = dll
-  SHARED_EXTENSION = dll
+  ifeq ($(CPU),i386)
+    EXTENSION = m_i386
+  endif
+  ifeq ($(CPU),i486)
+    EXTENSION = m_i386
+  endif
+  ifeq ($(CPU),i586)
+    EXTENSION = m_i386
+  endif
+  ifeq ($(CPU),i686)
+    EXTENSION = m_i386
+  endif
+  ifeq ($(CPU),amd64)
+    # amd64 and ia64 aren't the same thing, but that's how its done in pd...
+    EXTENSION = m_ia64
+  endif
+  ifeq ($(CPU),x86_64)
+    # x86_64 and ia64 aren't the same thing, but that's how its done in pd...
+    EXTENSION = m_ia64
+  endif
+  SHARED_EXTENSION = $(EXTENSION)
   OS = cygwin
   PD_PATH = $(shell cygpath $$PROGRAMFILES)/pd
   OPT_CFLAGS = -O6 -funroll-loops -fomit-frame-pointer
@@ -290,7 +310,27 @@ ifeq (MINGW,$(findstring MINGW,$(UNAME)))
   CPU := $(shell uname -m)
   SOURCES += $(SOURCES_windows)
   EXTENSION = dll
-  SHARED_EXTENSION = dll
+    ifeq ($(CPU),i386)
+    EXTENSION = m_i386
+  endif
+  ifeq ($(CPU),i486)
+    EXTENSION = m_i386
+  endif
+  ifeq ($(CPU),i586)
+    EXTENSION = m_i386
+  endif
+  ifeq ($(CPU),i686)
+    EXTENSION = m_i386
+  endif
+  ifeq ($(CPU),amd64)
+    # amd64 and ia64 aren't the same thing, but that's how its done in pd...
+    EXTENSION = m_ia64
+  endif
+  ifeq ($(CPU),x86_64)
+    # x86_64 and ia64 aren't the same thing, but that's how its done in pd...
+    EXTENSION = m_ia64
+  endif
+  SHARED_EXTENSION = $(EXTENSION)
   OS = windows
   PD_PATH = $(shell cd "$$PROGRAMFILES/pd" && pwd)
   # MinGW doesn't seem to include cc so force gcc
@@ -428,7 +468,7 @@ distclean: clean
 $(DISTBINDIR):
 	$(INSTALL_DIR) $(DISTBINDIR)
 
-libdir: all $(DISTBINDIR) overview
+libdir: all $(DISTBINDIR) overview lib3rd
 	$(INSTALL_DATA) $(LIBRARY_NAME)-meta.pd  $(DISTBINDIR)
 	if [ -s pix_opencv_facetracker.$(EXTENSION) ] ; then \
 		$(INSTALL_DATA) pix_opencv_facetracker.$(EXTENSION) $(DISTBINDIR) ; \
@@ -445,7 +485,19 @@ libdir: all $(DISTBINDIR) overview
 		$(INSTALL_DATA) $(EXTRA_DIST)    $(DISTBINDIR)
 	test -z "$(strip $(EXTRA_DIST_FOLDER))" || \
 		cp -r $(EXTRA_DIST_FOLDER)    $(DISTBINDIR)
-	tar --exclude-vcs -czpf $(DISTBINDIR).tar.gz $(DISTBINDIR)
+	if [ $(OS) == windows ] ; then \
+		zip -r $(DISTBINDIR).zip $(DISTBINDIR) ; \
+	else \
+		tar --exclude-vcs -czpf $(DISTBINDIR).tar.gz $(DISTBINDIR) ; \
+	fi;
+
+#copy 3rd party lib into DISTBINDIR
+lib3rd: $(DISTBINDIR)
+	if [ $(OS) == windows ] ; then \
+		$(INSTALL_DATA) `ls opencv*.dll` $(DISTBINDIR) ; \
+	elif [ $(OS) == macosx ] ; then \
+		./embed-mac-OpenCV-dependencies.sh && cp -r lib-$(EXTENSION) $(DISTBINDIR) ; \
+	fi;
 
 $(DISTDIR):
 	$(INSTALL_DIR) $(DISTDIR)
