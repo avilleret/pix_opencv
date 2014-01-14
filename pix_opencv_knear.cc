@@ -255,9 +255,13 @@ pix_opencv_knear :: pix_opencv_knear(t_symbol *path, t_floatarg nsamples)
 
   trainData = NULL;
   trainClasses = NULL;
-
-  this->load_patterns();
-
+  
+  try {
+    this->load_patterns();
+  } catch(...) {
+      error( "can't load patterns" );
+      return;
+  }
 }
 
 /////////////////////////////////////////////////////////
