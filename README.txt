@@ -1,4 +1,4 @@
-1. Prepare you machine
+﻿1. Prepare you machine
 You need to have puredata and Gem installed on your system.
 And you need to know where they are…
 
@@ -70,5 +70,5 @@ The include must contain the following :
   
 7. Testing 
   Open the pix_opencv_overview.pd patch.
-  Is shows an overview of all available externals.
-  And this test the creation of each external.
+  It shows an overview of all available externals.
+  And this tests the creation of each external.
