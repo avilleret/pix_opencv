@@ -17,7 +17,6 @@
 
 #include "pix_opencv_knear.h"
 
-#include <stdio.h>
 
 CPPEXTERN_NEW_WITH_TWO_ARGS(pix_opencv_knear, t_symbol *, A_DEFSYM, t_floatarg, A_DEFFLOAT )
 
@@ -117,7 +116,6 @@ IplImage pix_opencv_knear :: preprocessing(IplImage* imgSrc,int new_width, int n
   CvMat data;
   CvMat dataA;
   CvRect bb;//bounding box
-  CvRect bba;//boundinb box maintain aspect ratio
 
   // find bounding box
   bb=this->findBB(imgSrc);
@@ -165,8 +163,14 @@ void pix_opencv_knear :: load_patterns(void)
   for( j = 0; j< this->x_nsamples; j++)
   {
 
-     // load file
-     sprintf(file,"%s/%03d.png",this->x_filepath, j);
+     // load fileath
+     
+    if ( x_filepath[0] == '/' ){ // absolute path
+      sprintf(file,"%s/%03d.png",this->x_filepath, j);
+    } else { // relative path 
+      std::string absolutePath = localPath + x_filepath;
+      sprintf(file,"%s/%03d.png",absolutePath.c_str(), j);
+    }
      src_image = cvLoadImage(file,0);
      if(!src_image)
      {
@@ -256,6 +260,9 @@ pix_opencv_knear :: pix_opencv_knear(t_symbol *path, t_floatarg nsamples)
   trainData = NULL;
   trainClasses = NULL;
   
+  t_canvas* canvas =  canvas_getcurrent();
+  localPath = std::string(canvas_getdir(canvas)->s_name) + "/";
+  
   try {
     this->load_patterns();
   } catch(...) {
@@ -311,7 +318,6 @@ void pix_opencv_knear :: processRGBAImage(imageStruct &image)
   if ( this->x_classify )
   {
      IplImage prs_image;
-     float result;
      CvMat row_header, *row1, odata;
 
        // post( "pix_opencv_knear : size : (%dx%d)", this->x_pwidth, this->x_pheight);
@@ -325,7 +331,7 @@ void pix_opencv_knear :: processRGBAImage(imageStruct &image)
        cvGetSubRect(img32, &odata, cvRect(0,0, this->x_pwidth, this->x_pheight));
        row1 = cvReshape( &odata, &row_header, 0, 1 );
 
-       result=this->knn->find_nearest(row1,this->x_nsamples,0,0,this->x_nearest,this->x_dist);
+       this->knn->find_nearest(row1,this->x_nsamples,0,0,this->x_nearest,this->x_dist);
        for ( i=0; i<this->x_nsamples; i++ )
        {
          // post( "pix_opencv_knear : distance : %f", this->x_dist->data.fl[i] );
@@ -367,7 +373,6 @@ void pix_opencv_knear :: processRGBImage(imageStruct &image)
   if ( this->x_classify )
   {
      IplImage prs_image;
-     float result;
      CvMat row_header, *row1, odata;
 
        // post( "pix_opencv_knear : size : (%dx%d)", this->x_pwidth, this->x_pheight);
@@ -381,7 +386,7 @@ void pix_opencv_knear :: processRGBImage(imageStruct &image)
        cvGetSubRect(img32, &odata, cvRect(0,0, this->x_pwidth, this->x_pheight));
        row1 = cvReshape( &odata, &row_header, 0, 1 );
 
-       result=this->knn->find_nearest(row1,this->x_nsamples,0,0,this->x_nearest,this->x_dist);
+       this->knn->find_nearest(row1,this->x_nsamples,0,0,this->x_nearest,this->x_dist);
        for ( i=0; i<this->x_nsamples; i++ )
        {
          // post( "pix_opencv_knear : distance : %f", this->x_dist->data.fl[i] );
@@ -427,7 +432,6 @@ void pix_opencv_knear :: processGrayImage(imageStruct &image)
   if ( this->x_classify )
   {
      IplImage prs_image;
-     float result;
      CvMat row_header, *row1, odata;
 
        // post( "pix_opencv_knear : size : (%dx%d)", this->x_pwidth, this->x_pheight);
@@ -441,7 +445,7 @@ void pix_opencv_knear :: processGrayImage(imageStruct &image)
        cvGetSubRect(img32, &odata, cvRect(0,0, this->x_pwidth, this->x_pheight));
        row1 = cvReshape( &odata, &row_header, 0, 1 );
 
-       result=this->knn->find_nearest(row1,this->x_nsamples,0,0,this->x_nearest,this->x_dist);
+       this->knn->find_nearest(row1,this->x_nsamples,0,0,this->x_nearest,this->x_dist);
        for ( i=0; i<this->x_nsamples; i++ )
        {
          // post( "pix_opencv_knear : distance : %f", this->x_dist->data.fl[i] );
