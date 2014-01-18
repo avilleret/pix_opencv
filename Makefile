@@ -568,11 +568,16 @@ TAGS: $(wildcard $(PD_INCLUDE)/*.h) $(SOURCES) $(SHARED_SOURCE) $(SHARED_HEADER)
 	etags -a --language=none --regex="/proc[ \t]+\([^ \t]+\)/\1/" *.tcl
 	
 overview:
-	echo "#N canvas 147 197 1566 760 10;" > $(OVERVIEW)
+	echo "#N canvas 147 197 1566 537 10;" > $(OVERVIEW)
+	echo "#X text 126 15 overview of all available pix_opencv objects;" >> $(OVERVIEW)
 	ID=0 ; \
 	for extern in $(SOURCES:.cc=""); do \
-			echo "#X obj `expr $$ID % 5 \* 200 + 100` `expr $$ID / 5 \* 20 + 40` $$extern;" >> $(OVERVIEW) && ID=`expr $$ID + 1` ; \
-		done
+		echo "#X obj `expr $$ID % 5 \* 300 + 50` `expr $$ID / 5 \* 30 + 40` $$extern;" >> $(OVERVIEW) && ID=`expr $$ID + 1` ; \
+	done ; \
+	echo "#X obj 30 `expr $$ID / 5 \* 30 + 80` cnv 15 250 60 empty empty extra 20 12 0 14 -4034 -66577 0;" >> $(OVERVIEW) ; \
+	echo "#X obj 50 `expr $$ID / 5 \* 30 + 100` pix_opencv_facetracker;" >> $(OVERVIEW)
+
+	
 	
 
 showsetup:
