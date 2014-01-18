@@ -1,4 +1,4 @@
-#N canvas 253 422 985 540 10;
+#N canvas 601 243 985 540 10;
 #X obj 17 17 cnv 15 430 320 empty empty empty 20 12 0 14 -233017 -66577
 0;
 #X obj 17 -29 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
@@ -12,7 +12,7 @@
 -66577 0;
 #X obj 611 168 cnv 15 280 80 empty empty empty 20 12 0 14 -24198 -66577
 0;
-#X floatatom 744 211 5 0 0 0 - - -;
+#X floatatom 744 211 5 0 0 0 - - -, f 5;
 #X obj 615 228 pix_opencv_bgsubstract;
 #X msg 627 172 set;
 #X text 663 172 set the background;
@@ -35,7 +35,7 @@ shadows changes since you SET the background image.;
 #X obj 615 274 square 2;
 #X obj 741 259 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
 0;
-#N canvas 0 22 454 304 gemwin 0;
+#N canvas 0 50 454 304 gemwin 0;
 #X obj 67 89 outlet;
 #X obj 67 10 inlet;
 #X obj 65 41 route create;
@@ -74,7 +74,7 @@ shadows changes since you SET the background image.;
 -1;
 #X obj 710 29 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
 -1 -1;
-#X floatatom 692 -6 5 0 10000 1 frame# - -;
+#X floatatom 692 -6 5 0 10000 1 frame# - -, f 5;
 #X obj 653 -117 openpanel;
 #X msg 653 -97 open \$1;
 #X obj 641 12 pix_film;
@@ -91,22 +91,23 @@ shadows changes since you SET the background image.;
 #X obj 464 101 pix_separator;
 #X obj 464 141 translateXYZ -2 0 0;
 #X obj 615 141 translateXYZ 2 0 0;
-#N canvas 1 168 274 215 vswitch 0;
+#N canvas 1 168 274 158 vswitch 0;
 #X obj 36 138 outlet;
 #X obj 36 26 inlet;
 #X obj 100 29 inlet;
-#X obj 149 29 inlet;
-#X obj 149 67 == 0;
+#X obj 153 29 inlet;
+#X obj 89 69 == 0;
 #X obj 36 101 spigot 1;
 #X obj 100 101 spigot 0;
 #X connect 1 0 5 0;
 #X connect 2 0 6 0;
 #X connect 3 0 4 0;
+#X connect 3 0 6 1;
 #X connect 4 0 5 1;
 #X connect 5 0 0 0;
 #X connect 6 0 0 0;
 #X restore 464 58 pd vswitch;
-#X obj 532 58 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0 1
+#X obj 532 58 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 1 1
 ;
 #X obj 464 10 pix_video;
 #X obj 464 -175 gemhead;
