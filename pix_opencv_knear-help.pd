@@ -1,4 +1,4 @@
-#N canvas 564 203 1154 642 10;
+#N canvas 562 208 1154 642 10;
 #X obj 384 31 gemhead;
 #X obj 365 414 pix_texture;
 #X obj 365 442 square 2;
@@ -66,6 +66,8 @@ a character image;
 #X obj 367 215 pix_separator;
 #X obj 365 336 pix_opencv_knear;
 #X obj 575 199 t b b;
+#X text 638 309 Directory could be ether relative to patch or absolute
+;
 #X connect 0 0 26 0;
 #X connect 1 0 2 0;
 #X connect 4 0 5 0;
