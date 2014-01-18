@@ -17,6 +17,7 @@ LOG
 #define INCLUDE_PIX_OPENCV_HIST_COMPARE_H_
 
 #ifndef _EiC
+#include "opencv2/opencv.hpp"
 #include "opencv2/legacy/legacy.hpp"
 #include "opencv2/legacy/compat.hpp"
 #endif
@@ -57,10 +58,7 @@ class GEM_EXPORT pix_opencv_hist_compare : public GemPixObj
 
     	//////////
     	// Do the processing
-    	virtual void 	processRGBAImage(imageStruct &image);
-    	virtual void 	processRGBImage(imageStruct &image);
-	virtual void 	processYUVImage(imageStruct &image);
-    	virtual void 	processGrayImage(imageStruct &image); 
+    	virtual void 	processImage(imageStruct &image); 
 
         void  saveMess(float index);
 
