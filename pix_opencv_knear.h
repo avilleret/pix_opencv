@@ -24,6 +24,9 @@ LOG
 
 #include "Base/GemPixObj.h"
 
+#include <string>
+#include <stdio.h>
+
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
 CLASS
@@ -94,6 +97,8 @@ class GEM_EXPORT pix_opencv_knear : public GemPixObj
         int             x_pwidth;
         int             x_pheight;
         CvKNearest      *knn;
+        
+        std::string localPath;
 
 	// The output and temporary images
     	IplImage 	*rgba, *rgb, *grey;
