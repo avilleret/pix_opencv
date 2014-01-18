@@ -486,7 +486,7 @@ libdir: all $(DISTBINDIR) overview lib3rd
 	test -z "$(strip $(EXTRA_DIST_FOLDER))" || \
     cp -r $(EXTRA_DIST_FOLDER)    $(DISTBINDIR)
   ifeq ($(OS),windows)
-    zip -r $(DISTBINDIR).zip $(DISTBINDIR)
+		zip -r $(DISTBINDIR).zip $(DISTBINDIR)
   else
 		tar --exclude-vcs -czpf $(DISTBINDIR).tar.gz $(DISTBINDIR)
   endif
