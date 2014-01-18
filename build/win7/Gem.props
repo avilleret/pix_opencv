@@ -4,7 +4,7 @@
     <Import Project="puredata.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <GEM_DIR>C:\Users\win7\pd\Gem</GEM_DIR>
+    <GEM_DIR>C:\Users\win7\pd\Gem-0.93.3\Gem\dev</GEM_DIR>
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
@@ -16,11 +16,12 @@
   </ItemGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(GEM_DIR)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(GEM_DIR);$(GEM_DIR)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <AdditionalDependencies>Gem.lib;opengl32.lib;glu32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(GEM_DIR)\build\win-vce2010;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(GEM_DIR);$(GEM_DIR)\build\win-vce2010;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
 </Project>
