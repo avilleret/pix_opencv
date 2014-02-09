@@ -22,14 +22,14 @@ for pd_darwin in `find . -name '*.pd_darwin'`; do
 	    install -vp /usr/local/lib/$lib $PD_APP_LIB
 	    new_lib=`echo $lib | sed 's|.*/\(.*\.dylib\)|\1|'`
 	    install_name_tool -id @loader_path/$new_lib $PD_APP_LIB/$new_lib
-	    install_name_tool -change lib/$lib @loader_path/$new_lib $pd_darwin
+	    install_name_tool -change lib/$lib @loader_path/$PD_APP_LIB/$new_lib $pd_darwin
 	done
 	echo " "
     fi
 done
 
 for dylib in $PD_APP_LIB/*.dylib; do
-    LIBS=`otool -L $dylib | sed -n 's|.*/sw/lib/\(.*\.dylib\).*|\1|p'`
+    LIBS=`otool -L $dylib | sed -n 's|.*lib/\(.*\.dylib\).*|\1|p'`
     if [ "x$LIBS" != "x" ]; then
 	echo "`echo $dylib | sed 's|.*/\(.*\.dylib\)|\1|'` is using:"
 	for lib in $LIBS; do
@@ -41,7 +41,7 @@ for dylib in $PD_APP_LIB/*.dylib; do
 		install -vp /sw/lib/$lib $PD_APP_LIB
 	    fi
 	    install_name_tool -id @loader_path/$new_lib $PD_APP_LIB/$new_lib
-	    install_name_tool -change /sw/lib/$lib @loader_path/$new_lib $dylib
+	    install_name_tool -change lib/$lib @loader_path/$new_lib $dylib
 	done
 	echo " "
     fi
@@ -49,7 +49,7 @@ done
 
 # run it one more time to catch dylibs that depend on dylibs
 for dylib in $PD_APP_LIB/*.dylib; do
-    LIBS=`otool -L $dylib | sed -n 's|.*/sw/lib/\(.*\.dylib\).*|\1|p'`
+    LIBS=`otool -L $dylib | sed -n 's|.*lib/\(.*\.dylib\).*|\1|p'`
     if [ "x$LIBS" != "x" ]; then
 	echo "`echo $dylib | sed 's|.*/\(.*\.dylib\)|\1|'` is using:"
 	for lib in $LIBS; do
@@ -61,7 +61,7 @@ for dylib in $PD_APP_LIB/*.dylib; do
 		install -vp /sw/lib/$lib $PD_APP_LIB
 	    fi
 	    install_name_tool -id @loader_path/$new_lib $PD_APP_LIB/$new_lib
-	    install_name_tool -change /sw/lib/$lib @loader_path/$new_lib $dylib
+	    install_name_tool -change lib/$lib @loader_path/$new_lib $dylib
 	done
 	echo " "
     fi
@@ -69,7 +69,7 @@ done
 
 # seems like we need it one last time! phew...
 for dylib in $PD_APP_LIB/*.dylib; do
-    LIBS=`otool -L $dylib | sed -n 's|.*/sw/lib/\(.*\.dylib\).*|\1|p'`
+    LIBS=`otool -L $dylib | sed -n 's|.*lib/\(.*\.dylib\).*|\1|p'`
     if [ "x$LIBS" != "x" ]; then
 	echo "`echo $dylib | sed 's|.*/\(.*\.dylib\)|\1|'` is using:"
 	for lib in $LIBS; do
@@ -81,7 +81,7 @@ for dylib in $PD_APP_LIB/*.dylib; do
 		install -vp /sw/lib/$lib $PD_APP_LIB
 	    fi
 	    install_name_tool -id @loader_path/$new_lib $PD_APP_LIB/$new_lib
-	    install_name_tool -change /sw/lib/$lib @loader_path/$new_lib $dylib
+	    install_name_tool -change lib/$lib @loader_path/$new_lib $dylib
 	done
 	echo " "
     fi
