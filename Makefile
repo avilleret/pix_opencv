@@ -42,8 +42,10 @@ SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_matchshape.cc \
 				  pix_opencv_opticalflow.cc \
 				  pix_opencv_trackKnn.cc \
-				  pix_opencv_surf.cc
-				  
+				  pix_opencv_surf.cc \
+				  pix_opencv_bgstats2.cc \
+				  pix_opencv_clahe.cc
+				  				  
 HEADERS = `ls -1 *.h *.hpp`
 
 # list all pd objects (i.e. myobject.pd) files here, and their helpfiles will
