@@ -62,6 +62,7 @@ MANUAL =
 # automatically included
 OVERVIEW = pix_opencv-overview.pd
 EXTRA_DIST = dessin.tif $(OVERVIEW)
+EXTRA_DIST_FOLDER = model haarcascades plus
 EXTRA_DIST_FOLDER = model haarcascades
 
 
