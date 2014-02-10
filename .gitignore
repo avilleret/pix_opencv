@@ -1,3 +1,10 @@
+# OpenCV library binaries #
+###########################
+lib-pd_darwin
+lib-l_ia64
+lib-l_i386
+opencv*.dll
+
 # SVN repo files #
 ##################
 .svn/
