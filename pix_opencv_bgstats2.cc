@@ -82,8 +82,11 @@ void pix_opencv_bgstats2 :: processImage(imageStruct &image)
   if ( image.csize == 1 ){ // if grayscale, send out fgmask
     image.data = m_fgmask.data;
   } else { // else, set only alpha channel
-    imgMat.copyTo(m_segm);
-    add(m_segm, Scalar(255,0,0,255), imgMat, m_fgmask); // TODO copy mask to alpha channel only
+    std::vector<cv::Mat> split;
+    cv::split(imgMat, split);
+    split.pop_back(); // delete alpha channel
+    split.push_back(m_fgmask); // add fgmask as alpha channel
+    cv::merge(split, imgMat);
   }
 }
 
