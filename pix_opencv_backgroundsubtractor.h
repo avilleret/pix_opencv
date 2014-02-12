@@ -13,47 +13,50 @@ LOG
 
 -----------------------------------------------------------------*/
 
-#ifndef INCLUDE_PIX_OPENCV_BGSTATS2_H_
-#define INCLUDE_PIX_OPENCV_BGSTATS2_H_
+#ifndef INCLUDE_PIX_OPENCV_BACKGROUNDSUBTRACTOR_H_
+#define INCLUDE_PIX_OPENCV_BACKGROUNDSUBTRACTOR_H_
 
 #include "opencv2/opencv.hpp"
 
 #include "Base/GemPixObj.h"
 #include <RTE/MessageCallbacks.h>
+#include "Gem/Exception.h"
+
+#include <iostream>
 
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
 CLASS
-    pix_opencv_bgstats2
+    pix_opencv_backgroundsubtractor
     
-	square pattern detector
-	
+    generic dynamic background subtractor, should implement severals algo
 KEYWORDS
     pix
     
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-class GEM_EXPORT pix_opencv_bgstats2 : public GemPixObj
+class GEM_EXPORT pix_opencv_backgroundsubtractor: public GemPixObj
 {
-    CPPEXTERN_HEADER(pix_opencv_bgstats2, GemPixObj)
+    CPPEXTERN_HEADER(pix_opencv_backgroundsubtractor, GemPixObj)
 
   public:
 
 	    //////////
 	    // Constructor
-    	pix_opencv_bgstats2(t_floatarg threshold, t_floatarg initFrames);
+    	pix_opencv_backgroundsubtractor(t_floatarg threshold, t_floatarg initFrames);
     	
   protected:
   
     // Message handling
     void initFramesMess(double arg);
     void thresholdMess(double arg);
+    void algoMess(t_symbol *s, int argc, t_atom* argv);
 
     	
    	//////////
    	// Destructor
-   	virtual ~pix_opencv_bgstats2();
+   	virtual ~pix_opencv_backgroundsubtractor();
 
    	//////////
    	// Do the processing
@@ -64,6 +67,8 @@ class GEM_EXPORT pix_opencv_bgstats2 : public GemPixObj
     cv::Mat m_fgmask, m_segm;
     
     t_float m_threshold, m_initFrames;
+    
+    std::vector<std::string> m_bgsub_algos;
   
 };
 #endif	// for header file
