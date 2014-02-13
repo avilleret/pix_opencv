@@ -212,7 +212,7 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
     if ( id > id_max ) id = id_max;
     printf("choose id : %d\n",id);
     if ( !m_fgbg.empty() ) m_fgbg.release();
-    m_fgbg = Algorithm::create<BackgroundSubtractorGMG>(m_bgsub_algos[id]);
+    m_fgbg = Algorithm::create<BackgroundSubtractor>(m_bgsub_algos[id]);
 
     if (m_fgbg.empty())
     {
@@ -223,10 +223,10 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
   } else if ( argv[0].a_type == A_SYMBOL ) {
     t_symbol* algoSym = atom_getsymbol(argv);
     string algo = algoSym->s_name;
-    m_fgbg = Algorithm::create<BackgroundSubtractorGMG>(algo);
+    m_fgbg = Algorithm::create<BackgroundSubtractor>(algo);
     if (m_fgbg.empty())
     {
-      error("Failed to create BackgroundSubtractor.GMG Algorithm.");
+      error("Failed to create %s Algorithm.",algoSym->s_name;);
     } else {
       post("bgsub : \"%s\" created.", algo.c_str());
     }
