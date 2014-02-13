@@ -195,7 +195,15 @@ void pix_opencv_backgroundsubtractor :: getParamMess(t_symbol *paramName){
 
 void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* argv){
   if ( argc == 0 ) {
-    error("algo need symbol or float argument.");
+    t_atom a_prop[2];
+    SETFLOAT(a_prop, m_bgsub_algos.size());
+    outlet_anything( m_dataout, gensym("algos"), 1, a_prop);
+    
+    for (size_t i=0; i < m_bgsub_algos.size(); i++){
+      SETFLOAT(a_prop,i);
+      SETSYMBOL(a_prop+1, gensym(m_bgsub_algos[i].c_str()));
+      outlet_anything(m_dataout, gensym("algoList"), 2, a_prop);
+    }
     return;
   }
   
