@@ -95,6 +95,12 @@ void pix_opencv_backgroundsubtractor :: processImage(imageStruct &image)
     return;
   }
   
+  if (m_fgbg.empty())
+  {
+    error("Please load a valid algorithm before processing.");
+    return;
+  }
+    
   (*m_fgbg)(imgMat, m_fgmask);
   
   if ( image.csize == 1 ){ // if grayscale, send out fgmask
