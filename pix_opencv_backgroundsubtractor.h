@@ -49,8 +49,10 @@ class GEM_EXPORT pix_opencv_backgroundsubtractor: public GemPixObj
   protected:
   
     // Message handling
-    void initFramesMess(double arg);
-    void thresholdMess(double arg);
+    void enumParamsMess();
+    void setParamMess(t_symbol *s, int argc, t_atom* argv);
+    void getParamMess(t_symbol *paramName);
+    void paramHelpMess();
     void algoMess(t_symbol *s, int argc, t_atom* argv);
 
     	
@@ -63,8 +65,10 @@ class GEM_EXPORT pix_opencv_backgroundsubtractor: public GemPixObj
    	virtual void 	processImage(imageStruct &image);
 
   private:
-    cv::Ptr<cv::BackgroundSubtractorGMG> m_fgbg;
+    cv::Ptr<cv::BackgroundSubtractor> m_fgbg;
     cv::Mat m_fgmask, m_segm;
+    
+    t_outlet *m_dataout;
     
     t_float m_threshold, m_initFrames;
     

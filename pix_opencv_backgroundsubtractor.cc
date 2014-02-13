@@ -64,11 +64,8 @@ pix_opencv_backgroundsubtractor :: pix_opencv_backgroundsubtractor(t_floatarg th
     throw(GemException("Failed to create BackgroundSubtractor.GMG Algorithm."));
   }
   
-  //~if ( m_initFrames == 0. ) m_initFrames = 20;
-  //~if ( m_threshold == 0. ) m_threshold = 0.7;
-  
-  //~m_fgbg->set("initializationFrames", m_initFrames);
-  //~m_fgbg->set("decisionThreshold", m_threshold);
+  m_dataout = outlet_new(this->x_obj, 0);
+
 }
 
 /////////////////////////////////////////////////////////
@@ -114,13 +111,92 @@ void pix_opencv_backgroundsubtractor :: processImage(imageStruct &image)
   }
 }
 
-void pix_opencv_backgroundsubtractor :: initFramesMess(double val){
-  m_fgbg->set("initializationFrames", val);
+void pix_opencv_backgroundsubtractor :: paramHelpMess(){
+  vector<string> paramList;
+  m_fgbg->getParams(paramList);
+  post("%s parameters help :",m_fgbg->name().c_str());
+  for (size_t i=0; i < paramList.size(); i++){
+    post("%s : %s", paramList[i].c_str(), m_fgbg->paramHelp(paramList[i]).c_str());
+  }
 }
 
+void pix_opencv_backgroundsubtractor :: enumParamsMess(){
+  vector<string> paramList;
+  m_fgbg->getParams(paramList);
+  t_atom a_prop[2];
+  SETFLOAT(a_prop, paramList.size());
+  outlet_anything( m_dataout, gensym("params"), 1, a_prop);
+  
+  for (size_t i=0; i < paramList.size(); i++){
+    SETSYMBOL(a_prop, gensym(paramList[i].c_str()));
+    SETFLOAT(a_prop+1,0.);
+    outlet_anything(m_dataout, gensym("paramList"), 2, a_prop);
+  }
+}
 
-void pix_opencv_backgroundsubtractor :: thresholdMess(double val){
-  m_fgbg->set("decisionThreshold", val);
+void pix_opencv_backgroundsubtractor :: setParamMess(t_symbol *s, int argc, t_atom* argv){
+  if ( argc < 2 ){
+    error("setParam needs 2 args: paramName, value");
+    return;
+  }
+  
+  if ( argv[0].a_type != A_SYMBOL ){
+    error("1st argument should be paramName (symbol)");
+    return;
+  }
+  t_symbol* paramName = atom_getsymbol(argv);
+
+  if ( argv[1].a_type != A_FLOAT ){
+    error("currently support only float parameter values"); // I don't know the signification of output of paramType(), so only support float
+  }
+  
+  vector<string> paramList;
+  m_fgbg->getParams(paramList);
+  size_t i;
+  for (i=0; i < paramList.size(); i++){
+    if ( paramList[i] == paramName->s_name ) break;
+  }
+  if ( i == paramList.size()){
+    error("can't find parameter %s", paramName->s_name);
+    return;
+  }
+
+  float val = atom_getfloat(argv+1);
+  try {
+    m_fgbg->set(paramList[i], val);
+    
+  } catch (...) {
+    error("can't set parameter %s value",paramList[i].c_str());
+    return;
+  }
+}
+
+void pix_opencv_backgroundsubtractor :: getParamMess(t_symbol *paramName){
+  vector<string> paramList;
+  m_fgbg->getParams(paramList);
+  size_t i;
+  for (i=0; i < paramList.size(); i++){
+    if ( paramList[i] == paramName->s_name ) break;
+  }
+  if ( i == paramList.size()){
+    error("can't find parameter %s", paramName->s_name);
+    return;
+  }
+  double val=0;
+  try {
+    val = m_fgbg->get<double>(paramList[i]);
+    
+  } catch (...) {
+    error("can't get parameter %s value",paramList[i].c_str());
+    return;
+  }
+  
+  t_atom a_val[2];
+  SETSYMBOL(a_val, paramName);
+  SETFLOAT(a_val+1, val);
+  outlet_anything(m_dataout, gensym("param"), 2, a_val);
+  
+  
 }
 
 void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* argv){
@@ -138,7 +214,6 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
     if ( !m_fgbg.empty() ) m_fgbg.release();
     m_fgbg = Algorithm::create<BackgroundSubtractorGMG>(m_bgsub_algos[id]);
 
-    //~m_fgbg->setAlgorithm(m_bgsub_algos[id],m_fgbg);
     if (m_fgbg.empty())
     {
       error("Failed to create %s Algorithm.", m_bgsub_algos[id].c_str());
@@ -164,7 +239,9 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
 /////////////////////////////////////////////////////////
 void pix_opencv_backgroundsubtractor :: obj_setupCallback(t_class *classPtr)
 {
-  CPPEXTERN_MSG1(classPtr, "initFrames",  initFramesMess,     double);
-  CPPEXTERN_MSG1(classPtr, "threshold",   thresholdMess,     double);
   CPPEXTERN_MSG(classPtr, "algo",   algoMess);
+  CPPEXTERN_MSG0(classPtr, "enumParams",   enumParamsMess);
+  CPPEXTERN_MSG(classPtr, "setParam",   setParamMess);
+  CPPEXTERN_MSG1(classPtr, "getParam",   getParamMess, t_symbol*);
+  CPPEXTERN_MSG0(classPtr, "paramHelp",   paramHelpMess);
 }
