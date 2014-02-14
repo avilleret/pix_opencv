@@ -65,7 +65,6 @@ MANUAL =
 OVERVIEW = pix_opencv-overview.pd
 EXTRA_DIST = dessin.tif $(OVERVIEW)
 EXTRA_DIST_FOLDER = model haarcascades plus
-EXTRA_DIST_FOLDER = model haarcascades
 
 
 # unit tests and related files here, in the 'unittests' subfolder
@@ -86,7 +85,9 @@ FAT_FLAGS=-arch i386
 ALL_LDFLAGS =  
 SHARED_LDFLAGS =
 FACETRACKER_LIBS += FaceTracker/src/lib/CLM.o  FaceTracker/src/lib/FCheck.o  FaceTracker/src/lib/FDet.o  FaceTracker/src/lib/IO.o  FaceTracker/src/lib/Patch.o  FaceTracker/src/lib/PAW.o  FaceTracker/src/lib/PDM.o  FaceTracker/src/lib/Tracker.o
-ALL_LIBS += `pkg-config --libs opencv`
+LIBS_macosx += `pkg-config --libs opencv`
+LIBS_linux += lib-$(EXTENSION)/libopencv_calib3d.so.2.4 lib-$(EXTENSION)/libopencv_contrib.so.2.4 lib-$(EXTENSION)/libopencv_core.so.2.4 lib-$(EXTENSION)/libopencv_features2d.so.2.4 lib-$(EXTENSION)/libopencv_flann.so.2.4 lib-$(EXTENSION)/libopencv_highgui.so.2.4 lib-$(EXTENSION)/libopencv_imgproc.so.2.4 lib-$(EXTENSION)/libopencv_legacy.so.2.4 lib-$(EXTENSION)/libopencv_ml.so.2.4 lib-$(EXTENSION)/libopencv_nonfree.so.2.4 lib-$(EXTENSION)/libopencv_objdetect.so.2.4 lib-$(EXTENSION)/libopencv_ocl.so.2.4 lib-$(EXTENSION)/libopencv_photo.so.2.4 lib-$(EXTENSION)/libopencv_stitching.so.2.4 lib-$(EXTENSION)/libopencv_superres.so.2.4 lib-$(EXTENSION)/libopencv_video.so.2.4 lib-$(EXTENSION)/libopencv_videostab.so.2.4
+
 
 #------------------------------------------------------------------------------#
 #
@@ -236,7 +237,7 @@ ifeq ($(UNAME),Linux)
   PD_PATH = /usr
   OPT_CFLAGS = -O6 -funroll-loops -fomit-frame-pointer
   ALL_CFLAGS += -fPIC $(CFLAGS_linux)
-  ALL_LDFLAGS += -rdynamic -shared -fPIC -Wl,-rpath,"\$$ORIGIN",--enable-new-dtags
+  ALL_LDFLAGS += -rdynamic -shared -fPIC -Wl,-rpath,"\$$ORIGIN"/lib-$(EXTENSION),--enable-new-dtags
   SHARED_LDFLAGS += -Wl,-soname,$(SHARED_LIB) -shared
   ALL_LIBS += -lc $(LIBS_linux)
   STRIP = strip --strip-unneeded -R .note -R .comment

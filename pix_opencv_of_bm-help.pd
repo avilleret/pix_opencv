@@ -1,4 +1,4 @@
-#N canvas 66 25 1339 660 10;
+#N canvas 64 85 1339 660 10;
 #X obj 977 55 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
 0;
 #N canvas 189 149 454 304 gemwin 0;
@@ -54,25 +54,25 @@ average direction and the intensity of the movement in a video stream.
 0;
 #X obj 455 540 pix_opencv_of_bm;
 #X obj 560 572 unpack f f;
-#X floatatom 646 572 5 0 0 0 - - -;
-#X floatatom 648 592 5 0 0 0 - - -;
+#X floatatom 646 572 5 0 0 0 - - -, f 5;
+#X floatatom 648 592 5 0 0 0 - - -, f 5;
 #X text 688 571 largest amplitude of movement;
 #X text 688 592 angle of the block with the maximum movement;
 #X text 686 604 ( in degrees [-180 \, 180]);
-#X floatatom 507 621 5 0 0 0 - - -;
+#X floatatom 507 621 5 0 0 0 - - -, f 5;
 #X text 549 642 marked with a white arrow on the stream;
 #X text 549 618 average angle of the blocks movement;
 #X text 548 630 ( in degrees [-180 \, 180]);
 #X obj 600 463 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X msg 515 461 nightmode \$1;
-#X floatatom 573 332 5 0 0 0 - - -;
+#X floatatom 573 332 5 0 0 0 - - -, f 5;
 #X msg 463 331 blocksize \$1 \$1;
-#X floatatom 585 355 5 0 0 0 - - -;
-#X floatatom 599 381 5 0 0 0 - - -;
+#X floatatom 585 355 5 0 0 0 - - -, f 5;
+#X floatatom 599 381 5 0 0 0 - - -, f 5;
 #X msg 475 354 shiftsize \$1 \$1;
 #X msg 489 380 maxrange \$1 \$1;
-#X floatatom 589 408 5 0 0 0 - - -;
+#X floatatom 589 408 5 0 0 0 - - -, f 5;
 #X msg 502 406 threshold \$1;
 #X obj 621 492 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
@@ -83,7 +83,7 @@ average direction and the intensity of the movement in a video stream.
 #X text 643 490 use previous results ( default : 0 \, surprising results
 when on );
 #X msg 505 435 minblocks \$1;
-#X floatatom 592 436 5 0 0 0 - - -;
+#X floatatom 592 436 5 0 0 0 - - -, f 5;
 #X text 619 464 set nightmode;
 #X text 636 430 minimum nuber of blocks to detect the movement;
 #X text 631 405 threshold value for the detection of movement ( default
@@ -95,7 +95,7 @@ when on );
 -1;
 #X obj 618 113 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
 -1 -1;
-#X floatatom 600 78 5 0 10000 1 frame# - -;
+#X floatatom 600 78 5 0 10000 1 frame# - -, f 5;
 #X obj 561 -33 openpanel;
 #X msg 561 -13 open \$1;
 #X obj 549 96 pix_film;
@@ -109,7 +109,7 @@ when on );
 #X obj 296 224 separator;
 #X obj 296 250 translateXYZ -2 0 0;
 #X obj 454 253 translateXYZ 2 0 0;
-#N canvas 0 22 450 300 vswitch 0;
+#N canvas 0 50 450 300 vswitch 0;
 #X obj 144 263 outlet;
 #X obj 36 26 inlet;
 #X obj 260 29 inlet;
