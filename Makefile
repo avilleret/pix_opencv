@@ -62,7 +62,7 @@ MANUAL =
 # list them here.  This can be anything from header files, test patches,
 # documentation, etc.  README.txt and LICENSE.txt are required and therefore
 # automatically included
-OVERVIEW = pix_opencv-overview.pd
+OVERVIEW = pix_opencv-help.pd
 EXTRA_DIST = dessin.tif $(OVERVIEW)
 EXTRA_DIST_FOLDER = model haarcascades plus
 
@@ -363,6 +363,12 @@ SHARED_TCL_LIB = $(wildcard lib$(LIBRARY_NAME).tcl)
 
 .PHONY = install libdir_install single_install install-doc install-examples install-manual install-unittests clean distclean dist etags $(LIBRARY_NAME)
 
+
+# this links everything into a single binary file
+$(LIBRARY_NAME): $(SOURCES:.cc=.o) $(LIBRARY_NAME).o
+	$(CC) $(ALL_LDFLAGS) -o $(LIBRARY_NAME).$(EXTENSION) $(SOURCES:.cc=.o) $(LIBRARY_NAME).o $(ALL_LIBS)
+	chmod a-x $(LIBRARY_NAME).$(EXTENSION)
+
 all: $(SOURCES:.cc=.$(EXTENSION)) $(SHARED_LIB)
 
 facetracker: pix_opencv_facetracker.$(EXTENSION)
@@ -380,12 +386,6 @@ pix_opencv_facetracker.o: pix_opencv_facetracker.cc
 %.$(EXTENSION): %.o $(SHARED_LIB)
 	$(CC) $(ALL_LDFLAGS) -o "$*.$(EXTENSION)" "$*.o"  $(ALL_LIBS) $(SHARED_LIB)
 	chmod a-x "$*.$(EXTENSION)"
-
-# this links everything into a single binary file
-$(LIBRARY_NAME): $(SOURCES:.cc=.o) $(LIBRARY_NAME).o lib$(LIBRARY_NAME).o
-	$(CC) $(ALL_LDFLAGS) -o $(LIBRARY_NAME).$(EXTENSION) $(SOURCES:.cc=.o) \
-		$(LIBRARY_NAME).o lib$(LIBRARY_NAME).o $(ALL_LIBS)
-	chmod a-x $(LIBRARY_NAME).$(EXTENSION)
 
 $(SHARED_LIB): $(SHARED_SOURCE:.cc=.o)
 	$(CC) $(SHARED_LDFLAGS) -o $(SHARED_LIB) $(SHARED_SOURCE:.cc=.o) $(ALL_LIBS)
@@ -574,15 +574,13 @@ TAGS: $(wildcard $(PD_INCLUDE)/*.h) $(SOURCES) $(SHARED_SOURCE) $(SHARED_HEADER)
 overview:
 	echo "#N canvas 147 197 1566 537 10;" > $(OVERVIEW)
 	echo "#X text 126 15 overview of all available pix_opencv objects;" >> $(OVERVIEW)
+	echo "#X obj 30 40 pix_opencv;" >> $(OVERVIEW)
 	ID=0 ; \
 	for extern in $(SOURCES:.cc=""); do \
 		echo "#X obj `expr $$ID % 5 \* 300 + 50` `expr $$ID / 5 \* 30 + 40` $$extern;" >> $(OVERVIEW) && ID=`expr $$ID + 1` ; \
 	done ; \
 	echo "#X obj 30 `expr $$ID / 5 \* 30 + 80` cnv 15 250 60 empty empty extra 20 12 0 14 -4034 -66577 0;" >> $(OVERVIEW) ; \
 	echo "#X obj 50 `expr $$ID / 5 \* 30 + 100` pix_opencv_facetracker;" >> $(OVERVIEW)
-
-	
-	
 
 showsetup:
 	@echo "CC: $(CC)"
