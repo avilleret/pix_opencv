@@ -64,12 +64,9 @@ class GEM_EXPORT pix_opencv_clahe : public GemPixObj
   
   private:
   
-    Mat imgMat, outframe;
+    Mat m_imgMat, m_gray;
     ocl::oclMat d_outframe, d_frame;
     
     Ptr<CLAHE> m_oclFilter, m_cpuFilter;
-    
-    
-    	    
 };
 #endif	// for header file

@@ -57,19 +57,28 @@ void pix_opencv_clahe :: startRendering(){
 void pix_opencv_clahe :: processImage(imageStruct &image)
 { 
   if ( image.csize == 1 ){
-    imgMat = Mat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
+    m_gray = Mat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
+  } else if (image.csize == 4) {
+    m_imgMat = Mat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
+    cvtColor(m_imgMat,m_gray,CV_RGBA2GRAY);
   } else {
-    verbose(1,"suport only GRAY image");
-    return;
+    error("only support grayscale and RGBA image");
   }
   
   try {
-    d_outframe = imgMat;
+    d_outframe = m_gray;
     m_oclFilter->apply(d_outframe, d_outframe);
-    d_outframe.download(imgMat);
+    d_outframe.download(m_gray);
   } catch (...) {
-    verbose(1, "can't use OpenCL, switch to CPU, this could be very slow !!");
-    m_cpuFilter->apply(imgMat, imgMat);
+    m_cpuFilter->apply(m_gray, m_gray);
+  }
+  
+  if ( image.csize == 4 ){
+    std::vector<Mat> split;
+    cv::split(m_imgMat,split);
+    split.pop_back();
+    split.push_back(m_gray);
+    cv::merge(split,m_imgMat);    
   }
 }
 
