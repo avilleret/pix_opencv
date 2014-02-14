@@ -53,13 +53,17 @@ pix_opencv_backgroundsubtractor :: pix_opencv_backgroundsubtractor(t_floatarg th
     throw(GemException("Can't find any background subtractor algorithm."));
   }
   
-  m_fgbg = Algorithm::create<BackgroundSubtractorGMG>(m_bgsub_algos[0]);
-  if (m_fgbg.empty())
+  if ( m_bgsub_algos[0] == "BackgroundSubtractor.GMG"){
+    m_fgbgGMG = Algorithm::create<BackgroundSubtractorGMG>(m_bgsub_algos[0]);
+  } else {
+    m_fgbgMOG = Algorithm::create<BackgroundSubtractor>(m_bgsub_algos[0]);
+  }
+  if (m_fgbgMOG.empty() && m_fgbgGMG.empty())
   {
     throw(GemException("Failed to create BackgroundSubtractor Algorithm."));
   }
   
-  m_dataout = outlet_new(this->x_obj, 0);
+  m_dataout = outlet_new(this->x_obj, 0); 
 }
 
 /////////////////////////////////////////////////////////
@@ -76,30 +80,33 @@ pix_opencv_backgroundsubtractor :: ~pix_opencv_backgroundsubtractor()
 /////////////////////////////////////////////////////////    	
 void pix_opencv_backgroundsubtractor :: processImage(imageStruct &image)
 { 
-  Mat imgMat;
+  Mat imgMat, input;
   if ( image.csize == 1 ){
     imgMat = Mat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
+    input = imgMat;
   } else if ( image.csize == 4 ){
     imgMat = Mat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
+    cvtColor(imgMat, input, CV_RGBA2RGB);
   } else {
     verbose(1,"suport only RGBA or GRAY image");
     return;
   }
   
-  if (m_fgbg.empty())
-  {
+  if (!m_fgbgMOG.empty()){
+    (*m_fgbgMOG)(input, m_fgmask);
+  } else if (!m_fgbgGMG.empty()) {
+    (*m_fgbgGMG)(input, m_fgmask);
+  } else {
     error("Please load a valid algorithm before processing.");
     return;
   }
-    
-  (*m_fgbg)(imgMat, m_fgmask);
   
   if ( image.csize == 1 ){ // if grayscale, send out fgmask
     image.data = m_fgmask.data;
   } else { // else, set only alpha channel
     std::vector<cv::Mat> split;
     cv::split(imgMat, split);
-    split.pop_back(); // delete alpha channel
+    split.pop_back();
     split.push_back(m_fgmask); // add fgmask as alpha channel
     cv::merge(split, imgMat);
   }
@@ -107,16 +114,35 @@ void pix_opencv_backgroundsubtractor :: processImage(imageStruct &image)
 
 void pix_opencv_backgroundsubtractor :: paramHelpMess(){
   vector<string> paramList;
-  m_fgbg->getParams(paramList);
-  post("%s parameters help :",m_fgbg->name().c_str());
-  for (size_t i=0; i < paramList.size(); i++){
-    post("%s : %s", paramList[i].c_str(), m_fgbg->paramHelp(paramList[i]).c_str());
+  if (!m_fgbgMOG.empty()){
+    m_fgbgMOG->getParams(paramList);
+    post("%s parameters help :",m_fgbgMOG->name().c_str());
+    for (size_t i=0; i < paramList.size(); i++){
+      post("%s : %s", paramList[i].c_str(), m_fgbgMOG->paramHelp(paramList[i]).c_str());
+    }
+  } else if (!m_fgbgGMG.empty()) {
+    m_fgbgGMG->getParams(paramList);
+    post("%s parameters help :",m_fgbgGMG->name().c_str());
+    for (size_t i=0; i < paramList.size(); i++){
+      post("%s : %s", paramList[i].c_str(), m_fgbgGMG->paramHelp(paramList[i]).c_str());
+    }
+  } else {
+    error("Please load a valid algorithm before requesting paramHelp.");
+    return;
   }
 }
 
 void pix_opencv_backgroundsubtractor :: enumParamsMess(){
   vector<string> paramList;
-  m_fgbg->getParams(paramList);
+  if (!m_fgbgMOG.empty()){
+    m_fgbgMOG->getParams(paramList);
+  } else if ( !m_fgbgGMG.empty() ){
+    m_fgbgGMG->getParams(paramList);
+  } else {
+    error("please choose an algo before enumerating parameters.");
+    return;
+  }
+
   t_atom a_prop[2];
   SETFLOAT(a_prop, paramList.size());
   outlet_anything( m_dataout, gensym("params"), 1, a_prop);
@@ -145,7 +171,14 @@ void pix_opencv_backgroundsubtractor :: setParamMess(t_symbol *s, int argc, t_at
   }
   
   vector<string> paramList;
-  m_fgbg->getParams(paramList);
+   if (!m_fgbgMOG.empty()){
+    m_fgbgMOG->getParams(paramList);
+  } else if ( !m_fgbgGMG.empty() ){
+    m_fgbgGMG->getParams(paramList);
+  } else {
+    error("please choose an algo before enumerating parameters.");
+    return;
+  }
   size_t i;
   for (i=0; i < paramList.size(); i++){
     if ( paramList[i] == paramName->s_name ) break;
@@ -157,8 +190,11 @@ void pix_opencv_backgroundsubtractor :: setParamMess(t_symbol *s, int argc, t_at
 
   float val = atom_getfloat(argv+1);
   try {
-    m_fgbg->set(paramList[i], val);
-    
+    if (!m_fgbgMOG.empty()){
+      m_fgbgMOG->set(paramList[i], val);
+    } else if ( !m_fgbgGMG.empty() ) {
+      m_fgbgGMG->set(paramList[i], val);
+    }
   } catch (...) {
     error("can't set parameter %s value",paramList[i].c_str());
     return;
@@ -167,7 +203,14 @@ void pix_opencv_backgroundsubtractor :: setParamMess(t_symbol *s, int argc, t_at
 
 void pix_opencv_backgroundsubtractor :: getParamMess(t_symbol *paramName){
   vector<string> paramList;
-  m_fgbg->getParams(paramList);
+  if (!m_fgbgMOG.empty()){
+    m_fgbgMOG->getParams(paramList);
+  } else if ( !m_fgbgGMG.empty() ){
+    m_fgbgGMG->getParams(paramList);
+  } else {
+    error("please choose an algo before enumerating parameters.");
+    return;
+  }
   size_t i;
   for (i=0; i < paramList.size(); i++){
     if ( paramList[i] == paramName->s_name ) break;
@@ -178,8 +221,11 @@ void pix_opencv_backgroundsubtractor :: getParamMess(t_symbol *paramName){
   }
   double val=0;
   try {
-    val = m_fgbg->get<double>(paramList[i]);
-    
+    if (!m_fgbgMOG.empty()){
+      val = m_fgbgMOG->get<double>(paramList[i]);
+    } else if ( !m_fgbgGMG.empty() ){
+      val = m_fgbgGMG->get<double>(paramList[i]);
+    }    
   } catch (...) {
     error("can't get parameter %s value",paramList[i].c_str());
     return;
@@ -207,14 +253,19 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
     return;
   }
   
+  if ( !m_fgbgMOG.empty() ) m_fgbgMOG.release();
+  if ( !m_fgbgGMG.empty() ) m_fgbgGMG.release();
+  
   if ( argv[0].a_type == A_FLOAT ){
     int id_max = m_bgsub_algos.size()-1;
     int id = atom_getfloat(argv);
     if ( id > id_max ) id = id_max;
-    if ( !m_fgbg.empty() ) m_fgbg.release();
-    m_fgbg = Algorithm::create<BackgroundSubtractor>(m_bgsub_algos[id]);
-
-    if (m_fgbg.empty())
+    if ( m_bgsub_algos[id] == "BackgroundSubtractor.GMG"){
+      m_fgbgGMG = Algorithm::create<BackgroundSubtractorGMG>(m_bgsub_algos[id]);
+    } else {
+      m_fgbgMOG = Algorithm::create<BackgroundSubtractor>(m_bgsub_algos[id]);
+    }
+    if (m_fgbgMOG.empty() && m_fgbgGMG.empty())
     {
       error("Failed to create %s Algorithm.", m_bgsub_algos[id].c_str());
     } else {
@@ -223,12 +274,16 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
   } else if ( argv[0].a_type == A_SYMBOL ) {
     t_symbol* algoSym = atom_getsymbol(argv);
     string algo = algoSym->s_name;
-    m_fgbg = Algorithm::create<BackgroundSubtractor>(algo);
-    if (m_fgbg.empty())
-    {
-      error("Failed to create %s Algorithm.",algoSym->s_name);
+    if ( algo == "BackgroundSubtractor.GMG"){
+      m_fgbgGMG = Algorithm::create<BackgroundSubtractorGMG>(algo);
     } else {
-      verbose(2,"bgsub : \"%s\" created.", algo.c_str());
+      m_fgbgMOG = Algorithm::create<BackgroundSubtractor>(algo);
+    }
+    if (m_fgbgMOG.empty() && m_fgbgGMG.empty())
+    {
+      error("Failed to create %s Algorithm.", algo.c_str());
+    } else {
+      verbose(2,"bgsub : \"%s\" created.",algo.c_str());
     }
   }
 }

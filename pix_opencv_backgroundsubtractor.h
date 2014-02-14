@@ -65,7 +65,9 @@ class GEM_EXPORT pix_opencv_backgroundsubtractor: public GemPixObj
    	virtual void 	processImage(imageStruct &image);
 
   private:
-    cv::Ptr<cv::BackgroundSubtractor> m_fgbg;
+    //~cv::Ptr<cv::BackgroundSubtractor> m_fgbg;
+    cv::Ptr<cv::BackgroundSubtractor> m_fgbgMOG;
+    cv::Ptr<cv::BackgroundSubtractorGMG> m_fgbgGMG;
     cv::Mat m_fgmask, m_segm;
     
     t_outlet *m_dataout;
