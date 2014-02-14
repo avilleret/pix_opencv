@@ -21,7 +21,7 @@
 
 using namespace cv;
 
-CPPEXTERN_NEW(pix_opencv_clahe)
+CPPEXTERN_NEW_WITH_THREE_ARGS(pix_opencv_clahe, t_floatarg, A_DEFFLOAT, t_floatarg, A_DEFFLOAT, t_floatarg, A_DEFFLOAT);
 
 /////////////////////////////////////////////////////////
 //
@@ -31,8 +31,18 @@ CPPEXTERN_NEW(pix_opencv_clahe)
 // Constructor
 //
 /////////////////////////////////////////////////////////
-pix_opencv_clahe :: pix_opencv_clahe()
+pix_opencv_clahe :: pix_opencv_clahe(t_float clipLimit, int width, int height)
+  : m_clipLimit(40), m_tileGridSize(Size(8,8)), m_rendering(false)
 { 
+  if ( clipLimit > 0. ){
+    m_clipLimit = clipLimit;
+  }
+  if ( width > 0 && height > 0 ){
+    m_tileGridSize=Size(width, height);
+  } else if (width > 0 || height > 0) {
+    int max = width > height ? width : height;
+    m_tileGridSize=Size ( max, max );
+  }
 }
 
 /////////////////////////////////////////////////////////
@@ -46,8 +56,28 @@ pix_opencv_clahe :: ~pix_opencv_clahe()
 // StartRendering
 void pix_opencv_clahe :: startRendering(){
   
-  m_oclFilter = ocl::createCLAHE();
-  m_cpuFilter = createCLAHE(); 
+  ocl::DevicesInfo devicesInfo;
+  ocl::getOpenCLDevices(devicesInfo);
+  post("Found %d OpenCL device(s).", devicesInfo.size());
+  for ( size_t i = 0; i < devicesInfo.size(); i++){
+    post("%s %s", devicesInfo[i]->deviceVendor.c_str(), devicesInfo[i]->deviceName.c_str());
+  }
+  if ( devicesInfo.size() == 0 ){
+    post("can't find OpenCL device, switch to CPU mode");
+    m_cpuFilter = createCLAHE();
+    m_gpuMode = false;
+  } else {
+    m_oclFilter = ocl::createCLAHE();
+    m_gpuMode = true;
+  }
+  clipLimitMess(m_clipLimit);
+  tileGridSizeMess(m_tileGridSize.width,m_tileGridSize.height);
+  
+  m_rendering = true;
+}
+
+void pix_opencv_clahe :: stopRendering(){
+  m_rendering = false;
 }
 
 /////////////////////////////////////////////////////////
@@ -65,11 +95,11 @@ void pix_opencv_clahe :: processImage(imageStruct &image)
     error("only support grayscale and RGBA image");
   }
   
-  try {
+  if ( m_gpuMode ) {
     d_outframe = m_gray;
     m_oclFilter->apply(d_outframe, d_outframe);
     d_outframe.download(m_gray);
-  } catch (...) {
+  } else {
     m_cpuFilter->apply(m_gray, m_gray);
   }
   
@@ -82,10 +112,34 @@ void pix_opencv_clahe :: processImage(imageStruct &image)
   }
 }
 
+void pix_opencv_clahe :: clipLimitMess(t_float limit){
+  m_clipLimit=limit;
+  if ( m_rendering ){
+    if ( m_gpuMode ){
+      m_oclFilter->setClipLimit(m_clipLimit);
+    } else {
+      m_cpuFilter->setClipLimit(m_clipLimit);
+    }
+  }
+}
+
+void pix_opencv_clahe :: tileGridSizeMess(int width, int height){
+  m_tileGridSize=Size(MAX(width,1),MAX(height,1));
+  if ( m_rendering ){
+    if ( m_gpuMode ){
+      m_oclFilter->setTilesGridSize(m_tileGridSize);
+    } else {
+      m_cpuFilter->setTilesGridSize(m_tileGridSize);
+    }
+  }
+}
+
 /////////////////////////////////////////////////////////
 // static member function
 //
 /////////////////////////////////////////////////////////
 void pix_opencv_clahe :: obj_setupCallback(t_class *classPtr)
 {
+  CPPEXTERN_MSG1(classPtr, "clipLimit",   clipLimitMess, t_float);
+  CPPEXTERN_MSG2(classPtr, "tileGridSize",   tileGridSizeMess, int, int);
 }

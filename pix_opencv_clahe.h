@@ -32,9 +32,7 @@ using namespace cv;
 -------------------------------------------------------------------
 CLASS
     pix_opencv_clahe
-    
-	square pattern detector
-	
+    	
 KEYWORDS
     pix
     
@@ -49,8 +47,12 @@ class GEM_EXPORT pix_opencv_clahe : public GemPixObj
 
 	    //////////
 	    // Constructor
-    	pix_opencv_clahe();
+    	pix_opencv_clahe(t_float clipLimit, int width, int height);
     	
+      /////////
+      // Message handler
+      void clipLimitMess(float);
+      void tileGridSizeMess(int,int);
   protected:
     	
    	//////////
@@ -61,6 +63,7 @@ class GEM_EXPORT pix_opencv_clahe : public GemPixObj
    	// Do the processing
    	virtual void 	processImage(imageStruct &image);
     virtual void  startRendering();
+    virtual void  stopRendering();
   
   private:
   
@@ -68,5 +71,10 @@ class GEM_EXPORT pix_opencv_clahe : public GemPixObj
     ocl::oclMat d_outframe, d_frame;
     
     Ptr<CLAHE> m_oclFilter, m_cpuFilter;
+    
+    bool m_gpuMode;
+    float m_clipLimit;
+    Size m_tileGridSize;
+    bool m_rendering;
 };
 #endif	// for header file
