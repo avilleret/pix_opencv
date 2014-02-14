@@ -22,7 +22,7 @@
 using namespace cv;
 using namespace std;
 
-CPPEXTERN_NEW_WITH_TWO_ARGS(pix_opencv_backgroundsubtractor, t_floatarg, A_DEFFLOAT, t_floatarg, A_DEFFLOAT);
+CPPEXTERN_NEW(pix_opencv_backgroundsubtractor);
 
 /////////////////////////////////////////////////////////
 //
@@ -32,8 +32,7 @@ CPPEXTERN_NEW_WITH_TWO_ARGS(pix_opencv_backgroundsubtractor, t_floatarg, A_DEFFL
 // Constructor
 //
 /////////////////////////////////////////////////////////
-pix_opencv_backgroundsubtractor :: pix_opencv_backgroundsubtractor(t_floatarg threshold, t_floatarg initFrames)
-    : m_threshold(threshold), m_initFrames(initFrames)
+pix_opencv_backgroundsubtractor :: pix_opencv_backgroundsubtractor()
 { 
   initModule_video();
   setUseOptimized(true);

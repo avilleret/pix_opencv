@@ -44,7 +44,7 @@ class GEM_EXPORT pix_opencv_backgroundsubtractor: public GemPixObj
 
 	    //////////
 	    // Constructor
-    	pix_opencv_backgroundsubtractor(t_floatarg threshold, t_floatarg initFrames);
+    	pix_opencv_backgroundsubtractor();
     	
   protected:
   
