@@ -574,7 +574,7 @@ TAGS: $(wildcard $(PD_INCLUDE)/*.h) $(SOURCES) $(SHARED_SOURCE) $(SHARED_HEADER)
 overview:
 	echo "#N canvas 147 197 1566 537 10;" > $(OVERVIEW)
 	echo "#X text 126 15 overview of all available pix_opencv objects;" >> $(OVERVIEW)
-	echo "#X obj 30 40 pix_opencv;" >> $(OVERVIEW)
+	echo "#X obj 30 20 pix_opencv;" >> $(OVERVIEW)
 	ID=0 ; \
 	for extern in $(SOURCES:.cc=""); do \
 		echo "#X obj `expr $$ID % 5 \* 300 + 50` `expr $$ID / 5 \* 30 + 40` $$extern;" >> $(OVERVIEW) && ID=`expr $$ID + 1` ; \
