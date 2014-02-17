@@ -472,13 +472,13 @@ distclean: clean
 $(DISTBINDIR):
 	$(INSTALL_DIR) $(DISTBINDIR)
 
-libdir: all $(DISTBINDIR) overview lib3rd
+libdir: $(LIBRARY_NAME) $(DISTBINDIR) overview lib3rd
 	$(INSTALL_DATA) $(LIBRARY_NAME)-meta.pd  $(DISTBINDIR)
 	if [ -s pix_opencv_facetracker.$(EXTENSION) ] ; then \
 		$(INSTALL_DATA) pix_opencv_facetracker.$(EXTENSION) $(DISTBINDIR) ; \
 	fi;
 	$(INSTALL_DATA) $(HELPPATCHES) $(DISTBINDIR)
-	$(INSTALL_DATA) $(SOURCES:.cc=.$(EXTENSION)) $(DISTBINDIR)
+	$(INSTALL_DATA) pix_opencv.$(EXTENSION) $(DISTBINDIR)
 	test -z "$(strip $(EXAMPLES))" || \
 		test -e $(DISTBINDIR)/examples || \
 			mkdir $(DISTBINDIR)/examples
