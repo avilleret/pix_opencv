@@ -74,12 +74,15 @@ The include must contain the following :
 # 6. Packaging
 ## 6.1 To make a Distribuable source tarbal :
   `make dist`
-	This archive is called "pix_opencv-VERSION".
-	This archive must contains all sources files and headers, the build mechanism, and all other files needed to build it.
+	
+This archive is called "pix_opencv-VERSION".
+This archive must contains all sources files and headers, the build mechanism, and all other files needed to build it.
+
 ## 6.2 To make a binary archive :
   `make libdir`
-	This archive is called "pix_opencv-VERSION-TARGET".
-	This archive must contains binary of VERSION for TARGET architecture.
+
+This archive is called "pix_opencv-VERSION-TARGET".
+This archive must contains binary of VERSION for TARGET architecture.
   
 # 7. Testing 
   Open the pix_opencv_overview.pd patch.
