@@ -9,10 +9,18 @@ And you need to know where they are…
 You also need a compiling toolchain, e.g. GCC on Linux/Mac or Microsoft Visual C++ on Windows.
 
 # 2. Get the sources :
-Download the pix_opencv sources from Puredata external repository :
-svn co svn://svn.code.sf.net/p/pure-data/svn/trunk/externals/pix_opencv
-or if you don't have svnl, can get a "snapshot",i.e. a zip file with the current code, here :
-https://sourceforge.net/p/pure-data/svn/HEAD/tree/trunk/externals/pix_opencv/
+
+The is a `pix_opencv` folder in the externals folder of the Puredata SVN repository.
+This is the primary version of `pix_opencv` but as it is quite hard to maintain this version, I decided to fork it in Githud. Thus the latest sources are here : https://github.com/avilleret/pix_opencv
+You can clone it : 
+
+~~~~
+git clone https://github.com/avilleret/pix_opencv
+~~~~
+
+or fork it, or even download a snapshot.
+
+The SVN repository will be updated on each release.
 
 # 3. Get opencv :
 ## Ubuntu/Linux
