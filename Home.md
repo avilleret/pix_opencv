@@ -68,7 +68,7 @@ The include must contain the following :
   - Gem include folder : path\to\Gem
   - OpenCV include path, wich is ususally $(OPENCV_DIR)\..\..\include if you setup OPENCV_DIR according to Windows quickstart guide on opencv.org.
   
-# 5. to build pix_opencv_facetracker :
+# 5. to build `pix_opencv_facetracker` :
 
 ~~~~
   git submodule init
@@ -93,6 +93,6 @@ This archive is called "pix_opencv-VERSION-TARGET".
 This archive must contains binary of VERSION for TARGET architecture.
   
 # 7. Testing 
-  Open the pix_opencv_overview.pd patch.
+  Open the `pix_opencv_overview.pd` patch.
   It shows an overview of all available externals.
   And this tests the creation of each external.
