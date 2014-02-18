@@ -35,7 +35,6 @@ CPPEXTERN_NEW(pix_opencv_template)
 /////////////////////////////////////////////////////////
 pix_opencv_template :: pix_opencv_template()
 { 
-	m_dataout = outlet_new(this->x_obj, 0);
 }
 
 /////////////////////////////////////////////////////////
@@ -49,23 +48,10 @@ pix_opencv_template :: ~pix_opencv_template()
 /////////////////////////////////////////////////////////
 // processImage
 //
-/////////////////////////////////////////////////////////
-void pix_opencv_template :: processRGBAImage(imageStruct &image)
+///////////////////////////////////////////////////////// 	
+void pix_opencv_template :: processImage(imageStruct &image)
 { 
-	error( "pix_opencv_template : rgba format not supported" );
-}
-
-void pix_opencv_template :: processRGBImage(imageStruct &image) {
-	error( "pix_opencv_template : rgb format not supported");
-}
-
-void pix_opencv_template :: processYUVImage(imageStruct &image) {
-	error( "pix_opencv_template : yuv format not supported" );
-}
-    	
-void pix_opencv_template :: processGrayImage(imageStruct &image)
-{ 
-	Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
+	cv::Mat imgMat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
 }
 
 /////////////////////////////////////////////////////////
@@ -74,5 +60,4 @@ void pix_opencv_template :: processGrayImage(imageStruct &image)
 /////////////////////////////////////////////////////////
 void pix_opencv_template :: obj_setupCallback(t_class *classPtr)
 {
-  		    		    		  	  
 }

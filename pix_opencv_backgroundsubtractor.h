@@ -13,45 +13,68 @@ LOG
 
 -----------------------------------------------------------------*/
 
-#ifndef INCLUDE_pix_opencv_template_H_
-#define INCLUDE_pix_opencv_template_H_
+#ifndef INCLUDE_PIX_OPENCV_BACKGROUNDSUBTRACTOR_H_
+#define INCLUDE_PIX_OPENCV_BACKGROUNDSUBTRACTOR_H_
 
 #include "opencv2/opencv.hpp"
 
 #include "Base/GemPixObj.h"
+#include <RTE/MessageCallbacks.h>
+#include "Gem/Exception.h"
+
+#include <iostream>
 
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
 CLASS
-    pix_opencv_template
+    pix_opencv_backgroundsubtractor
     
-	square pattern detector
-	
+    generic dynamic background subtractor, should implement severals algo
 KEYWORDS
     pix
     
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-class GEM_EXPORT pix_opencv_template : public GemPixObj
+class GEM_EXPORT pix_opencv_backgroundsubtractor: public GemPixObj
 {
-    CPPEXTERN_HEADER(pix_opencv_template, GemPixObj)
+    CPPEXTERN_HEADER(pix_opencv_backgroundsubtractor, GemPixObj)
 
-    public:
+  public:
 
 	    //////////
 	    // Constructor
-    	pix_opencv_template();
+    	pix_opencv_backgroundsubtractor();
     	
-    protected:
+  protected:
+  
+    // Message handling
+    void enumParamsMess();
+    void setParamMess(t_symbol *s, int argc, t_atom* argv);
+    void getParamMess(t_symbol *paramName);
+    void paramHelpMess();
+    void algoMess(t_symbol *s, int argc, t_atom* argv);
+
     	
    	//////////
    	// Destructor
-   	virtual ~pix_opencv_template();
+   	virtual ~pix_opencv_backgroundsubtractor();
 
    	//////////
    	// Do the processing
    	virtual void 	processImage(imageStruct &image);
-    	    
+
+  private:
+    //~cv::Ptr<cv::BackgroundSubtractor> m_fgbg;
+    cv::Ptr<cv::BackgroundSubtractor> m_fgbgMOG;
+    cv::Ptr<cv::BackgroundSubtractorGMG> m_fgbgGMG;
+    cv::Mat m_fgmask, m_segm;
+    
+    t_outlet *m_dataout;
+    
+    t_float m_threshold, m_initFrames;
+    
+    std::vector<std::string> m_bgsub_algos;
+  
 };
 #endif	// for header file

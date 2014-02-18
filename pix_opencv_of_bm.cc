@@ -53,10 +53,8 @@ pix_opencv_of_bm :: pix_opencv_of_bm()
   // initialize font
   cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 1.0, 1.0, 0, 1, 8 );
 
-  rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-  rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-  grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-  prev_grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
+  grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), IPL_DEPTH_8U, 1 );
+  prev_grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), IPL_DEPTH_8U, 1 );
 
   x_velx = cvCreateImage( x_velsize, IPL_DEPTH_32F, 1 );
   x_vely = cvCreateImage( x_velsize, IPL_DEPTH_32F, 1 );
@@ -70,8 +68,6 @@ pix_opencv_of_bm :: pix_opencv_of_bm()
 pix_opencv_of_bm :: ~pix_opencv_of_bm()
 {
   // Destroy cv_images
-  cvReleaseImage( &rgba );
-  cvReleaseImage( &rgb );
   cvReleaseImage( &grey );
   cvReleaseImage( &prev_grey );
   cvReleaseImage( &x_velx );
@@ -83,7 +79,7 @@ pix_opencv_of_bm :: ~pix_opencv_of_bm()
 // processImage
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_of_bm :: processRGBAImage(imageStruct &image)
+void pix_opencv_of_bm :: processImage(imageStruct &image)
 {
   int px,py;
   double globangle=0.0, globx=0.0, globy=0.0, maxamp=0.0, maxangle=0.0;
@@ -91,9 +87,11 @@ void pix_opencv_of_bm :: processRGBAImage(imageStruct &image)
   CvPoint orig, dest;
   double angle=0.0;
   double hypotenuse=0.0;
+  
 
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
+  if ((comp_xsize!=image.xsize) || (comp_ysize!=image.ysize)) 
   {
+    printf("resize buffer\n");
 
     this->comp_xsize=image.xsize;
     this->comp_ysize=image.ysize;
@@ -101,35 +99,45 @@ void pix_opencv_of_bm :: processRGBAImage(imageStruct &image)
     x_velsize.width = (comp_xsize-x_blocksize.width)/x_shiftsize.width;
     x_velsize.height = (comp_ysize-x_blocksize.height)/x_shiftsize.height;
 
-    cvReleaseImage( &rgba );
-    cvReleaseImage( &rgb );
     cvReleaseImage( &grey );
     cvReleaseImage( &prev_grey );
     cvReleaseImage( &x_velx );
     cvReleaseImage( &x_vely );
 
-    rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-    rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    prev_grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
+    grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), IPL_DEPTH_8U, 1 );
+    prev_grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), IPL_DEPTH_8U, 1 );
 
     x_velx = cvCreateImage( x_velsize, IPL_DEPTH_32F, 1 );
     x_vely = cvCreateImage( x_velsize, IPL_DEPTH_32F, 1 );
   }
 
-  memcpy( rgba->imageData, image.data, image.xsize*image.ysize*4 );
-
-  // Convert to hsv
-  cvCvtColor(rgba, rgb, CV_BGRA2BGR);
-  cvCvtColor(rgb, grey, CV_BGR2GRAY);
+  // no need to copy the image, just create valid header and point to image.data...
+  IplImage* imgMat = cvCreateImageHeader( cv::Size(image.xsize, image.ysize), IPL_DEPTH_8U, image.csize);
+  imgMat->imageData = (char*) image.data; 
+  
+  if ( image.csize == 1 ){ // gray
+    grey = imgMat;
+  } else if ( image.csize == 4 ) { //RGBA
+    cvCvtColor(imgMat, grey, CV_BGRA2GRAY);
+  } else {
+    error("support only RGBA or GRAY image");
+    return;
+  }
 
   if( x_nightmode )
-      cvZero( rgb );
+      cvZero( imgMat );
+      
+  printf("grey size : %dx%d %d, prev_grey size %dx%d %d\n",grey->width,grey->height,grey->nChannels,prev_grey->width,prev_grey->height,prev_grey->nChannels);
 
-  cvCalcOpticalFlowBM( prev_grey, grey,
+  try {
+    cvCalcOpticalFlowBM( prev_grey, grey,
                        x_blocksize, x_shiftsize,
                        x_maxrange, x_useprevious,
                        x_velx, x_vely  );
+  } catch (...) {
+    error("can't comupute OpticalFlow");
+    return;
+  }
 
   nbblocks = 0;
   globangle = 0;
@@ -151,14 +159,14 @@ void pix_opencv_of_bm :: processRGBAImage(imageStruct &image)
         */
         if (hypotenuse >= x_threshold)
         {
-          cvLine( rgb, orig, dest, CV_RGB(0,255,0), (int)hypotenuse/10, CV_AA, 0 );
+          cvLine( imgMat, orig, dest, CV_RGB(0,255,0), (int)hypotenuse/10, CV_AA, 0 );
 
           orig.x = (int) (dest.x - (x_shiftsize.width/4) * cos(angle + M_PI / 4));
           orig.y = (int) (dest.y + (x_shiftsize.height/4) * sin(angle + M_PI / 4));
-          cvLine( rgb, orig, dest, CV_RGB(0,0,255), (int)hypotenuse/10, CV_AA, 0 );
+          cvLine( imgMat, orig, dest, CV_RGB(0,0,255), (int)hypotenuse/10, CV_AA, 0 );
           orig.x = (int) (dest.x - (x_shiftsize.width/4) * cos(angle - M_PI / 4));
           orig.y = (int) (dest.y + (x_shiftsize.height/4) * sin(angle - M_PI / 4));
-          cvLine( rgb, orig, dest, CV_RGB(0,0,255), (int)hypotenuse/10, CV_AA, 0 );
+          cvLine( imgMat, orig, dest, CV_RGB(0,0,255), (int)hypotenuse/10, CV_AA, 0 );
 
           globx = globx+cvGet2D(x_velx, py, px).val[0];
           globy = globy+cvGet2D(x_vely, py, px).val[0];
@@ -183,13 +191,13 @@ void pix_opencv_of_bm :: processRGBAImage(imageStruct &image)
       orig.y = (int) (comp_ysize/2);
       dest.x = (int) (orig.x+((comp_xsize>comp_ysize)?comp_ysize/2:comp_xsize/2)*cos(globangle));
       dest.y = (int) (orig.y-((comp_xsize>comp_ysize)?comp_ysize/2:comp_xsize/2)*sin(globangle));
-      cvLine( rgb, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
+      cvLine( imgMat, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
       orig.x = (int) (dest.x - (x_shiftsize.width/2) * cos(globangle + M_PI / 4));
       orig.y = (int) (dest.y + (x_shiftsize.height/2) * sin(globangle + M_PI / 4));
-      cvLine( rgb, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
+      cvLine( imgMat, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
       orig.x = (int) (dest.x - (x_shiftsize.width/2) * cos(globangle - M_PI / 4));
       orig.y = (int) (dest.y + (x_shiftsize.height/2) * sin(globangle - M_PI / 4));
-      cvLine( rgb, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
+      cvLine( imgMat, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
 
       // outputs the average angle of movement
       globangle = (globangle*180)/M_PI;
@@ -202,264 +210,6 @@ void pix_opencv_of_bm :: processRGBAImage(imageStruct &image)
       SETFLOAT(&x_list[1], maxangle);
       outlet_list( m_maxout, 0, 2, x_list );
   }
-
-  memcpy( prev_grey->imageData, grey->imageData, image.xsize*image.ysize );
-
-  cvCvtColor(rgb, rgba, CV_BGR2BGRA);
-  memcpy( image.data, rgba->imageData, image.xsize*image.ysize*4 );
-}
-
-void pix_opencv_of_bm :: processRGBImage(imageStruct &image)
-{ 
-  int px,py;
-  double globangle=0.0, globx=0.0, globy=0.0, maxamp=0.0, maxangle=0.0;
-  int nbblocks=0;
-  CvPoint orig, dest;
-  double angle=0.0;
-  double hypotenuse=0.0;
-
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
-  {
-
-    this->comp_xsize=image.xsize;
-    this->comp_ysize=image.ysize;
-
-    x_velsize.width = (comp_xsize-x_blocksize.width)/x_shiftsize.width;
-    x_velsize.height = (comp_ysize-x_blocksize.height)/x_shiftsize.height;
-
-    cvReleaseImage( &rgba );
-    cvReleaseImage( &rgb );
-    cvReleaseImage( &grey );
-    cvReleaseImage( &prev_grey );
-    cvReleaseImage( &x_velx );
-    cvReleaseImage( &x_vely );
-
-    rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-    rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    prev_grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-
-    x_velx = cvCreateImage( x_velsize, IPL_DEPTH_32F, 1 );
-    x_vely = cvCreateImage( x_velsize, IPL_DEPTH_32F, 1 );
-  }
-
-  memcpy( rgb->imageData, image.data, image.xsize*image.ysize*3 );
-
-  // Convert to hsv
-  cvCvtColor(rgba, rgb, CV_BGRA2BGR);
-  cvCvtColor(rgb, grey, CV_BGR2GRAY);
-
-  if( x_nightmode )
-      cvZero( rgb );
-
-  cvCalcOpticalFlowBM( prev_grey, grey,
-                       x_blocksize, x_shiftsize,
-                       x_maxrange, x_useprevious,
-                       x_velx, x_vely  );
-
-  nbblocks = 0;
-  globangle = 0;
-  globx = 0;
-  globy = 0;
-  for( py=0; py<x_velsize.height; py++ )
-  {
-    for( px=0; px<x_velsize.width; px++ )
-    {
-        // post( "pdp_opencv_of_bm : (%d,%d) values (%f,%f)", px, py, velxf, velyf );
-        orig.x = (px*comp_xsize)/x_velsize.width;
-        orig.y = (py*comp_ysize)/x_velsize.height;
-        dest.x = (int)(orig.x + cvGet2D(x_velx, py, px).val[0]);
-        dest.y = (int)(orig.y + cvGet2D(x_vely, py, px).val[0]);
-        angle = -atan2( (double) (dest.y-orig.y), (double) (dest.x-orig.x) );
-        hypotenuse = sqrt( pow((double) (dest.y-orig.y), 2) + pow((double) (dest.x-orig.x), 2) );
-
-        /* Now draw the tips of the arrow. I do some scaling so that the
-        * tips look proportional to the main line of the arrow.
-        */
-        if (hypotenuse >= x_threshold)
-        {
-          cvLine( rgb, orig, dest, CV_RGB(0,255,0), (int)hypotenuse/10, CV_AA, 0 );
-
-          orig.x = (int) (dest.x - (x_shiftsize.width/4) * cos(angle + M_PI / 4));
-          orig.y = (int) (dest.y + (x_shiftsize.height/4) * sin(angle + M_PI / 4));
-          cvLine( rgb, orig, dest, CV_RGB(0,0,255), (int)hypotenuse/10, CV_AA, 0 );
-          orig.x = (int) (dest.x - (x_shiftsize.width/4) * cos(angle - M_PI / 4));
-          orig.y = (int) (dest.y + (x_shiftsize.height/4) * sin(angle - M_PI / 4));
-          cvLine( rgb, orig, dest, CV_RGB(0,0,255), (int)hypotenuse/10, CV_AA, 0 );
-
-          globx = globx+cvGet2D(x_velx, py, px).val[0];
-          globy = globy+cvGet2D(x_vely, py, px).val[0];
-          if ( hypotenuse > maxamp )
-          {
-             maxamp = hypotenuse;
-             maxangle = angle;
-          }
-          // post( "pdp_opencv_of_bm : block %d : amp : %f : angle : %f", nbblocks, hypotenuse, (angle*180)/M_PI );
-          nbblocks++;
-        }
-
-      }
-  }
-
-  if ( nbblocks >= x_minblocks )
-  {
-      globangle=-atan2( globy, globx );
-      // post( "pdp_opencv_of_bm : globangle : %f", (globangle*180)/M_PI );
-
-      orig.x = (int) (comp_xsize/2);
-      orig.y = (int) (comp_ysize/2);
-      dest.x = (int) (orig.x+((comp_xsize>comp_ysize)?comp_ysize/2:comp_xsize/2)*cos(globangle));
-      dest.y = (int) (orig.y-((comp_xsize>comp_ysize)?comp_ysize/2:comp_xsize/2)*sin(globangle));
-      cvLine( rgb, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
-      orig.x = (int) (dest.x - (x_shiftsize.width/2) * cos(globangle + M_PI / 4));
-      orig.y = (int) (dest.y + (x_shiftsize.height/2) * sin(globangle + M_PI / 4));
-      cvLine( rgb, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
-      orig.x = (int) (dest.x - (x_shiftsize.width/2) * cos(globangle - M_PI / 4));
-      orig.y = (int) (dest.y + (x_shiftsize.height/2) * sin(globangle - M_PI / 4));
-      cvLine( rgb, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
-
-      // outputs the average angle of movement
-      globangle = (globangle*180)/M_PI;
-      SETFLOAT(&x_list[0], globangle);
-      outlet_list( m_meanout, 0, 1, x_list );
-
-      // outputs the amplitude and angle of the maximum movement
-      maxangle = (maxangle*180)/M_PI;
-      SETFLOAT(&x_list[0], maxamp);
-      SETFLOAT(&x_list[1], maxangle);
-      outlet_list( m_maxout, 0, 2, x_list );
-  }
-
-  memcpy( prev_grey->imageData, grey->imageData, image.xsize*image.ysize );
-
-  memcpy( image.data, rgb->imageData, image.xsize*image.ysize*3 );
-}
-
-void pix_opencv_of_bm :: processYUVImage(imageStruct &image)
-{
-  post( "pix_opencv_of_bm : yuv format not supported" );
-}
-    	
-void pix_opencv_of_bm :: processGrayImage(imageStruct &image)
-{ 
-  int px,py;
-  double globangle=0.0, globx=0.0, globy=0.0, maxamp=0.0, maxangle=0.0;
-  int nbblocks=0;
-  CvPoint orig, dest;
-  double angle=0.0;
-  double hypotenuse=0.0;
-
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
-  {
-
-    this->comp_xsize=image.xsize;
-    this->comp_ysize=image.ysize;
-
-    x_velsize.width = (comp_xsize-x_blocksize.width)/x_shiftsize.width;
-    x_velsize.height = (comp_ysize-x_blocksize.height)/x_shiftsize.height;
-
-    cvReleaseImage( &rgba );
-    cvReleaseImage( &rgb );
-    cvReleaseImage( &grey );
-    cvReleaseImage( &prev_grey );
-    cvReleaseImage( &x_velx );
-    cvReleaseImage( &x_vely );
-
-    rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-    rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    prev_grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-
-    x_velx = cvCreateImage( x_velsize, IPL_DEPTH_32F, 1 );
-    x_vely = cvCreateImage( x_velsize, IPL_DEPTH_32F, 1 );
-  }
-
-  memcpy( grey->imageData, image.data, image.xsize*image.ysize );
-
-  if( x_nightmode )
-      cvZero( grey );
-
-  cvCalcOpticalFlowBM( prev_grey, grey,
-                       x_blocksize, x_shiftsize,
-                       x_maxrange, x_useprevious,
-                       x_velx, x_vely  );
-
-  nbblocks = 0;
-  globangle = 0;
-  globx = 0;
-  globy = 0;
-  for( py=0; py<x_velsize.height; py++ )
-  {
-    for( px=0; px<x_velsize.width; px++ )
-    {
-        // post( "pdp_opencv_of_bm : (%d,%d) values (%f,%f)", px, py, velxf, velyf );
-        orig.x = (px*comp_xsize)/x_velsize.width;
-        orig.y = (py*comp_ysize)/x_velsize.height;
-        dest.x = (int)(orig.x + cvGet2D(x_velx, py, px).val[0]);
-        dest.y = (int)(orig.y + cvGet2D(x_vely, py, px).val[0]);
-        angle = -atan2( (double) (dest.y-orig.y), (double) (dest.x-orig.x) );
-        hypotenuse = sqrt( pow((double)dest.y-orig.y, 2) + pow((double)dest.x-orig.x, 2) );
-
-        /* Now draw the tips of the arrow. I do some scaling so that the
-        * tips look proportional to the main line of the arrow.
-        */
-        if (hypotenuse >= x_threshold)
-        {
-          cvLine( grey, orig, dest, CV_RGB(0,255,0), (int)hypotenuse/10, CV_AA, 0 );
-
-          orig.x = (int) (dest.x - (x_shiftsize.width/4) * cos(angle + M_PI / 4));
-          orig.y = (int) (dest.y + (x_shiftsize.height/4) * sin(angle + M_PI / 4));
-          cvLine( grey, orig, dest, CV_RGB(0,0,255), (int)hypotenuse/10, CV_AA, 0 );
-          orig.x = (int) (dest.x - (x_shiftsize.width/4) * cos(angle - M_PI / 4));
-          orig.y = (int) (dest.y + (x_shiftsize.height/4) * sin(angle - M_PI / 4));
-          cvLine( grey, orig, dest, CV_RGB(0,0,255), (int)hypotenuse/10, CV_AA, 0 );
-
-          globx = globx+cvGet2D(x_velx, py, px).val[0];
-          globy = globy+cvGet2D(x_vely, py, px).val[0];
-          if ( hypotenuse > maxamp )
-          {
-             maxamp = hypotenuse;
-             maxangle = angle;
-          }
-          // post( "pdp_opencv_of_bm : block %d : amp : %f : angle : %f", nbblocks, hypotenuse, (angle*180)/M_PI );
-          nbblocks++;
-        }
-
-      }
-  }
-
-  if ( nbblocks >= x_minblocks )
-  {
-      globangle=-atan2( globy, globx );
-      // post( "pdp_opencv_of_bm : globangle : %f", (globangle*180)/M_PI );
-
-      orig.x = (int) (comp_xsize/2);
-      orig.y = (int) (comp_ysize/2);
-      dest.x = (int) (orig.x+((comp_xsize>comp_ysize)?comp_ysize/2:comp_xsize/2)*cos(globangle));
-      dest.y = (int) (orig.y-((comp_xsize>comp_ysize)?comp_ysize/2:comp_xsize/2)*sin(globangle));
-      cvLine( grey, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
-      orig.x = (int) (dest.x - (x_shiftsize.width/2) * cos(globangle + M_PI / 4));
-      orig.y = (int) (dest.y + (x_shiftsize.height/2) * sin(globangle + M_PI / 4));
-      cvLine( grey, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
-      orig.x = (int) (dest.x - (x_shiftsize.width/2) * cos(globangle - M_PI / 4));
-      orig.y = (int) (dest.y + (x_shiftsize.height/2) * sin(globangle - M_PI / 4));
-      cvLine( grey, orig, dest, CV_RGB(255,255,255), 3, CV_AA, 0 );
-
-      // outputs the average angle of movement
-      globangle = (globangle*180)/M_PI;
-      SETFLOAT(&x_list[0], globangle);
-      outlet_list( m_meanout, 0, 1, x_list );
-
-      // outputs the amplitude and angle of the maximum movement
-      maxangle = (maxangle*180)/M_PI;
-      SETFLOAT(&x_list[0], maxamp);
-      SETFLOAT(&x_list[1], maxangle);
-      outlet_list( m_maxout, 0, 2, x_list );
-  }
-
-  memcpy( prev_grey->imageData, grey->imageData, image.xsize*image.ysize );
-
-  memcpy( image.data, grey->imageData, image.xsize*image.ysize );
 }
 
 /////////////////////////////////////////////////////////

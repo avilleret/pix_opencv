@@ -13,45 +13,68 @@ LOG
 
 -----------------------------------------------------------------*/
 
-#ifndef INCLUDE_pix_opencv_template_H_
-#define INCLUDE_pix_opencv_template_H_
+#ifndef INCLUDE_PIX_OPENCV_CLAHE_H_
+#define INCLUDE_PIX_OPENCV_CLAHE_H_
 
 #include "opencv2/opencv.hpp"
+#include "opencv2/ocl/ocl.hpp"
+
 
 #include "Base/GemPixObj.h"
+#include "RTE/MessageCallbacks.h"
+#include "Gem/Exception.h"
+
+
+using namespace cv;
+
 
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
 CLASS
-    pix_opencv_template
-    
-	square pattern detector
-	
+    pix_opencv_clahe
+    	
 KEYWORDS
     pix
     
 DESCRIPTION
    
 -----------------------------------------------------------------*/
-class GEM_EXPORT pix_opencv_template : public GemPixObj
+class GEM_EXPORT pix_opencv_clahe : public GemPixObj
 {
-    CPPEXTERN_HEADER(pix_opencv_template, GemPixObj)
+    CPPEXTERN_HEADER(pix_opencv_clahe, GemPixObj)
 
-    public:
+  public:
 
 	    //////////
 	    // Constructor
-    	pix_opencv_template();
+    	pix_opencv_clahe(t_float clipLimit, int width, int height);
     	
-    protected:
+      /////////
+      // Message handler
+      void clipLimitMess(float);
+      void tileGridSizeMess(int,int);
+  protected:
     	
    	//////////
    	// Destructor
-   	virtual ~pix_opencv_template();
+   	virtual ~pix_opencv_clahe();
 
    	//////////
    	// Do the processing
    	virtual void 	processImage(imageStruct &image);
-    	    
+    virtual void  startRendering();
+    virtual void  stopRendering();
+  
+  private:
+  
+    Mat m_imgMat, m_gray;
+    ocl::oclMat d_outframe, d_frame;
+    
+    Ptr<CLAHE> m_oclFilter, m_cpuFilter;
+    
+    bool m_gpuMode;
+    float m_clipLimit;
+    Size m_tileGridSize;
+    bool m_rendering;
 };
 #endif	// for header file

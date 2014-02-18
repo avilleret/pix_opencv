@@ -42,8 +42,10 @@ SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_matchshape.cc \
 				  pix_opencv_opticalflow.cc \
 				  pix_opencv_trackKnn.cc \
-				  pix_opencv_surf.cc
-				  
+				  pix_opencv_surf.cc \
+				  pix_opencv_backgroundsubtractor.cc \
+				  pix_opencv_clahe.cc
+				  				  
 HEADERS = `ls -1 *.h *.hpp`
 
 # list all pd objects (i.e. myobject.pd) files here, and their helpfiles will
@@ -60,9 +62,9 @@ MANUAL =
 # list them here.  This can be anything from header files, test patches,
 # documentation, etc.  README.txt and LICENSE.txt are required and therefore
 # automatically included
-OVERVIEW = pix_opencv-overview.pd
+OVERVIEW = pix_opencv-help.pd
 EXTRA_DIST = dessin.tif $(OVERVIEW)
-EXTRA_DIST_FOLDER = model haarcascades
+EXTRA_DIST_FOLDER = model haarcascades plus
 
 
 # unit tests and related files here, in the 'unittests' subfolder
@@ -83,7 +85,25 @@ FAT_FLAGS=-arch i386
 ALL_LDFLAGS =  
 SHARED_LDFLAGS =
 FACETRACKER_LIBS += FaceTracker/src/lib/CLM.o  FaceTracker/src/lib/FCheck.o  FaceTracker/src/lib/FDet.o  FaceTracker/src/lib/IO.o  FaceTracker/src/lib/Patch.o  FaceTracker/src/lib/PAW.o  FaceTracker/src/lib/PDM.o  FaceTracker/src/lib/Tracker.o
-ALL_LIBS += `pkg-config --libs opencv`
+LIBS_macosx += `pkg-config --libs opencv`
+LIBS_linux += lib-$(EXTENSION)/libopencv_calib3d.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_contrib.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_core.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_features2d.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_flann.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_highgui.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_imgproc.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_legacy.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_ml.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_nonfree.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_objdetect.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_ocl.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_photo.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_stitching.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_superres.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_video.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_videostab.so.2.4
+LIBS_linux += -lrt -lpthread -ldl
 
 #------------------------------------------------------------------------------#
 #
@@ -233,7 +253,7 @@ ifeq ($(UNAME),Linux)
   PD_PATH = /usr
   OPT_CFLAGS = -O6 -funroll-loops -fomit-frame-pointer
   ALL_CFLAGS += -fPIC $(CFLAGS_linux)
-  ALL_LDFLAGS += -rdynamic -shared -fPIC -Wl,-rpath,"\$$ORIGIN",--enable-new-dtags
+  ALL_LDFLAGS += -rdynamic -shared -fPIC -Wl,-rpath,"\$$ORIGIN"/lib-$(EXTENSION),--enable-new-dtags
   SHARED_LDFLAGS += -Wl,-soname,$(SHARED_LIB) -shared
   ALL_LIBS += -lc $(LIBS_linux)
   STRIP = strip --strip-unneeded -R .note -R .comment
@@ -359,6 +379,12 @@ SHARED_TCL_LIB = $(wildcard lib$(LIBRARY_NAME).tcl)
 
 .PHONY = install libdir_install single_install install-doc install-examples install-manual install-unittests clean distclean dist etags $(LIBRARY_NAME)
 
+
+# this links everything into a single binary file
+$(LIBRARY_NAME): $(SOURCES:.cc=.o) $(LIBRARY_NAME).o
+	$(CC) $(ALL_LDFLAGS) -o $(LIBRARY_NAME).$(EXTENSION) $(SOURCES:.cc=.o) $(LIBRARY_NAME).o $(ALL_LIBS)
+	chmod a-x $(LIBRARY_NAME).$(EXTENSION)
+
 all: $(SOURCES:.cc=.$(EXTENSION)) $(SHARED_LIB)
 
 facetracker: pix_opencv_facetracker.$(EXTENSION)
@@ -376,12 +402,6 @@ pix_opencv_facetracker.o: pix_opencv_facetracker.cc
 %.$(EXTENSION): %.o $(SHARED_LIB)
 	$(CC) $(ALL_LDFLAGS) -o "$*.$(EXTENSION)" "$*.o"  $(ALL_LIBS) $(SHARED_LIB)
 	chmod a-x "$*.$(EXTENSION)"
-
-# this links everything into a single binary file
-$(LIBRARY_NAME): $(SOURCES:.cc=.o) $(LIBRARY_NAME).o lib$(LIBRARY_NAME).o
-	$(CC) $(ALL_LDFLAGS) -o $(LIBRARY_NAME).$(EXTENSION) $(SOURCES:.cc=.o) \
-		$(LIBRARY_NAME).o lib$(LIBRARY_NAME).o $(ALL_LIBS)
-	chmod a-x $(LIBRARY_NAME).$(EXTENSION)
 
 $(SHARED_LIB): $(SHARED_SOURCE:.cc=.o)
 	$(CC) $(SHARED_LDFLAGS) -o $(SHARED_LIB) $(SHARED_SOURCE:.cc=.o) $(ALL_LIBS)
@@ -468,13 +488,13 @@ distclean: clean
 $(DISTBINDIR):
 	$(INSTALL_DIR) $(DISTBINDIR)
 
-libdir: all $(DISTBINDIR) overview lib3rd
+libdir: $(LIBRARY_NAME) $(DISTBINDIR) overview lib3rd
 	$(INSTALL_DATA) $(LIBRARY_NAME)-meta.pd  $(DISTBINDIR)
 	if [ -s pix_opencv_facetracker.$(EXTENSION) ] ; then \
 		$(INSTALL_DATA) pix_opencv_facetracker.$(EXTENSION) $(DISTBINDIR) ; \
 	fi;
 	$(INSTALL_DATA) $(HELPPATCHES) $(DISTBINDIR)
-	$(INSTALL_DATA) $(SOURCES:.cc=.$(EXTENSION)) $(DISTBINDIR)
+	$(INSTALL_DATA) pix_opencv.$(EXTENSION) $(DISTBINDIR)
 	test -z "$(strip $(EXAMPLES))" || \
 		test -e $(DISTBINDIR)/examples || \
 			mkdir $(DISTBINDIR)/examples
@@ -570,15 +590,13 @@ TAGS: $(wildcard $(PD_INCLUDE)/*.h) $(SOURCES) $(SHARED_SOURCE) $(SHARED_HEADER)
 overview:
 	echo "#N canvas 147 197 1566 537 10;" > $(OVERVIEW)
 	echo "#X text 126 15 overview of all available pix_opencv objects;" >> $(OVERVIEW)
+	echo "#X obj 30 20 pix_opencv;" >> $(OVERVIEW)
 	ID=0 ; \
 	for extern in $(SOURCES:.cc=""); do \
 		echo "#X obj `expr $$ID % 5 \* 300 + 50` `expr $$ID / 5 \* 30 + 40` $$extern;" >> $(OVERVIEW) && ID=`expr $$ID + 1` ; \
 	done ; \
 	echo "#X obj 30 `expr $$ID / 5 \* 30 + 80` cnv 15 250 60 empty empty extra 20 12 0 14 -4034 -66577 0;" >> $(OVERVIEW) ; \
 	echo "#X obj 50 `expr $$ID / 5 \* 30 + 100` pix_opencv_facetracker;" >> $(OVERVIEW)
-
-	
-	
 
 showsetup:
 	@echo "CC: $(CC)"
