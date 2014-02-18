@@ -62,9 +62,10 @@ void pix_opencv_clahe :: startRendering(){
   for ( size_t i = 0; i < devicesInfo.size(); i++){
     post("%s %s", devicesInfo[i]->deviceVendor.c_str(), devicesInfo[i]->deviceName.c_str());
   }
+  m_cpuFilter = createCLAHE();
+ 
   if ( devicesInfo.size() == 0 ){
     post("can't find OpenCL device, switch to CPU mode");
-    m_cpuFilter = createCLAHE();
     m_gpuMode = false;
   } else {
     m_oclFilter = ocl::createCLAHE();
