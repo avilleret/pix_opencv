@@ -496,7 +496,7 @@ lib3rd: $(DISTBINDIR)
 	if [ $(OS) == windows ] ; then \
 		$(INSTALL_DATA) `ls opencv*.dll` $(DISTBINDIR) ; \
 	elif [ $(OS) == macosx ] ; then \
-		./embed-mac-OpenCV-dependencies.sh && cp -r lib-$(EXTENSION) $(DISTBINDIR) ; \
+		./embed-mac-OpenCV-dependencies.sh lib-$(EXTENSION) && cp -r lib-$(EXTENSION) $(DISTBINDIR) ; \
 	fi;
 
 $(DISTDIR):
