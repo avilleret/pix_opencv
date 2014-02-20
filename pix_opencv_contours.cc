@@ -80,14 +80,12 @@ void pix_opencv_contours :: processImage(imageStruct &image)
     input = imgMat2;
   } else if ( image.csize == 4 ){
     imgMat2 = Mat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
-    printf("split array\n");
     split(imgMat2,split_array);
     input = split_array[3]; // select alpha channel to find contours
   } else {
     error("suport only RGBA or GRAY image");
     return;
   }
-  printf("clone matrix\n");
   cv::Mat imgMat = input.clone(); // copy data because findContours will destroy it...
 
   m_contours.clear();
@@ -100,7 +98,6 @@ void pix_opencv_contours :: processImage(imageStruct &image)
 
   std::vector<std::vector<cv::Point> > contours;
   std::vector<cv::Vec4i> hierarchy;
-  printf("find contours....\n");
   cv::findContours(imgMat, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
   
   /*
@@ -491,7 +488,6 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
       }
       
       int n=0;      
-      printf("found %d contours\n",m_contours.size());
       
       for( size_t i = 0 ; i < m_contours.size(); i++ )
       {
@@ -512,7 +508,6 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
             n++;
         }
 
-        printf("contour %d size : %d, n : %d..\n",i,m_contours[i].size(),n);
         for ( j = 0 ; j < m_contours[i].size() && n < vecxsize ; j++) {
         
           pt = m_contours[i][j];
@@ -539,7 +534,6 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
       garray_redraw(az);
     }
   }
-  printf("endof outputContours\n");
 }
 
 /////////////////////////////////////////////////////////
