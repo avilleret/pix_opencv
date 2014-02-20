@@ -358,7 +358,7 @@ void pix_opencv_contours :: outputBlobs(imageStruct &image){
         SETFLOAT(apt+1, rot_rect.center.x/image.xsize); // rotrect center
         SETFLOAT(apt+2, rot_rect.center.y/image.ysize);
         SETFLOAT(apt+3, rot_rect.size.width/image.xsize); // blob size
-        SETFLOAT(apt+4, rot_rect.size.height/image.xsize);
+        SETFLOAT(apt+4, rot_rect.size.height/image.ysize);
         SETFLOAT(apt+5, rot_rect.angle); // rotrect angle
         SETFLOAT(apt+6, area/imageArea); // blob area in % of image sizes
         
