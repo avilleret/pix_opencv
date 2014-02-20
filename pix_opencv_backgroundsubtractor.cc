@@ -293,9 +293,9 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
 /////////////////////////////////////////////////////////
 void pix_opencv_backgroundsubtractor :: obj_setupCallback(t_class *classPtr)
 {
-  CPPEXTERN_MSG(classPtr, "algo",   algoMess);
-  CPPEXTERN_MSG0(classPtr, "enumParams",   enumParamsMess);
-  CPPEXTERN_MSG(classPtr, "setParam",   setParamMess);
-  CPPEXTERN_MSG1(classPtr, "getParam",   getParamMess, t_symbol*);
-  CPPEXTERN_MSG0(classPtr, "paramHelp",   paramHelpMess);
+  CPPEXTERN_MSG(classPtr,  "algo",       algoMess);
+  CPPEXTERN_MSG0(classPtr, "enumParams", enumParamsMess);
+  CPPEXTERN_MSG(classPtr,  "setParam",   setParamMess);
+  CPPEXTERN_MSG1(classPtr, "getParam",   getParamMess,     t_symbol*);
+  CPPEXTERN_MSG0(classPtr, "paramHelp",  paramHelpMess);
 }
