@@ -58,20 +58,8 @@ pix_opencv_trackKnn :: ~pix_opencv_trackKnn()
 // processImage
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_trackKnn :: processRGBAImage(imageStruct &image)
-{ 
-  error( "pix_opencv_trackKnn : rgba format not supported" );
-}
-
-void pix_opencv_trackKnn :: processRGBImage(imageStruct &image) {
-  error( "pix_opencv_trackKnn : rgb format not supported");
-}
-
-void pix_opencv_trackKnn :: processYUVImage(imageStruct &image) {
-  error( "pix_opencv_trackKnn : yuv format not supported" );
-}
-      
-void pix_opencv_trackKnn :: processGrayImage(imageStruct &image)
+     
+void pix_opencv_trackKnn :: processImage(imageStruct &image)
 { 
   // nothing to do for now...
 }
