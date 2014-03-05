@@ -253,7 +253,7 @@ ifeq ($(UNAME),Linux)
   PD_PATH = /usr
   OPT_CFLAGS = -O6 -funroll-loops -fomit-frame-pointer
   ALL_CFLAGS += -fPIC $(CFLAGS_linux)
-  ALL_LDFLAGS += -rdynamic -shared -fPIC -Wl,-rpath,"\$$ORIGIN"/lib-$(EXTENSION),--enable-new-dtags
+  ALL_LDFLAGS += -rdynamic -shared -fPIC -Wl,-rpath,"\$$ORIGIN"/lib-$(EXTENSION) -Wl,-rpath,"\$$ORIGIN"
   SHARED_LDFLAGS += -Wl,-soname,$(SHARED_LIB) -shared
   ALL_LIBS += -lc $(LIBS_linux)
   STRIP = strip --strip-unneeded -R .note -R .comment
