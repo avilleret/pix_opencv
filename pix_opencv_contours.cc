@@ -68,26 +68,25 @@ pix_opencv_contours :: ~pix_opencv_contours()
 // processImage
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_contours :: processRGBAImage(imageStruct &image)
-{ 
-  error( "pix_opencv_contours : rgba format not supported" );
-}
-
-void pix_opencv_contours :: processRGBImage(imageStruct &image) {
-  error( "pix_opencv_contours : rgb format not supported");
-}
-
-void pix_opencv_contours :: processYUVImage(imageStruct &image) {
-  error( "pix_opencv_contours : yuv format not supported" );
-}
-      
-void pix_opencv_contours :: processGrayImage(imageStruct &image)
+void pix_opencv_contours :: processImage(imageStruct &image)
 { 
   if ( image.xsize < 0 || image.ysize < 0 ) return;
-
-  cv::Mat imgMat2( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
   
-  cv::Mat imgMat = imgMat2.clone(); // copy data because findContours need it...
+  Mat imgMat2, input;
+  std::vector<cv::Mat> split_array;
+    
+  if ( image.csize == 1 ){
+    imgMat2 = Mat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
+    input = imgMat2;
+  } else if ( image.csize == 4 ){
+    imgMat2 = Mat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
+    split(imgMat2,split_array);
+    input = split_array[3]; // select alpha channel to find contours
+  } else {
+    error("suport only RGBA or GRAY image");
+    return;
+  }
+  cv::Mat imgMat = input.clone(); // copy data because findContours will destroy it...
 
   m_contours.clear();
   m_convexhulls.clear();
@@ -99,7 +98,6 @@ void pix_opencv_contours :: processGrayImage(imageStruct &image)
 
   std::vector<std::vector<cv::Point> > contours;
   std::vector<cv::Vec4i> hierarchy;
-
   cv::findContours(imgMat, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
   
   /*
@@ -358,7 +356,7 @@ void pix_opencv_contours :: outputBlobs(imageStruct &image){
         SETFLOAT(apt+1, rot_rect.center.x/image.xsize); // rotrect center
         SETFLOAT(apt+2, rot_rect.center.y/image.ysize);
         SETFLOAT(apt+3, rot_rect.size.width/image.xsize); // blob size
-        SETFLOAT(apt+4, rot_rect.size.height/image.xsize);
+        SETFLOAT(apt+4, rot_rect.size.height/image.ysize);
         SETFLOAT(apt+5, rot_rect.angle); // rotrect angle
         SETFLOAT(apt+6, area/imageArea); // blob area in % of image sizes
         
@@ -510,7 +508,7 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
             n++;
         }
 
-        for ( j = 0 ; j < m_contours[i].size() ; j++) {
+        for ( j = 0 ; j < m_contours[i].size() && n < vecxsize ; j++) {
         
           pt = m_contours[i][j];
           
@@ -521,7 +519,7 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
         }
         // close contour
         pt = m_contours[i][0];
-        for (j=0; j<m_repeat_point; j++){ // TODO what is this loop ??? m_repeat_point is either 0 or 1...
+        for (j=0; j<m_repeat_point && n < vecxsize; j++){ // TODO what is this loop ??? m_repeat_point is either 0 or 1...
             vecx[n].w_float = (float) pt.x/image.xsize;
             vecy[n].w_float = (float) pt.y/image.ysize;
             vecz[n].w_float = 0.;

@@ -62,9 +62,11 @@ void pix_opencv_clahe :: startRendering(){
   for ( size_t i = 0; i < devicesInfo.size(); i++){
     post("%s %s", devicesInfo[i]->deviceVendor.c_str(), devicesInfo[i]->deviceName.c_str());
   }
+ 
+  m_cpuFilter = createCLAHE();
+ 
   if ( devicesInfo.size() == 0 ){
     post("can't find OpenCL device, switch to CPU mode");
-    m_cpuFilter = createCLAHE();
     m_gpuMode = false;
   } else {
     m_oclFilter = ocl::createCLAHE();
@@ -96,9 +98,16 @@ void pix_opencv_clahe :: processImage(imageStruct &image)
   }
   
   if ( m_gpuMode ) {
-    d_outframe = m_gray;
-    m_oclFilter->apply(d_outframe, d_outframe);
-    d_outframe.download(m_gray);
+    try  {
+      d_outframe = m_gray;
+      m_oclFilter->apply(d_outframe, d_outframe);
+      d_outframe.download(m_gray);
+    } catch (cv::Exception& e) {
+      error("can't use OpenCL, do you have OpenCL driver installed ?");
+      error("error %d : %s", e.code, e.err.c_str());
+      m_gpuMode = false;
+      return;
+    }
   } else {
     m_cpuFilter->apply(m_gray, m_gray);
   }

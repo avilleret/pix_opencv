@@ -1,4 +1,4 @@
-#N canvas 930 218 963 626 10;
+#N canvas 918 248 963 626 10;
 #X obj 20 43 cnv 15 430 380 empty empty empty 20 12 0 14 -228856 -66577
 0;
 #X obj 20 -3 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
@@ -42,35 +42,25 @@
 #X connect 9 2 8 0;
 #X connect 10 0 6 0;
 #X restore 675 276 pd gemwin;
-#X msg 675 256 create;
+#X msg 675 256 destroy;
 #X text 673 236 Create window and render;
-#X text 25 -151 Synopsis: [pix_opencv_bgstats2];
-#X text 26 -90 Description: pix_opencv_bgstats2 extracts foreground
-using a n algorithm made for an artistic installation at the Contemporary
-Jewish Museum in San Francisco \, CA from March 31 throughn July 31
-\, 2011;
 #X obj 485 -34 cnv 15 400 260 empty empty empty 20 12 0 14 -4034 -66577
 0;
-#X text 40 203 for more about the algorithm please refer to : A. Godbehere
-\, A. Matsukawa \, K. Goldberg \, "Visual Tracking of Human Visitors
-under Variable-Lighting Conditions for a Responsiven Audio Art Installation"
-\, American Control Conference \, 2012 \,;
 #X obj 488 282 rectangle 4 3;
 #X text 40 15 <threshold> <initFrames>;
 #X text 29 1 Arguments: (optional);
 #X text 62 343 see also :;
 #X obj 104 367 pix_opencv_bgstats;
-#X obj 269 358 pix_threshold;
+#X obj 104 387 pix_threshold;
 #X msg 511 18 algo \$1;
-#X obj 488 136 pix_opencv_backgroundsubtractor 0.3 20;
-#N canvas 1038 444 576 492 parameters 0;
+#N canvas 320 153 576 492 parameters 1;
 #X obj 21 21 cnv 15 400 80 empty empty readProperties 20 12 0 14 -233017
 -66577 0;
-#X obj 29 47 hradio 15 1 0 1 \$0-propreadId \$0-propreadId empty 0
+#X obj 29 47 hradio 15 1 0 4 \$0-propreadId \$0-propreadId empty 0
 -8 0 10 -262144 -1 -1 0;
 #X obj 30 70 cnv 15 260 20 empty \$0-propreadName <none> 10 9 0 14
 -203904 -66577 0;
-#N canvas 1298 438 597 537 PropertyLogic 0;
+#N canvas 1296 443 597 537 PropertyLogic 0;
 #N canvas 570 124 774 460 id2property 0;
 #X obj 353 106 r \$0-info;
 #X obj 405 176 t b f;
@@ -280,13 +270,13 @@ under Variable-Lighting Conditions for a Responsiven Audio Art Installation"
 -66577 0;
 #X obj 21 111 cnv 15 400 80 empty empty writeProperties 20 12 0 14
 -233017 -66577 0;
-#X obj 29 137 hradio 15 1 0 1 \$0-propwriteId \$0-propwriteId empty
+#X obj 29 137 hradio 15 1 0 4 \$0-propwriteId \$0-propwriteId empty
 0 -8 0 10 -262144 -1 -1 0;
 #X obj 30 160 cnv 15 260 20 empty \$0-propwriteName <none> 10 9 0 14
 -203904 -66577 0;
 #X obj 301 160 nbx 5 20 -1e+37 1e+37 0 0 \$0-propwriteValue \$0-propwriteValue
 empty 0 -8 0 14 -204786 -1 -1 0 256;
-#X msg 73 412 setParam decisionThreshold 0.7;
+#X msg 73 412 setParam noiseSigma 137;
 #X obj 56 314 r \$0-propget;
 #X obj 73 392 r \$0-propset;
 #X msg 77 360 get Hue Saturation;
@@ -295,7 +285,7 @@ empty 0 -8 0 14 -204786 -1 -1 0 256;
 might contain spaces (and other weird characters);
 #X text 98 203 INIT: query names of all available properties;
 #X msg 31 203 enumParams;
-#X msg 56 335 getParam decisionThreshold;
+#X msg 56 335 getParam noiseSigma;
 #X text 59 224 this will return a list of parameters through the "info"
 outlet of [pix_opencv_backgroundsubtractor].;
 #X text 135 315 query a (readable) property via a message "getParam
@@ -311,9 +301,9 @@ outlet of [pix_opencv_backgroundsubtractor].;
 #X connect 16 0 3 0;
 #X connect 17 0 3 0;
 #X connect 21 0 3 0;
-#X restore 545 76 pd parameters;
-#X obj 520 109 r \$0-ctl;
-#X obj 713 196 s \$0-info;
+#X restore 745 76 pd parameters;
+#X obj 521 109 r \$0-ctl;
+#X obj 671 201 s \$0-info;
 #N canvas 782 389 504 512 src 0;
 #X obj 302 -79 gemhead;
 #X obj 314 -52 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
@@ -411,26 +401,55 @@ outlet of [pix_opencv_backgroundsubtractor].;
 #X text 504 -166 camera;
 #X text 504 -151 video file;
 #X msg 504 -25 algo;
-#X obj 713 156 t a a;
-#X obj 740 176 print info;
+#X obj 671 161 t a a;
+#X obj 698 181 print info;
 #X obj 511 0 hradio 15 1 0 3 empty empty empty 0 -8 0 10 -262144 -1
--1 0;
+-1 1;
 #X text 561 18 choose algo by id;
 #X msg 518 43 algo BackgroundSubtractor.MOG;
 #X text 700 43 choose algo by name;
-#X connect 5 0 14 0;
+#X obj 488 136 pix_opencv_backgroundsubtractor;
+#X msg 521 85 cpuMode \$1;
+#X obj 521 65 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X text 25 -156 Synopsis: [pix_opencv_backgroundsubtractor];
+#X text 26 -90 Description: pix_opencv_backgroundsubtractor extracts
+foreground using different algorithms;
+#X text 541 -24 report available algorithm on the right outlet;
+#X text 32 54 input : message : algo : without arg \, reports the available
+algorithms;
+#X text 32 84 input : message : algo <float> choose an algo by id;
+#X text 32 98 input : message : algo <symbol> choose an algo by name
+;
+#X text 32 118 input : message : cpuMode <symbol> force CPU mode;
+#X text 27 -56 It uses OpenCL when it's available.;
+#X text 32 138 input : message : enumParams : query parameters name
+and value of available;
+#X text 40 258 for more about the GMG algorithm please refer to : A.
+Godbehere \, A. Matsukawa \, K. Goldberg \, "Visual Tracking of Human
+Visitors under Variable-Lighting Conditions for a Responsiven Audio
+Art Installation" \, American Control Conference \, 2012 \,;
+#X text 32 168 input : message : paramHelp : print parameters help
+in the Pd's console (not filled for all parameters);
+#X text 32 198 input : message : getParam <symbol> : get parameter
+value;
+#X text 32 213 input : message : setParam <symbol> <float> : set paramter
+value;
+#X connect 5 0 11 0;
 #X connect 7 0 8 0;
 #X connect 8 0 7 0;
-#X connect 20 0 21 0;
-#X connect 21 0 5 0;
-#X connect 21 1 34 0;
-#X connect 23 0 21 0;
-#X connect 25 0 27 0;
-#X connect 26 0 25 0;
-#X connect 27 0 21 0;
-#X connect 28 0 27 1;
-#X connect 33 0 21 0;
-#X connect 34 0 24 0;
-#X connect 34 1 35 0;
-#X connect 36 0 20 0;
-#X connect 38 0 21 0;
+#X connect 17 0 36 0;
+#X connect 19 0 36 0;
+#X connect 21 0 23 0;
+#X connect 22 0 21 0;
+#X connect 23 0 36 0;
+#X connect 24 0 23 1;
+#X connect 29 0 36 0;
+#X connect 30 0 20 0;
+#X connect 30 1 31 0;
+#X connect 32 0 17 0;
+#X connect 34 0 36 0;
+#X connect 36 0 5 0;
+#X connect 36 1 30 0;
+#X connect 37 0 36 0;
+#X connect 38 0 37 0;

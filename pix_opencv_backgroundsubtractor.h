@@ -17,6 +17,7 @@ LOG
 #define INCLUDE_PIX_OPENCV_BACKGROUNDSUBTRACTOR_H_
 
 #include "opencv2/opencv.hpp"
+#include "opencv2/ocl/ocl.hpp"
 
 #include "Base/GemPixObj.h"
 #include <RTE/MessageCallbacks.h>
@@ -54,6 +55,7 @@ class GEM_EXPORT pix_opencv_backgroundsubtractor: public GemPixObj
     void getParamMess(t_symbol *paramName);
     void paramHelpMess();
     void algoMess(t_symbol *s, int argc, t_atom* argv);
+    void cpuModeMess(int val);
 
     	
    	//////////
@@ -63,16 +65,26 @@ class GEM_EXPORT pix_opencv_backgroundsubtractor: public GemPixObj
    	//////////
    	// Do the processing
    	virtual void 	processImage(imageStruct &image);
-
+    virtual void  startRendering();
+    virtual void  stopRendering();
+    
   private:
-    //~cv::Ptr<cv::BackgroundSubtractor> m_fgbg;
     cv::Ptr<cv::BackgroundSubtractor> m_fgbgMOG;
     cv::Ptr<cv::BackgroundSubtractorGMG> m_fgbgGMG;
+    
+    cv::ocl::MOG m_oclMOG;
+    cv::ocl::MOG2 m_oclMOG2;
+    //~ cv::ocl::GMG m_oclGMG;
+    
     cv::Mat m_fgmask, m_segm;
+    cv::ocl::oclMat d_input, d_fgmask;
+    
+    std::string m_algoName;
     
     t_outlet *m_dataout;
     
     t_float m_threshold, m_initFrames;
+    bool m_rendering, m_gpuMode, m_forceCPU;
     
     std::vector<std::string> m_bgsub_algos;
   

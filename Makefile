@@ -495,6 +495,7 @@ libdir: $(LIBRARY_NAME) $(DISTBINDIR) overview lib3rd
 	fi;
 	$(INSTALL_DATA) $(HELPPATCHES) $(DISTBINDIR)
 	$(INSTALL_DATA) pix_opencv.$(EXTENSION) $(DISTBINDIR)
+	cp -r lib-$(EXTENSION) $(DISTBINDIR)
 	test -z "$(strip $(EXAMPLES))" || \
 		test -e $(DISTBINDIR)/examples || \
 			mkdir $(DISTBINDIR)/examples

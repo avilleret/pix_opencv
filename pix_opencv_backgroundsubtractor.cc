@@ -32,8 +32,7 @@ CPPEXTERN_NEW(pix_opencv_backgroundsubtractor);
 // Constructor
 //
 /////////////////////////////////////////////////////////
-pix_opencv_backgroundsubtractor :: pix_opencv_backgroundsubtractor()
-{ 
+pix_opencv_backgroundsubtractor :: pix_opencv_backgroundsubtractor() : m_forceCPU(false) { 
   initModule_video();
   setUseOptimized(true);
   setNumThreads(8);
@@ -74,6 +73,38 @@ pix_opencv_backgroundsubtractor :: ~pix_opencv_backgroundsubtractor()
 }
 
 /////////////////////////////////////////////////////////
+// StartRendering
+//
+/////////////////////////////////////////////////////////
+
+void pix_opencv_backgroundsubtractor :: startRendering(){
+  
+  ocl::DevicesInfo devicesInfo;
+  ocl::getOpenCLDevices(devicesInfo);
+  post("Found %d OpenCL device(s).", devicesInfo.size());
+  for ( size_t i = 0; i < devicesInfo.size(); i++){
+    post("%s %s", devicesInfo[i]->deviceVendor.c_str(), devicesInfo[i]->deviceName.c_str());
+  }
+ 
+  if ( devicesInfo.size() == 0 || m_forceCPU ){
+    post("can't find OpenCL device, switch to CPU mode");
+    m_gpuMode = false;
+  } else {
+    m_gpuMode = true;
+  }
+  
+  m_rendering = true;
+}
+
+void pix_opencv_backgroundsubtractor :: stopRendering(){
+  m_rendering = false;
+
+  //~ this crashes when no OCL device is used
+  //~m_oclMOG.release();
+  //~m_oclMOG2.release();
+}
+
+/////////////////////////////////////////////////////////
 // processImage
 //
 /////////////////////////////////////////////////////////    	
@@ -91,7 +122,27 @@ void pix_opencv_backgroundsubtractor :: processImage(imageStruct &image)
     return;
   }
   
-  if (!m_fgbgMOG.empty()){
+  
+  if ( m_gpuMode ) {
+    try  {
+      d_input = input;
+      if ( m_algoName == "MOG" ){
+        m_oclMOG( d_input, d_fgmask );
+      } else if ( m_algoName == "MOG2" ){
+        m_oclMOG2( d_input, d_fgmask, 0.01f );
+      } else { 
+        error("there is no GPU version of algo %s", m_algoName.c_str());
+        m_gpuMode = false;
+        return;
+      }
+      d_fgmask.download(m_fgmask);
+    } catch (cv::Exception& e) {
+      error("can't use OpenCL, do you have OpenCL driver installed ?");
+      error("error %d : %s", e.code, e.err.c_str());
+      m_gpuMode = false;
+      return;
+    }
+  } else if (!m_fgbgMOG.empty()){
     (*m_fgbgMOG)(input, m_fgmask);
   } else if (!m_fgbgGMG.empty()) {
     (*m_fgbgGMG)(input, m_fgmask);
@@ -194,8 +245,9 @@ void pix_opencv_backgroundsubtractor :: setParamMess(t_symbol *s, int argc, t_at
     } else if ( !m_fgbgGMG.empty() ) {
       m_fgbgGMG->set(paramList[i], val);
     }
-  } catch (...) {
+  } catch (cv::Exception& e) {
     error("can't set parameter %s value",paramList[i].c_str());
+    error("error %d : %s", e.code, e.err.c_str());
     return;
   }
 }
@@ -225,8 +277,9 @@ void pix_opencv_backgroundsubtractor :: getParamMess(t_symbol *paramName){
     } else if ( !m_fgbgGMG.empty() ){
       val = m_fgbgGMG->get<double>(paramList[i]);
     }    
-  } catch (...) {
+  } catch (cv::Exception& e) {
     error("can't get parameter %s value",paramList[i].c_str());
+    error("error %d : %s", e.code, e.err.c_str());
     return;
   }
   
@@ -255,6 +308,8 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
   if ( !m_fgbgMOG.empty() ) m_fgbgMOG.release();
   if ( !m_fgbgGMG.empty() ) m_fgbgGMG.release();
   
+  m_algoName = "NONE";
+  
   if ( argv[0].a_type == A_FLOAT ){
     int id_max = m_bgsub_algos.size()-1;
     int id = atom_getfloat(argv);
@@ -269,6 +324,7 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
       error("Failed to create %s Algorithm.", m_bgsub_algos[id].c_str());
     } else {
       verbose(2,"bgsub %d : \"%s\" created.",id, m_bgsub_algos[id].c_str());
+      m_algoName = m_bgsub_algos[id].substr(21);
     }
   } else if ( argv[0].a_type == A_SYMBOL ) {
     t_symbol* algoSym = atom_getsymbol(argv);
@@ -283,8 +339,14 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
       error("Failed to create %s Algorithm.", algo.c_str());
     } else {
       verbose(2,"bgsub : \"%s\" created.",algo.c_str());
+      m_algoName = algo.substr(21);
     }
   }
+  if ( !m_forceCPU) m_gpuMode=true;
+}
+
+void pix_opencv_backgroundsubtractor :: cpuModeMess( int val ){
+  m_forceCPU = val > 0;
 }
 
 /////////////////////////////////////////////////////////
@@ -293,9 +355,10 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
 /////////////////////////////////////////////////////////
 void pix_opencv_backgroundsubtractor :: obj_setupCallback(t_class *classPtr)
 {
-  CPPEXTERN_MSG(classPtr, "algo",   algoMess);
-  CPPEXTERN_MSG0(classPtr, "enumParams",   enumParamsMess);
-  CPPEXTERN_MSG(classPtr, "setParam",   setParamMess);
-  CPPEXTERN_MSG1(classPtr, "getParam",   getParamMess, t_symbol*);
-  CPPEXTERN_MSG0(classPtr, "paramHelp",   paramHelpMess);
+  CPPEXTERN_MSG(classPtr,  "algo",       algoMess);
+  CPPEXTERN_MSG0(classPtr, "enumParams", enumParamsMess);
+  CPPEXTERN_MSG(classPtr,  "setParam",   setParamMess);
+  CPPEXTERN_MSG1(classPtr, "getParam",   getParamMess,     t_symbol*);
+  CPPEXTERN_MSG0(classPtr, "paramHelp",  paramHelpMess);
+  CPPEXTERN_MSG1(classPtr, "cpuMode",    cpuModeMess,      int);
 }
