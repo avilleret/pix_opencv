@@ -63,7 +63,7 @@ MANUAL =
 # documentation, etc.  README.txt and LICENSE.txt are required and therefore
 # automatically included
 OVERVIEW = pix_opencv-help.pd
-EXTRA_DIST = dessin.tif $(OVERVIEW)
+EXTRA_DIST = dessin.tif $(OVERVIEW) README.txt
 EXTRA_DIST_FOLDER = model haarcascades plus
 
 
