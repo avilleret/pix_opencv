@@ -203,6 +203,7 @@ void pix_opencv_facetracker :: Draw(cv::Mat &image,cv::Mat &shape,cv::Mat &con,c
 void pix_opencv_facetracker :: processImage(imageStruct &image)
 { 
   cv::Mat gray, im;
+  if ( image.ysize < 1 || image.xsize < 1 ) return;
   if ( image.csize == 1 ){
     gray = cv::Mat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
     im = gray;
