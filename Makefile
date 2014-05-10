@@ -86,23 +86,23 @@ ALL_LDFLAGS =
 SHARED_LDFLAGS =
 FACETRACKER_LIBS += FaceTracker/src/lib/CLM.o  FaceTracker/src/lib/FCheck.o  FaceTracker/src/lib/FDet.o  FaceTracker/src/lib/IO.o  FaceTracker/src/lib/Patch.o  FaceTracker/src/lib/PAW.o  FaceTracker/src/lib/PDM.o  FaceTracker/src/lib/Tracker.o
 LIBS_macosx += `pkg-config --libs opencv`
-LIBS_linux += lib-$(EXTENSION)/libopencv_calib3d.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_contrib.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_core.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_features2d.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_flann.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_highgui.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_imgproc.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_legacy.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_ml.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_nonfree.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_objdetect.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_ocl.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_photo.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_stitching.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_superres.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_video.so.2.4
-LIBS_linux += lib-$(EXTENSION)/libopencv_videostab.so.2.4
+LIBS_linux += lib-$(EXTENSION)/libopencv_calib3d.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_contrib.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_core.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_features2d.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_flann.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_highgui.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_imgproc.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_legacy.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_ml.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_nonfree.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_objdetect.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_ocl.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_photo.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_stitching.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_superres.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_video.so
+LIBS_linux += lib-$(EXTENSION)/libopencv_videostab.so
 LIBS_linux += -lrt -lpthread -ldl
 
 #------------------------------------------------------------------------------#
@@ -381,7 +381,7 @@ SHARED_TCL_LIB = $(wildcard lib$(LIBRARY_NAME).tcl)
 
 
 # this links everything into a single binary file
-$(LIBRARY_NAME): $(SOURCES:.cc=.o) $(LIBRARY_NAME).o
+$(LIBRARY_NAME): lib-$(EXTENSION) $(SOURCES:.cc=.o) $(LIBRARY_NAME).o
 	$(CC) $(ALL_LDFLAGS) -o $(LIBRARY_NAME).$(EXTENSION) $(SOURCES:.cc=.o) $(LIBRARY_NAME).o $(ALL_LIBS)
 	chmod a-x $(LIBRARY_NAME).$(EXTENSION)
 
@@ -471,6 +471,7 @@ clean:
 	-rm -f -- $(LIBRARY_NAME).o
 	-rm -f -- $(LIBRARY_NAME).$(EXTENSION)
 	-rm -f -- $(SHARED_LIB)
+	-rm -rf -- lib-$(EXTENSION)
 
 clean_facetracker:
 	-rm -f pix_opencv_facetracker.o
@@ -519,6 +520,10 @@ lib3rd: $(DISTBINDIR)
 	elif [ $(OS) == macosx ] ; then \
 		./embed-mac-OpenCV-dependencies.sh lib-$(EXTENSION) && cp -r lib-$(EXTENSION) $(DISTBINDIR) ; \
 	fi;
+	
+lib-$(EXTENSION):
+	$(INSTALL_DIR) lib-$(EXTENSION)
+	cp `pkg-config --libs-only-other opencv | sed s/.so/.so*/g` lib-$(EXTENSION)/
 
 $(DISTDIR):
 	$(INSTALL_DIR) $(DISTDIR)
