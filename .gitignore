@@ -1,8 +1,6 @@
 # OpenCV library binaries #
 ###########################
 lib-pd_darwin
-lib-l_ia64
-lib-l_i386
 opencv*.dll
 
 # OCL binary #
@@ -50,6 +48,8 @@ pix_opencv-help.pd
 *.o
 *.so
 *.d
+*.lo
+*.la
 
 # Packages #
 ############
@@ -63,6 +63,20 @@ pix_opencv-help.pd
 *.rar
 *.tar
 *.zip
+
+# Automake #
+############
+.deps
+autom4te.cache
+configure
+install-sh
+config
+build/
+Makefile
+Makefile.in
+aclocal.m4
+libtool
+*.lai
 
 # Logs and databases #
 ######################
