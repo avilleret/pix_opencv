@@ -43,10 +43,10 @@ pix_opencv_la_SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_matchshape.cc \
 				  pix_opencv_opticalflow.cc \
 				  pix_opencv_trackKnn.cc \
-				  #~pix_opencv_surf.cc \
 				  pix_opencv_backgroundsubtractor.cc \
 				  pix_opencv_clahe.cc \
 				  pix_opencv.cc
+				  ## pix_opencv_surf.cc \
 
 ## uha, this is ugly
 $(abs_builddir)/.libs/pix_opencv.@GEXTENSION@: pix_opencv.la
