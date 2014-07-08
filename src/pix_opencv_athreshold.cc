@@ -15,6 +15,8 @@
 //
 /////////////////////////////////////////////////////////
 
+#if HAVE_LIBOPENCV_LEGACY
+
 #include "pix_opencv_athreshold.h"
 
 CPPEXTERN_NEW(pix_opencv_athreshold)
@@ -256,3 +258,4 @@ void pix_opencv_athreshold :: floatDimMessCallback(void *data, t_floatarg dim)
 {
   GetMyClass(data)->floatDimMess((float)dim);
 }
+#endif /*HAVE_LIBOPENCV_LEGACY*/

@@ -15,7 +15,9 @@
 //
 /////////////////////////////////////////////////////////
 
+#if HAVE_LIBOPENCV_NONFREE
 #include "pix_opencv_surf.h"
+
 #include <stdio.h>
 
 
@@ -1047,4 +1049,6 @@ void  pix_opencv_surf :: pdelaunayMess(float point, float threshold)
      // post( "pix_opencv_surf : setting threshold to : %d", x_threshold );
   }
 }
+#endif /* HAVE_LIBOPENCV_NONFREE */
+
 
