@@ -2,8 +2,8 @@
 AUTOMAKE_OPTIONS = foreign
 pkglib_LTLIBRARIES = pix_opencv.la
 
-pix_opencv_la_CXXFLAGS = @GEM_CPPFLAGS@ @PD_CPPFLAGS@  `pkg-config --cflags pd`
-pix_opencv_la_LDFLAGS = -module -avoid-version -shared -shrext .@EXTENSION@  @GEM_LDFLAGS@ @PD_LDFLAGS@
+pix_opencv_la_CXXFLAGS = @GEM_CPPFLAGS@ @PD_CPPFLAGS@  @FACETRACKER_CPPFLAGS@
+pix_opencv_la_LDFLAGS = -module -avoid-version -shared -shrext .@EXTENSION@  @GEM_LDFLAGS@ @PD_LDFLAGS@ @FACETRACKER_LDFLAGS@
 #~pix_opencv_la_HEADERS = `ls -1 *.h *.hpp`
 
 pix_opencv_la_SOURCES = pix_opencv_edge.cc \
@@ -45,7 +45,8 @@ pix_opencv_la_SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_backgroundsubtractor.cc \
 				  pix_opencv_clahe.cc \
 				  pix_opencv.cc \
-				  pix_opencv_surf.cc
+				  pix_opencv_surf.cc \
+				  pix_opencv_facetracker.cc
 
 ## uha, this is ugly
 $(abs_builddir)/.libs/pix_opencv.@GEXTENSION@: pix_opencv.la

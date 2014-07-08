@@ -9,6 +9,8 @@ AC_SUBST(PD_CPPFLAGS)
 AC_SUBST(PD_LDFLAGS)
 AC_SUBST(GEM_CPPFLAGS)
 AC_SUBST(GEM_LDFLAGS)
+AC_SUBST(FACETRACKER_CPPFLAGS)
+AC_SUBST(FACETRACKER_LDFLAGS)
 AC_SUBST(EXTENSION)
 
 AM_INIT_AUTOMAKE([1.10 foreign])
@@ -16,6 +18,7 @@ AM_INIT_AUTOMAKE([1.10 foreign])
 AC_ARG_WITH([pd],       [  --with-pd=</path/to/pd> where to look for pd-headers and and -libs])
 AC_ARG_WITH([gem],       [  --with-gem=</path/to/gem> where to look for gem-headers and and -libs])
 AC_ARG_WITH([extension],[  --with-extension=<ext>  enforce a certain extension for the dynamic library (e.g. dll)])
+AC_ARG_WITH([facetracker],[  --with-facetracker=</path/to/gem>  where to look for facetracker-headers and -libs])
 
 ARCH=$(uname -m)
 KERN=$(uname -s)
@@ -83,6 +86,31 @@ else
   AC_MSG_RESULT([no Gem path given, trying with pkg-config data])
   GEM_CPPFLAGS=`pkg-config --cflags Gem`
   GEM_LDFLAGS=`pkg-config --libs Gem`
+fi
+
+if test "x$with_facetracker" != "x"; then
+ if test -d "${with_facetracker}"; then
+   FACETRACKERPATH=${with_facetracker}
+ fi
+else 
+  if test -d "FaceTracker/src"; then
+    #~ ouch ! I don't know how to do that in a cleaner way...
+    FACETRACKERPATH=$(pwd)/FaceTracker
+  fi
+fi
+
+if test "x$FACETRACKERPATH" != "x"; then
+ AC_MSG_RESULT([FaceTracker library detected])
+ if test -d "${FACETRACKERPATH}/include"; then
+  AC_MSG_RESULT([adding ${FACETRACKERPATH}/include to INCLUDES])
+  FACETRACKER_CPPFLAGS="-I${FACETRACKERPATH}/include ${CPPFLAGS} -DHAVE_FACETRACKER"
+ fi
+ if test -d "${FACETRACKERPATH}/src/lib"; then
+  for obj in "${FACETRACKERPATH}/src/lib/*.o"; do
+    AC_MSG_RESULT([adding $obj to LDFLAGS])
+    FACETRACKER_LDFLAGS+="$obj"
+  done
+ fi
 fi
 
 AC_MSG_CHECKING([extension])

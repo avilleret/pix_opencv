@@ -17,6 +17,7 @@
 // based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org ) (pix_opencv)
 // FaceTracker for pix_opencv
 
+#ifdef HAVE_FACETRACKER
 #include "pix_opencv_facetracker.h"
 
 using namespace FACETRACKER;
@@ -296,3 +297,4 @@ void pix_opencv_facetracker :: clampMess(float arg){
 void pix_opencv_facetracker :: filterMess(float arg){
   m_nIter=int(arg);
 }
+#endif /* HAVE_FACETRACKER */
