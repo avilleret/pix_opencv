@@ -6,9 +6,9 @@ nobase_dist_pix_opencvexamples_DATA = \
 00_opencv_haarcascade+pix_image/00_opencv_haarcascade+pix_image.pd \
 00_opencv_haarcascade+pix_image/bocadillo.gif \
 00_opencv_haarcascade+pix_image/haarcascade_frontalface_alt.xml \
-01_opencv_contrours_boundingrect+pmpd_ambient/01_opencv_contrours_boundingrect+pmpd_ambient.pd \
-01_opencv_contrours_boundingrect+pmpd_ambient/pd_link.pd \
-01_opencv_contrours_boundingrect+pmpd_ambient/pd_mass.pd \
+01_boundingrect+pmpd_ambient/01_boundingrect+pmpd_ambient.pd \
+01_boundingrect+pmpd_ambient/pd_link.pd \
+01_boundingrect+pmpd_ambient/pd_mass.pd \
 02_opencv_motempl+particle_system/02_opencv_motempl+particle_system.pd \
 03_opencv_hist_compare+text_trigger/03_opencv_hist_compare+text_trigger.pd \
 03_opencv_hist_compare+text_trigger/vera.ttf \
