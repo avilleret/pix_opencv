@@ -250,7 +250,7 @@ pix_opencv_knear :: pix_opencv_knear(t_symbol *path, t_floatarg nsamples)
   grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
 
   x_filepath = ( char * ) getbytes( 1024 );
-  sprintf( x_filepath, path->s_name );
+  sprintf( x_filepath, "%s", path->s_name );
   x_nsamples = (int)nsamples;
 
   x_classify = 0;
