@@ -115,72 +115,12 @@ else
 fi
 AC_MSG_RESULT([$EXTENSION])
 
-#~AC_CHECK_LIB([pd], [error],,
-    #~[AC_MSG_ERROR([[missing pd library install puredata and try again.]])
-  #~])
-#~
-#~AC_CHECK_LIB([Gem], [error],,
-    #~[AC_MSG_ERROR([[missing Gem library install puredata-gem and try again.]])
-  #~])
-
-#~AC_CHECK_LIB([opencv_core], [error],,
-    #~[AC_MSG_ERROR([[missing libopencv_core install it and try again.]])
-  #~])
-
-#~AC_CHECK_LIB([opencv_calib3d], [findChessboardCorners],,
-    #~[AC_MSG_ERROR([[missing a library from opencv try installing libopencv_calib3d]])
-  #~])
-  
-# SIMD support section is from Gem's configure.ac
-
-## SIMD support
-# naive approach is to just check, which SIMD-flags the compiler takes
-# and use these
-# drawback: while the compiler might support compilation for a specific
-# SIMD instruction set, the hardware you are compiling for might not
-
-# proposal:
-# by default the configure-task should only enable flags that are known
-# to work on the machine we are compiling.
-# the user can override this by explicitely stating that they want the
-# flag to be enabled (if possible)
-# e.g. "./configure --enable-sse2" on a pentium-3 should
-# produce a binary that will only run on machines with SSE2 registers
-# whereas "./configure" will make a binary with only MMX enabled.
-#
-# but how do we test for the CPU-caps? on linux we could just read /proc/cpuinfo
-# but on other OSs?
-
-# we make it a bit complicated in order to allow people to enforce the
-# compilation with a specific SIMD-instruction set, even on platforms
-# that don't support it
-# why? think cross-compilation
-
-GEM_CHECK_FAT(GEM_ARCH)
-AC_MSG_RESULT($GEM_ARCH)
-AC_SUBST(GEM_ARCH_CXXFLAGS)
-AC_SUBST(GEM_ARCH_LDFLAGS)
-
-if test "x${ARCH}" = "xi386" || test "x${ARCH}" = "xi686" || test "x${ARCH}" = "xx86_64"; then
- if test "x$enable_altivec" != "xyes"; then enable_altivec="no"; fi
-fi
-
-if test "x${ARCH}" = "xPower Macintosh" || test "x${ARCH}" = "xpowerpc"; then
- if test "x$enable_mmx"  != "xyes"; then enable_mmx="no" ; fi
- if test "x$enable_sse2" != "xyes"; then enable_sse2="no"; fi
-fi
-
-if test "x$enable_mmx" != "xno"; then
-  GEM_CHECK_CXXFLAGS([-mmmx])
-fi
-if test "x$enable_sse2" = "xyes"; then
-  GEM_CHECK_CXXFLAGS([-msse2])
-fi
-if test "x$enable_altivec" != "xno"; then
-  GEM_CHECK_CXXFLAGS([-faltivec])
-fi
-if test "x$enable_powerpc" = "xyes"; then
-  GEM_CHECK_CXXFLAGS([-mpowerpc-gfxopt])
-fi
+AC_CHECK_LIB([opencv_core], [error],,)
+AC_CHECK_LIB([opencv_imgproc], [cvCvtColor],,)
+AC_CHECK_LIB([opencv_legacy], [_Z38cvCreateModuleBlobTrackAnalysisHistPVSv],,)
+AC_CHECK_LIB([opencv_ocl], [_init],,)
+AC_CHECK_LIB([opencv_calib3d], [cvFindChessboardCorners],,)
+AC_CHECK_LIB([opencv_video], [_ZTSN2cv20BackgroundSubtractorE],,)
+AC_CHECK_LIB([opencv_nonfree],[_ZN2cv18initModule_nonfreeEv],,)
 
 AC_OUTPUT(Makefile src/Makefile)
