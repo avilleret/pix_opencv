@@ -4,6 +4,7 @@ AC_INIT([pix_opencv], 0.4, antoine.villeret@gmail.com,[pix_opencv])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_FILES([help/Makefile examples/Makefile])
+AC_CONFIG_FILES([pix_opencv-meta.pd])
 AC_CONFIG_SRCDIR(src)
 
 AC_SUBST(PD_CPPFLAGS)

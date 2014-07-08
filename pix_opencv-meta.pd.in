@@ -1,0 +1,10 @@
+#N canvas 65 210 200 200 10;
+#N canvas 562 196 421 300 META 1;
+#X text 13 10 NAME pix_opencv;
+#X text 10 95 LICENSE Intel License Agreement For Open Source Computer
+Vision Library;
+#X text 10 74 VERSION @PACKAGE_VERSION@;
+#X text 10 30 AUTHOR Antoine Villleret <antoine.villeret@gmail.com>
+\, Yves Degoyon <ydegoyon@gmail.com> \, Lluis Gomez i Bigorda <lluisgomez@hangar.org>
+;
+#X restore 10 10 pd META;
