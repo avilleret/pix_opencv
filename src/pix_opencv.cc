@@ -21,6 +21,12 @@ void pix_opencv_setup(void)
     verbose(-1,"pix_opencv %s library by Antoine Villeret 2012-2014",VERSION);
     verbose(-1,"\tbased on work by Yves Degoyon and Lluis Gomez i Bigorda");
     verbose(-1,"\tbuilt on %s",__DATE__);
+#if HAVE_LIBOPENCV_NONFREE
+    verbose(-1,"\twith non-free features");
+#endif
+#ifdef HAVE_FACETRACKER
+    verbose(-1,"\twith FaceTracker");
+#endif
     pix_opencv_class = class_new(gensym("pix_opencv"), (t_newmethod)pix_opencv_new, 0,
     	sizeof(t_pix_opencv), 0, (t_atomtype) 0);
 }
