@@ -6,6 +6,8 @@ pix_opencv_la_CXXFLAGS = @GEM_CPPFLAGS@ @PD_CPPFLAGS@  @FACETRACKER_CPPFLAGS@
 pix_opencv_la_LDFLAGS = -module -avoid-version -shared -shrext .@EXTENSION@  @GEM_LDFLAGS@ @PD_LDFLAGS@ @FACETRACKER_LDFLAGS@
 #~pix_opencv_la_HEADERS = `ls -1 *.h *.hpp`
 
+OVERVIEW=../pix_opencv-help.pd
+
 pix_opencv_la_SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_laplace.cc \
 				  pix_opencv_morphology.cc \
@@ -50,7 +52,7 @@ pix_opencv_la_SOURCES = pix_opencv_edge.cc \
 
 #~ Override pix_opencv.la target to add ".WAIT" but it doesn't seems to work...
 #~pix_opencv.la: .WAIT $(pix_opencv_la_OBJECTS) $(pix_opencv_la_DEPENDENCIES) $(EXTRA_pix_opencv_la_DEPENDENCIES) 
-	#~$(AM_V_CXXLD)$(pix_opencv_la_LINK) -rpath $(pkglibdir) $(pix_opencv_la_OBJECTS) $(pix_opencv_la_LIBADD) $(LIBS)
+#~$(AM_V_CXXLD)$(pix_opencv_la_LINK) -rpath $(pkglibdir) $(pix_opencv_la_OBJECTS) $(pix_opencv_la_LIBADD) $(LIBS)
 #~
 #~.WAIT: 
 
@@ -60,15 +62,26 @@ $(abs_builddir)/.libs/pix_opencv.@GEXTENSION@: pix_opencv.la
 $(top_builddir)/pix_opencv.@EXTENSION@: $(abs_builddir)/.libs/pix_opencv.@EXTENSION@ 
 		rm -f $@ && cd $(top_builddir) && test -e $< && $(LN_S) $< pix_opencv.@EXTENSION@ || true
 
-.PHONY: clean-conveniencelink
+.PHONY: clean-conveniencelink help
 
 clean-conveniencelink:
 	test -L $(top_builddir)/pix_opencv.@EXTENSION@ && rm -f $(top_builddir)/pix_opencv.@EXTENSION@ || true
 
 
-all-local:: $(top_builddir)/pix_opencv.@EXTENSION@
+all-local:: $(top_builddir)/pix_opencv.@EXTENSION@ help
 
 clean-local:: clean-conveniencelink
 
 .o: .cc
 	$(CXX) $(ALL_CFLAGS) -o "$*.o" -c "$*.cc"
+
+help:
+	echo "#N canvas 147 197 1566 537 10;" > $(OVERVIEW)
+	echo "#X text 126 15 overview of all available pix_opencv objects;" >> $(OVERVIEW)
+	echo "#X obj 30 20 pix_opencv;" >> $(OVERVIEW)
+	ID=0 ; \
+	for extern in $(pix_opencv_la_SOURCES:.cc=""); do \
+		echo "#X obj `expr $$ID % 5 \* 300 + 50` `expr $$ID / 5 \* 30 + 40` $$extern;" >> $(OVERVIEW) && ID=`expr $$ID + 1` ; \
+	done ; \
+	#~echo "#X obj 30 `expr $$ID / 5 \* 30 + 80` cnv 15 250 60 empty empty extra 20 12 0 14 -4034 -66577 0;" >> $(OVERVIEW) ; \
+	#~echo "#X obj 50 `expr $$ID / 5 \* 30 + 100` pix_opencv_facetracker;" >> $(OVERVIEW)
