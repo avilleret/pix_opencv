@@ -48,6 +48,12 @@ pix_opencv_la_SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_surf.cc \
 				  pix_opencv_facetracker.cc
 
+#~ Override pix_opencv.la target to add ".WAIT" but it doesn't seems to work...
+#~pix_opencv.la: .WAIT $(pix_opencv_la_OBJECTS) $(pix_opencv_la_DEPENDENCIES) $(EXTRA_pix_opencv_la_DEPENDENCIES) 
+	#~$(AM_V_CXXLD)$(pix_opencv_la_LINK) -rpath $(pkglibdir) $(pix_opencv_la_OBJECTS) $(pix_opencv_la_LIBADD) $(LIBS)
+#~
+#~.WAIT: 
+
 ## uha, this is ugly
 $(abs_builddir)/.libs/pix_opencv.@GEXTENSION@: pix_opencv.la
 
