@@ -48,15 +48,17 @@ Go to the fresh created folder, i.e. « pix_opencv » and build the things :
 
 ~~~~
 cd pix_opencv
+./configure
 make
 ~~~~
 
 If you see something like « can’t find m_pd.h », you need to tweak pd’s path with this command :
-make CFLAGS=-I/path/to/pd
+`configure --with-pd=/path/to/pd`
 If you see something like « can’t find Base/GemPixObj.h », you need to tweak Gem’s path with this command :
-make CFLAGS=-I/path/to/gem
+`configure --with-gem=/path/to/gem`
 You can combine options like :
-make CFLAGS=-I/path/to/pd CFLAGS=-I/path/to/gem
+`configure --with-pd=/path/to/pd --with-gem=/path/to/gem`
+To see more option, run `configure --help`.
 
 ## Windows
 You need Visual C++ (at least the free express edition) to build pix_opencv on Windows.
@@ -68,18 +70,27 @@ The include must contain the following :
   - Gem include folder : path\to\Gem
   - OpenCV include path, wich is ususally $(OPENCV_DIR)\..\..\include if you setup OPENCV_DIR according to Windows quickstart guide on opencv.org.
   
-# 5. to build `pix_opencv_facetracker` :
+# 5. Optional
+## 5.1 Build the `FaceTracker` lib
 
+From the `pix_opencv` directory :
 ~~~~
   git submodule init
   git submodule update
   cd FaceTrakcer
   make 
-  cd ..
-  make facetracker
 ~~~~
+Then re-run `./configure` and `make` to add `pix_opencv_facetracker`.
 
-# 6. Packaging
+## 5.2 Add non-free features support
+Some OpenCV feature are non-free, this mean the licence doesn't allow packaging for these.
+Anyway, you can use them but you have to build OpenCV library yourself.
+Refer to opencv website to learn how to build it.
+Then you can re-run `./configure` and `make` to add non-free feature support.
+
+Currently, only `pix_opencv_surf` is affected by this.
+
+# 6. Packaging !! OBSOLETE !!
 ## 6.1 To make a Distribuable source tarbal :
   `make dist`
 	
@@ -93,6 +104,6 @@ This archive is called "pix_opencv-VERSION-TARGET".
 This archive must contains binary of VERSION for TARGET architecture.
   
 # 7. Testing 
-  Open the `pix_opencv_overview.pd` patch.
+  Open the `pix_opencv-help.pd` patch.
   It shows an overview of all available externals.
   And this tests the creation of each external.
