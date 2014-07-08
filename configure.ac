@@ -27,6 +27,10 @@ KERN=$(uname -s)
 AC_PROG_CXX
 AC_PROG_LIBTOOL
 
+if test "x${libdir}" = "x\${exec_prefix}/lib"; then
+ libdir='${exec_prefix}/lib/pd/extra'
+fi
+
 if test "x$with_pd" != "x"; then
  if test -d "${with_pd}"; then
    PDPATH=${with_pd}
