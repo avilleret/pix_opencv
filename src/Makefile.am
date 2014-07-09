@@ -4,7 +4,51 @@ pkglib_LTLIBRARIES = pix_opencv.la
 
 pix_opencv_la_CXXFLAGS = @GEM_CPPFLAGS@ @PD_CPPFLAGS@  @FACETRACKER_CPPFLAGS@
 pix_opencv_la_LDFLAGS = -module -avoid-version -shared -shrext .@EXTENSION@  @GEM_LDFLAGS@ @PD_LDFLAGS@ @FACETRACKER_LDFLAGS@
-#~pix_opencv_la_HEADERS = `ls -1 *.h *.hpp`
+pix_opencv_la_includedir=$(includedir)/src
+pix_opencv_la_include_HEADERS = Blob.hpp \
+					blobtrack.h \
+					pix_opencv_athreshold.h \
+					pix_opencv_backgroundsubtractor.h \
+					pix_opencv_bgstats.h \
+					pix_opencv_bgsubstract.h \
+					pix_opencv_blobtrack.h \
+					pix_opencv_calibration.h \
+					pix_opencv_camshift.h \
+					pix_opencv_clahe.h \
+					pix_opencv_colorfilt.h \
+					pix_opencv_contours_boundingrect.h \
+					pix_opencv_contours_convexhull.h \
+					pix_opencv_contours_convexity.h \
+					pix_opencv_contours.h \
+					pix_opencv_dft.h \
+					pix_opencv_distrans.h \
+					pix_opencv_edge.h \
+					pix_opencv_facetracker.h \
+					pix_opencv_findchessboardcorners.h \
+					pix_opencv_floodfill.h \
+					pix_opencv_haarcascade.h \
+					pix_opencv_hist_compare.h \
+					pix_opencv_hough_circles.h \
+					pix_opencv_hough_lines.h \
+					pix_opencv_hu_compare.h \
+					pix_opencv_hu_moments.h \
+					pix_opencv_knear.h \
+					pix_opencv_laplace.h \
+					pix_opencv_lk.h \
+					pix_opencv_matchshape.h \
+					pix_opencv_morphology.h \
+					pix_opencv_motempl.h \
+					pix_opencv_of_bm.h \
+					pix_opencv_of_hs.h \
+					pix_opencv_of_lk.h \
+					pix_opencv_opticalflow.h \
+					pix_opencv_patreco.h \
+					pix_opencv_pgh_compare.h \
+					pix_opencv_surf.h \
+					pix_opencv_template.h \
+					pix_opencv_threshold.h \
+					pix_opencv_trackKnn.h \
+					pix_opencv_warpperspective.h
 
 OVERVIEW=../pix_opencv-help.pd
 
