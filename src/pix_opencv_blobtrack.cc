@@ -51,7 +51,7 @@ pix_opencv_blobtrack :: pix_opencv_blobtrack() : 	m_fg_name(FGDetector_Modules[0
 	m_dataout = outlet_new(this->x_obj, 0);
 	setupModules();
 	createModules();
-	printParamsMess();
+	//~printParamsMess();
 }
 
 /////////////////////////////////////////////////////////
