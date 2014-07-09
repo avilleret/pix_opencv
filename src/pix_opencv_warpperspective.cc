@@ -73,9 +73,6 @@ pix_opencv_warpperspective :: pix_opencv_warpperspective()
   flags =  CV_WARP_FILL_OUTLIERS; // TODO add a set method
   findmethod = 0; // TODO add a set method
   
-  post("pix_opencv_warpperspective by Antoine Villeret");
-  post("build on %s at %s", __DATE__, __TIME__);
-
 }
 
 /////////////////////////////////////////////////////////

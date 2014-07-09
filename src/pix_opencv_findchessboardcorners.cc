@@ -23,6 +23,7 @@ CPPEXTERN_NEW(pix_opencv_findchessboardcorners)
 /////////////////////////////////////////////////////////
 //
 // pix_opencv_findchessboardcorners
+// by Antoine Villeret
 //
 /////////////////////////////////////////////////////////
 // Constructor
@@ -50,9 +51,6 @@ pix_opencv_findchessboardcorners :: pix_opencv_findchessboardcorners()
   criteria = cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1);
   coord_list = new t_atom[pattern_size.width * pattern_size.height * 2]; // all coordinates are packed in one list [x0 y0 x1 y1 .. xn yn(
   
-  post("pix_opencv_findchessboardcorners by Antoine Villeret");
-  post("build on %s at %s", __DATE__, __TIME__);
-
 }
 
 /////////////////////////////////////////////////////////
