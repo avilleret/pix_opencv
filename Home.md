@@ -10,6 +10,10 @@ You also need a compiling toolchain, e.g. GCC on Linux/Mac or Microsoft Visual C
 
 # 2. Get the sources :
 
+## 2.1 Get the latest release
+You can download a source tarball here : https://github.com/avilleret/pix_opencv/releases.
+
+## 2.2 Get the latest sources
 The is a `pix_opencv` folder in the externals folder of the Puredata SVN repository.
 This is the primary version of `pix_opencv` but as it is quite hard to maintain this version, I decided to fork it in Githud. Thus the latest sources are here : https://github.com/avilleret/pix_opencv
 You can clone it : 
@@ -44,7 +48,9 @@ You can follow the quickstart guide on opencv.org to setup environment variables
 # 4. Build the Sources :
 
 ## Ubuntu/Linux & MacOSX
-Go to the fresh created folder, i.e. « pix_opencv » and build the things :
+Go to the fresh created folder, i.e. « pix_opencv ».
+If you cloned the git repo, you first have to run `./autogen.sh`.
+Then run those commands :
 
 ~~~~
 cd pix_opencv
@@ -59,6 +65,8 @@ If you see something like « can’t find Base/GemPixObj.h », you need to tweak
 You can combine options like :
 `configure --with-pd=/path/to/pd --with-gem=/path/to/gem`
 To see more option, run `configure --help`.
+
+Then you can install the package in the `pd/extra` directory with `sudo make install`.
 
 ## Windows
 You need Visual C++ (at least the free express edition) to build pix_opencv on Windows.
