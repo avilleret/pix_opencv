@@ -126,6 +126,4 @@ help:
 	ID=0 ; \
 	for extern in $(pix_opencv_la_SOURCES:.cc=""); do \
 		echo "#X obj `expr $$ID % 5 \* 300 + 50` `expr $$ID / 5 \* 30 + 40` $$extern;" >> $(OVERVIEW) && ID=`expr $$ID + 1` ; \
-	done ; \
-	#~echo "#X obj 30 `expr $$ID / 5 \* 30 + 80` cnv 15 250 60 empty empty extra 20 12 0 14 -4034 -66577 0;" >> $(OVERVIEW) ; \
-	#~echo "#X obj 50 `expr $$ID / 5 \* 30 + 100` pix_opencv_facetracker;" >> $(OVERVIEW)
+	done ;
