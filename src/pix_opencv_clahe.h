@@ -78,7 +78,7 @@ class GEM_EXPORT pix_opencv_clahe : public GemPixObj
     
     bool m_gpuMode;
     float m_clipLimit;
-    Size m_tileGridSize;
+    cv::Size m_tileGridSize;
     bool m_rendering;
 };
 #endif	// for header file

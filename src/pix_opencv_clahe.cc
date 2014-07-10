@@ -33,7 +33,7 @@ CPPEXTERN_NEW_WITH_THREE_ARGS(pix_opencv_clahe, t_floatarg, A_DEFFLOAT, t_floata
 //
 /////////////////////////////////////////////////////////
 pix_opencv_clahe :: pix_opencv_clahe(t_float clipLimit, int width, int height)
-  : m_clipLimit(40), m_tileGridSize(Size(8,8)), m_rendering(false)
+  : m_clipLimit(40), m_tileGridSize(cv::Size(8,8)), m_rendering(false)
 { 
   if ( clipLimit > 0. ){
     m_clipLimit = clipLimit;
@@ -42,7 +42,7 @@ pix_opencv_clahe :: pix_opencv_clahe(t_float clipLimit, int width, int height)
     m_tileGridSize=cv::Size(width, height);
   } else if (width > 0 || height > 0) {
     int max = width > height ? width : height;
-    m_tileGridSize=Size ( max, max );
+    m_tileGridSize=cv::Size ( max, max );
   }
 }
 
