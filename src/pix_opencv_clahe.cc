@@ -38,7 +38,7 @@ pix_opencv_clahe :: pix_opencv_clahe(t_float clipLimit, int width, int height)
     m_clipLimit = clipLimit;
   }
   if ( width > 0 && height > 0 ){
-    m_tileGridSize=Size(width, height);
+    m_tileGridSize=cv::Size(width, height);
   } else if (width > 0 || height > 0) {
     int max = width > height ? width : height;
     m_tileGridSize=Size ( max, max );
@@ -133,7 +133,7 @@ void pix_opencv_clahe :: clipLimitMess(t_float limit){
 }
 
 void pix_opencv_clahe :: tileGridSizeMess(int width, int height){
-  m_tileGridSize=Size(MAX(width,1),MAX(height,1));
+  m_tileGridSize=cv::Size(MAX(width,1),MAX(height,1));
   if ( m_rendering ){
     if ( m_gpuMode ){
       m_oclFilter->setTilesGridSize(m_tileGridSize);

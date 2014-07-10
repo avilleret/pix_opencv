@@ -1,4 +1,4 @@
-#N canvas 950 259 785 758 10;
+#N canvas 478 34 785 700 10;
 #X obj 473 46 cnv 15 300 500 empty empty empty 20 12 0 14 -228992 -66577
 0;
 #X obj 12 67 cnv 15 450 200 empty empty empty 20 12 0 14 -233017 -66577
@@ -35,7 +35,7 @@
 #X connect 6 0 0 0;
 #X connect 7 0 0 0;
 #X restore 359 575 pd gemwin;
-#X msg 359 556 create;
+#X msg 359 556 destroy;
 #X text 355 535 Create window:;
 #X text 26 508 Outlet 1: gemlist output;
 #X text 17 730 bug \, feedback \, comment... on the pd-list;
@@ -44,7 +44,7 @@
 #X obj 488 58 gemhead 1;
 #X obj 488 291 pix_texture;
 #X msg 500 190 reset;
-#X obj 488 78 pix_video;
+#X obj 488 88 pix_video;
 #X text 31 340 Inlet 1: gemlist input;
 #X text 38 16 Synopsis: [pix_opencv_facetracker];
 #X text 12 71 Description: finds face;
@@ -58,11 +58,11 @@ by Jason Saragih and Kyle Macdonald to track face features.;
 #X text 31 370 Inlet 1: message show : draw tracking data on image
 ;
 #X msg 604 190 tolerance \$1;
-#X floatatom 604 173 5 0 0 0 - - -, f 5;
-#X floatatom 688 173 5 0 0 0 - - -, f 5;
+#X floatatom 604 173 5 0 0 0 - - -;
+#X floatatom 688 173 5 0 0 0 - - -;
 #X msg 688 190 clamp \$1;
 #X msg 576 142 filter \$1;
-#X floatatom 576 125 5 0 0 0 - - -, f 5;
+#X floatatom 576 125 5 0 0 0 - - -;
 #X text 31 443 Inlet 1: message filter : Maximum number of optimization
 steps to perform. default 5;
 #X text 31 413 Inlet 1: message clamp : shape model parameters clamping
@@ -315,7 +315,7 @@ draw_range 0 4;
 #X obj 25 167 t a b b;
 #X obj 25 375 gemvertexbuffer 200;
 #X msg 45 191 position INNER_MOUTH;
-#X floatatom 157 77 5 0 0 0 - - -, f 5;
+#X floatatom 157 77 5 0 0 0 - - -;
 #X msg 81 253 draw lineloop \, colorG colorR \, colorA colorA \, draw_range
 0 8;
 #X connect 0 0 8 0;
@@ -395,12 +395,13 @@ NOSE_BRIDGE \, settab NOSE_BASE NOSE_BASE \, settab INNER_MOUTH INNER_MOUTH
 LEFT_EYE \, RIGHT_EYE \, LEFT_JAW \, RIGHT_JAW \, JAW \, OUTER_MOUTH
 \, INNER_MOUTH \, NOSE_BRIDGE \, NOSE_BASE \, FACE_OUTLINE \, ALL_FEATURES
 ;
+#X obj 488 119 pix_rgba;
 #X connect 11 0 12 0;
 #X connect 12 0 11 0;
 #X connect 17 0 20 0;
 #X connect 18 0 40 0;
 #X connect 19 0 43 0;
-#X connect 20 0 43 0;
+#X connect 20 0 45 0;
 #X connect 26 0 43 0;
 #X connect 27 0 26 0;
 #X connect 30 0 43 0;
@@ -411,3 +412,4 @@ LEFT_EYE \, RIGHT_EYE \, LEFT_JAW \, RIGHT_JAW \, JAW \, OUTER_MOUTH
 #X connect 35 0 34 0;
 #X connect 41 0 43 0;
 #X connect 43 0 18 0;
+#X connect 45 0 43 0;
