@@ -362,3 +362,4 @@ void pix_opencv_backgroundsubtractor :: obj_setupCallback(t_class *classPtr)
   CPPEXTERN_MSG0(classPtr, "paramHelp",  paramHelpMess);
   CPPEXTERN_MSG1(classPtr, "cpuMode",    cpuModeMess,      int);
 }
+#endif /* HAVE_BGSUB */
