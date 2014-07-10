@@ -17,6 +17,7 @@
 // based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org ) (pix_opencv)
 // Template for pix_opencv class
 
+#if HAVE_LIBOPENCV_CL
 #include "pix_opencv_clahe.h"
 
 using namespace cv;
@@ -152,3 +153,4 @@ void pix_opencv_clahe :: obj_setupCallback(t_class *classPtr)
   CPPEXTERN_MSG1(classPtr, "clipLimit",   clipLimitMess, t_float);
   CPPEXTERN_MSG2(classPtr, "tileGridSize",   tileGridSizeMess, int, int);
 }
+#endif /* HAVE_LIBOPENCV_CL */

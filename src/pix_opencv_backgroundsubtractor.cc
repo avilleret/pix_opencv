@@ -17,6 +17,7 @@
 // based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org ) (pix_opencv)
 // Template for pix_opencv class
 
+#if HAVE_BGSUB
 #include "pix_opencv_backgroundsubtractor.h"
 
 using namespace cv;
@@ -78,7 +79,8 @@ pix_opencv_backgroundsubtractor :: ~pix_opencv_backgroundsubtractor()
 /////////////////////////////////////////////////////////
 
 void pix_opencv_backgroundsubtractor :: startRendering(){
-  
+
+#if HAVE_LIBOPENCV_CL
   ocl::DevicesInfo devicesInfo;
   ocl::getOpenCLDevices(devicesInfo);
   post("Found %d OpenCL device(s).", devicesInfo.size());
@@ -92,7 +94,10 @@ void pix_opencv_backgroundsubtractor :: startRendering(){
   } else {
     m_gpuMode = true;
   }
-  
+#else
+  verbose(2,"no OpenCL support, it could be very slow !");
+#endif
+
   m_rendering = true;
 }
 
@@ -122,7 +127,7 @@ void pix_opencv_backgroundsubtractor :: processImage(imageStruct &image)
     return;
   }
   
-  
+#if HAVE_LIBOPENCV_CL    
   if ( m_gpuMode ) {
     try  {
       d_input = input;
@@ -142,6 +147,9 @@ void pix_opencv_backgroundsubtractor :: processImage(imageStruct &image)
       m_gpuMode = false;
       return;
     }
+#else
+  if ( 0 ) {
+#endif /* HAVE_LIBOPENCV_CL */
   } else if (!m_fgbgMOG.empty()){
     (*m_fgbgMOG)(input, m_fgmask);
   } else if (!m_fgbgGMG.empty()) {
@@ -363,3 +371,4 @@ void pix_opencv_backgroundsubtractor :: obj_setupCallback(t_class *classPtr)
   CPPEXTERN_MSG1(classPtr, "cpuMode",    cpuModeMess,      int);
 }
 #endif /* HAVE_BGSUB */
+

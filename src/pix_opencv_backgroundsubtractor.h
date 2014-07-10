@@ -17,7 +17,9 @@ LOG
 #define INCLUDE_PIX_OPENCV_BACKGROUNDSUBTRACTOR_H_
 
 #include "opencv2/opencv.hpp"
+#if HAVE_LIBOPENCV_CL    
 #include "opencv2/ocl/ocl.hpp"
+#endif /* HAVE_LIBOPENCV_CL */
 
 #include "Base/GemPixObj.h"
 #include <RTE/MessageCallbacks.h>
@@ -71,13 +73,15 @@ class GEM_EXPORT pix_opencv_backgroundsubtractor: public GemPixObj
   private:
     cv::Ptr<cv::BackgroundSubtractor> m_fgbgMOG;
     cv::Ptr<cv::BackgroundSubtractorGMG> m_fgbgGMG;
-    
+
+#if HAVE_LIBOPENCV_CL    
     cv::ocl::MOG m_oclMOG;
     cv::ocl::MOG2 m_oclMOG2;
     //~ cv::ocl::GMG m_oclGMG;
+    cv::ocl::oclMat d_input, d_fgmask;
+#endif /* HAVE_LIBOPENCV_CL */
     
     cv::Mat m_fgmask, m_segm;
-    cv::ocl::oclMat d_input, d_fgmask;
     
     std::string m_algoName;
     
