@@ -159,7 +159,7 @@ AC_CHECK_LIB([opencv_calib3d], [cvFindChessboardCorners],,[AC_MSG_ERROR([[please
 AC_CHECK_LIB([opencv_video], [_ZTSN2cv20BackgroundSubtractorE],,[AC_MSG_ERROR([[please install libopencv_video and try again]])])
 AC_CHECK_LIB([opencv_nonfree],[_ZN2cv18initModule_nonfreeEv],,)
 
-PKG_CHECK_MODULES([backgroundsubstractor],[opencv >= 2.4],[HAVE_BGSUB=0],[HAVE_BGSUB=1]);
-PKG_CHECK_MODULES([clahe],[opencv >= 2.4.5],[HAVE_CLAHE=0],[HAVE_CLAHE=1]);
+PKG_CHECK_EXISTS([opencv >= 2.4],[AC_DEFINE([HAVE_BGSUB],[1], [Define if opencv version >= 2.4])]);
+PKG_CHECK_EXISTS([opencv >= 2.4.5],[AC_DEFINE([HAVE_CLAHE],[1], [Define if opencv version >= 2.4.5])]);
 
 AC_OUTPUT(Makefile src/Makefile)
