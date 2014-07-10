@@ -17,7 +17,9 @@ LOG
 #define INCLUDE_PIX_OPENCV_CLAHE_H_
 
 #include "opencv2/opencv.hpp"
+#if HAVE_LIBOPENCV_CL
 #include "opencv2/ocl/ocl.hpp"
+#endif /* HAVE_LIBOPENCV_CL */
 
 
 #include "Base/GemPixObj.h"
@@ -68,8 +70,10 @@ class GEM_EXPORT pix_opencv_clahe : public GemPixObj
   private:
   
     Mat m_imgMat, m_gray;
+#if HAVE_LIBOPENCV_CL
     ocl::oclMat d_outframe, d_frame;
-    
+#endif /* HAVE_LIBOPENCV_CL */
+
     Ptr<CLAHE> m_oclFilter, m_cpuFilter;
     
     bool m_gpuMode;

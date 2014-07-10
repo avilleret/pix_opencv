@@ -17,7 +17,7 @@
 // based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org ) (pix_opencv)
 // Template for pix_opencv class
 
-#if HAVE_LIBOPENCV_CL
+#if HAVE_CLAHE
 #include "pix_opencv_clahe.h"
 
 using namespace cv;
@@ -56,7 +56,7 @@ pix_opencv_clahe :: ~pix_opencv_clahe()
 
 // StartRendering
 void pix_opencv_clahe :: startRendering(){
-  
+#if HAVE_LIBOPENCV_CL
   ocl::DevicesInfo devicesInfo;
   ocl::getOpenCLDevices(devicesInfo);
   post("Found %d OpenCL device(s).", devicesInfo.size());
@@ -75,7 +75,10 @@ void pix_opencv_clahe :: startRendering(){
   }
   clipLimitMess(m_clipLimit);
   tileGridSizeMess(m_tileGridSize.width,m_tileGridSize.height);
-  
+#else
+  verbose(2,"no OpenCL support, it could be very slow !!");
+#endif /* HAVE_LIBOPENCV_CL */
+
   m_rendering = true;
 }
 
@@ -97,7 +100,8 @@ void pix_opencv_clahe :: processImage(imageStruct &image)
   } else {
     error("only support grayscale and RGBA image");
   }
-  
+
+#if HAVE_LIBOPENCV_CL
   if ( m_gpuMode ) {
     try  {
       d_outframe = m_gray;
@@ -109,6 +113,9 @@ void pix_opencv_clahe :: processImage(imageStruct &image)
       m_gpuMode = false;
       return;
     }
+#else
+  if ( 0 ) {
+#endif /* HAVE_LIBOPENCV_CL */
   } else {
     m_cpuFilter->apply(m_gray, m_gray);
   }
@@ -125,8 +132,12 @@ void pix_opencv_clahe :: processImage(imageStruct &image)
 void pix_opencv_clahe :: clipLimitMess(t_float limit){
   m_clipLimit=limit;
   if ( m_rendering ){
+#if HAVE_LIBOPENCV_CL
     if ( m_gpuMode ){
       m_oclFilter->setClipLimit(m_clipLimit);
+#else
+    if ( 0 ) {
+#endif /* HAVE_LIBOPENCV_CL */
     } else {
       m_cpuFilter->setClipLimit(m_clipLimit);
     }
@@ -136,8 +147,12 @@ void pix_opencv_clahe :: clipLimitMess(t_float limit){
 void pix_opencv_clahe :: tileGridSizeMess(int width, int height){
   m_tileGridSize=cv::Size(MAX(width,1),MAX(height,1));
   if ( m_rendering ){
+#if HAVE_LIBOPENCV_CL
     if ( m_gpuMode ){
       m_oclFilter->setTilesGridSize(m_tileGridSize);
+#else
+    if ( 0 ) {
+#endif /* HAVE_LIBOPENCV_CL */
     } else {
       m_cpuFilter->setTilesGridSize(m_tileGridSize);
     }
@@ -153,4 +168,4 @@ void pix_opencv_clahe :: obj_setupCallback(t_class *classPtr)
   CPPEXTERN_MSG1(classPtr, "clipLimit",   clipLimitMess, t_float);
   CPPEXTERN_MSG2(classPtr, "tileGridSize",   tileGridSizeMess, int, int);
 }
-#endif /* HAVE_LIBOPENCV_CL */
+#endif /* HAVE_CLAHE */
