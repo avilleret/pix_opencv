@@ -71,7 +71,6 @@ pix_opencv-meta.pd
 autom4te.cache
 configure
 install-sh
-config
 build/
 Makefile
 Makefile.in
