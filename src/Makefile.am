@@ -2,8 +2,9 @@
 AUTOMAKE_OPTIONS = foreign
 pkglib_LTLIBRARIES = pix_opencv.la
 
-pix_opencv_la_CXXFLAGS = @GEM_CPPFLAGS@ @PD_CPPFLAGS@  @FACETRACKER_CPPFLAGS@
-pix_opencv_la_LDFLAGS = -module -avoid-version -shared -shrext .@EXTENSION@  @GEM_LDFLAGS@ @PD_LDFLAGS@ @FACETRACKER_LDFLAGS@
+pix_opencv_la_CXXFLAGS = @GEM_CPPFLAGS@ @PD_CPPFLAGS@  @FACETRACKER_CPPFLAGS@ @OPENCV_CFLAGS@
+pix_opencv_la_LDFLAGS = -module -avoid-version -shared -shrext .@EXTENSION@  @GEM_LDFLAGS@ @PD_LDFLAGS@ @FACETRACKER_LDFLAGS@ @OPENCV_LDFLAGS@
+pix_opencv_la_LIBADD = @OPENCV_LIBS@
 pix_opencv_la_includedir=$(includedir)/src
 pix_opencv_la_include_HEADERS = Blob.hpp \
 					blobtrack.h \

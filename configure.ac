@@ -11,6 +11,9 @@ AC_SUBST(PD_CPPFLAGS)
 AC_SUBST(PD_LDFLAGS)
 AC_SUBST(GEM_CPPFLAGS)
 AC_SUBST(GEM_LDFLAGS)
+AC_SUBST(OPENCV_CFLAGS)
+AC_SUBST(OPENCV_LDFLAGS)
+AC_SUBST(OPENCV_LIBS)
 AC_SUBST(FACETRACKER_CPPFLAGS)
 AC_SUBST(FACETRACKER_LDFLAGS)
 AC_SUBST(EXTENSION)
@@ -149,7 +152,11 @@ else
 fi
 AC_MSG_RESULT([$EXTENSION])
 
-AC_CHECK_LIB([opencv_core], [error],,)
+
+PKG_CHECK_EXISTS([opencv >= 2.4],[AC_DEFINE([HAVE_BGSUB],[1], [Define if opencv version >= 2.4])]);
+PKG_CHECK_EXISTS([opencv >= 2.4.5],[AC_DEFINE([HAVE_CLAHE],[1], [Define if opencv version >= 2.4.5])]);
+
+AC_CHECK_LIB([opencv_core], [error],,[PKG_CHECK_MODULES([OPENCV],[opencv > 2.0],,[AC_MSG_RESULT(["warning ! can't find OpenCV !"])])])
 AC_CHECK_LIB([opencv_imgproc], [cvCvtColor],,)
 AC_CHECK_LIB([opencv_legacy], [_Z38cvCreateModuleBlobTrackAnalysisHistPVSv],,)
 AC_CHECK_LIB([opencv_objdetect], [cvHaarDetectObjects],,)
@@ -159,7 +166,5 @@ AC_CHECK_LIB([opencv_calib3d], [cvFindChessboardCorners],,)
 AC_CHECK_LIB([opencv_video], [_ZTSN2cv20BackgroundSubtractorE],,)
 AC_CHECK_LIB([opencv_nonfree],[_ZN2cv18initModule_nonfreeEv],,)
 
-PKG_CHECK_EXISTS([opencv >= 2.4],[AC_DEFINE([HAVE_BGSUB],[1], [Define if opencv version >= 2.4])]);
-PKG_CHECK_EXISTS([opencv >= 2.4.5],[AC_DEFINE([HAVE_CLAHE],[1], [Define if opencv version >= 2.4.5])]);
 
 AC_OUTPUT(Makefile src/Makefile)
