@@ -149,14 +149,14 @@ else
 fi
 AC_MSG_RESULT([$EXTENSION])
 
-AC_CHECK_LIB([opencv_core], [error],,[AC_MSG_ERROR([[please install libopencv_core and try again]])])
-AC_CHECK_LIB([opencv_imgproc], [cvCvtColor],,[AC_MSG_ERROR([[please install libopencv_imgproc and try again]])])
-AC_CHECK_LIB([opencv_legacy], [_Z38cvCreateModuleBlobTrackAnalysisHistPVSv],,[AC_MSG_ERROR([[please install libopencv_legacy and try again]])])
+AC_CHECK_LIB([opencv_core], [error],,)
+AC_CHECK_LIB([opencv_imgproc], [cvCvtColor],,)
+AC_CHECK_LIB([opencv_legacy], [_Z38cvCreateModuleBlobTrackAnalysisHistPVSv],,)
 AC_CHECK_LIB([opencv_objdetect], [cvHaarDetectObjects],,)
 AC_CHECK_LIB([opencv_ml], [_ZN10CvKNearestC1EPK5CvMatS2_S2_bi],,)
 AC_CHECK_LIB([opencv_ocl], [_init],,)
-AC_CHECK_LIB([opencv_calib3d], [cvFindChessboardCorners],,[AC_MSG_ERROR([[please install libopencv_calib3d and try again]])])
-AC_CHECK_LIB([opencv_video], [_ZTSN2cv20BackgroundSubtractorE],,[AC_MSG_ERROR([[please install libopencv_video and try again]])])
+AC_CHECK_LIB([opencv_calib3d], [cvFindChessboardCorners],,)
+AC_CHECK_LIB([opencv_video], [_ZTSN2cv20BackgroundSubtractorE],,)
 AC_CHECK_LIB([opencv_nonfree],[_ZN2cv18initModule_nonfreeEv],,)
 
 PKG_CHECK_EXISTS([opencv >= 2.4],[AC_DEFINE([HAVE_BGSUB],[1], [Define if opencv version >= 2.4])]);
