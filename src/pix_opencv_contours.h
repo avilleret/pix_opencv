@@ -76,7 +76,6 @@ private:
   std::vector<std::vector<int> > m_convexhulls;
   std::vector<int> m_area;
   
-  unsigned int m_repeat_point;
   double m_epsilon;
 
 

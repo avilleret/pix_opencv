@@ -35,7 +35,6 @@ CPPEXTERN_NEW(pix_opencv_contours)
 //
 /////////////////////////////////////////////////////////
 pix_opencv_contours :: pix_opencv_contours() :   \
-                        m_repeat_point(1), \
                         m_epsilon(2), \
                         m_enable_contours(1), \
                         m_enable_hulls(1), \
@@ -301,7 +300,6 @@ void pix_opencv_contours :: obj_setupCallback(t_class *classPtr)
   CPPEXTERN_MSG1(classPtr, "hierarchy_level",  hierarchyMess,       double);                  
   CPPEXTERN_MSG1(classPtr, "taboutput",  taboutputMess,       float);                  
   CPPEXTERN_MSG3(classPtr, "settab",  tableMess, t_symbol*, t_symbol*, t_symbol*);                  
-  CPPEXTERN_MSG1(classPtr, "repeat_point",  repeat_pointMess, float);                  
 }
 
 void pix_opencv_contours :: outputCount(){
@@ -309,7 +307,7 @@ void pix_opencv_contours :: outputCount(){
   for( size_t i = 0 ; i < m_contours.size(); i++ ){
       m_totalPointsCount+=m_contours[i].size();
   }
-  m_totalPointsCount+=m_contours.size()*m_repeat_point*2; // add 2 points for each contour (on start and end)
+  m_totalPointsCount+=m_contours.size()*2; // add 2 points for each contour (on start and end)
   
   t_atom count_atom[2];
   SETFLOAT(count_atom, m_contours.size());
@@ -369,7 +367,7 @@ void pix_opencv_contours :: outputBlobs(imageStruct &image){
           apt2+=2;
         }
 
-        SETFLOAT(apt+15, m_contours[i].size()+m_repeat_point*2); // number of points in segment
+        SETFLOAT(apt+15, m_contours[i].size()); // number of points in segment
         SETFLOAT(apt+16, (float) length);        
       }
     }
@@ -390,38 +388,25 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
       {
                       
         if (!m_contours[i].empty() && m_contours[i].size() > 2) {
-          int size = 2+(m_repeat_point*2+m_contours[i].size())*2;
+          int size = 2+2*m_contours[i].size();
           t_atom*acontours = new t_atom[size];
           t_atom* apt=acontours;
-          SETFLOAT(apt, static_cast<t_float>(m_repeat_point*2+m_contours[i].size()));
+          SETFLOAT(apt, static_cast<t_float>(m_contours[i].size()));
           SETFLOAT(apt+1, 2.0);
           
           apt+=2;
-          
-          for ( size_t j = 0 ; j < m_repeat_point ; j++){
-            cv::Point pt = m_contours[i][0];
-            SETFLOAT(apt, (float) pt.x/image.xsize);
-            SETFLOAT(apt+1,(float) pt.y/image.ysize);
-            apt+=2;
-          }
-                      
-          for ( size_t j = 1 ; j < m_contours[i].size() ; j++){
+
+          size_t j;
+          for ( j = 0 ; j < m_contours[i].size() ; j++){
             cv::Point pt = m_contours[i][j];
             SETFLOAT(apt,(float) pt.x/image.xsize);
             SETFLOAT(apt+1,(float) pt.y/image.ysize);
             apt+=2;
           }
-                      
-          for ( size_t j = 0 ; j < m_repeat_point ; j++){
-            cv::Point pt = m_contours[i][0]; // repeat the first point to close the contour
-            SETFLOAT(apt, (float) pt.x/image.xsize);
-            SETFLOAT(apt+1,(float) pt.y/image.ysize);
-            apt+=2;
-          }
-          
+
           outlet_anything(m_dataout_middle, gensym("contour"), size, acontours);
           if(acontours) {
-            delete acontours;
+            delete[] acontours;
             acontours=NULL;  
           }
         }
@@ -436,7 +421,7 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
         return;
       }
             
-      int vecxsize(0), vecysize(0), veczsize(0);
+      int vecxsize(0), vecysize(0), veczsize(0), vecsize(0);
       t_garray  *ax, *ay, *az;
       t_word *vecx, *vecy, *vecz;
       
@@ -487,11 +472,13 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
         } 
       }
       
+      vecsize=min(min(vecxsize,vecysize),veczsize);
+      
       int n=0;      
       
       for( size_t i = 0 ; i < m_contours.size(); i++ )
       {
-        if (n >= vecxsize || n>=vecysize || n>=veczsize)
+        if ( n >= vecsize )
         {
           error("array are not wide enough");
           break;
@@ -501,14 +488,12 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
         cv::Point pt;
         pt = m_contours[i][0];
         //~ start with blank point
-        for (j=0; j<m_repeat_point; j++){
-            vecx[n].w_float = (float) pt.x/image.xsize;
-            vecy[n].w_float = (float) pt.y/image.ysize;
-            vecz[n].w_float = 0.;
-            n++;
-        }
+        vecx[n].w_float = (float) pt.x/image.xsize;
+        vecy[n].w_float = (float) pt.y/image.ysize;
+        vecz[n].w_float = 0.;
+        n++;
 
-        for ( j = 0 ; j < m_contours[i].size() && n < vecxsize ; j++) {
+        for ( j = 0 ; j < m_contours[i].size() ; j++) {
         
           pt = m_contours[i][j];
           
@@ -517,16 +502,15 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
           vecz[n].w_float = 1.;
           n++;
         }
+        
         // close contour
-        pt = m_contours[i][0];
-        for (j=0; j<m_repeat_point && n < vecxsize; j++){ // TODO what is this loop ??? m_repeat_point is either 0 or 1...
-            vecx[n].w_float = (float) pt.x/image.xsize;
-            vecy[n].w_float = (float) pt.y/image.ysize;
-            vecz[n].w_float = 0.;
-            n++;
+        if ( n < vecsize ){
+          pt = m_contours[i][0];
+          vecx[n].w_float = (float) pt.x/image.xsize;
+          vecy[n].w_float = (float) pt.y/image.ysize;
+          vecz[n].w_float = 1.;
+          n++;
         }
-
-
       }
       //~ comment the redraw fnt if not needed
       garray_redraw(ax);
@@ -573,11 +557,6 @@ void pix_opencv_contours :: hierarchyMess(int arg)
 void pix_opencv_contours :: taboutputMess(float arg)
 {
   m_taboutput = arg > 0;
-}
-
-void pix_opencv_contours :: repeat_pointMess(float arg)
-{
-  m_repeat_point = arg > 1 ? arg : 1;
 }
 
 void pix_opencv_contours :: tableMess(t_symbol*xarray, t_symbol*yarray, t_symbol*zarray)
