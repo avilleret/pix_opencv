@@ -1,4 +1,4 @@
-#N canvas 408 133 794 766 10;
+#N canvas 406 149 794 766 10;
 #X declare -lib pix_opencv;
 #X obj 472 35 cnv 15 300 500 empty empty empty 20 12 0 14 -228992 -66577
 0;
@@ -138,7 +138,7 @@ of drawing contours;
 -1 -1;
 #X text 813 127 draw with gemvertexbuffer;
 #X msg 383 167 cvblobOutput \$1;
-#X obj 383 148 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 383 148 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X text 25 57 -2 for only contours with no child (aka holes);
 #X text 543 5 to improve performance and avoid "stack overflow" (because
@@ -289,7 +289,7 @@ you set tables);
 #X connect 47 0 14 0;
 #X connect 47 1 46 1;
 #X restore 542 323 pd draw_contours;
-#N canvas 154 308 1198 730 info 0;
+#N canvas 152 324 1198 730 info 1;
 #X obj -67 115 cnv 15 250 40 empty empty empty 20 12 0 14 -4034 -66577
 0;
 #X obj -68 292 cnv 15 350 20 empty empty empty 20 12 0 14 -4034 -66577
@@ -362,6 +362,15 @@ you set tables);
 #X text 690 160 total counts of contours and points;
 #X text 9 -35 activate cvblob output before trying this !;
 #X obj 794 197 + 3;
+#X obj 347 444 list split 2;
+#X obj 452 584 cnv 15 100 60 empty empty empty 20 12 0 14 -4034 -66577
+0;
+#X floatatom 462 609 5 0 0 0 - - -, f 5;
+#X floatatom 519 609 5 0 0 0 - - -, f 5;
+#X obj 462 589 unpack f f;
+#X text 472 627 centroid;
+#X text 452 608 x;
+#X text 509 608 y;
 #X connect 5 0 52 0;
 #X connect 6 0 22 0;
 #X connect 6 1 7 0;
@@ -373,7 +382,7 @@ you set tables);
 #X connect 15 0 12 0;
 #X connect 15 1 37 0;
 #X connect 17 0 27 0;
-#X connect 17 1 51 0;
+#X connect 17 1 62 0;
 #X connect 18 0 19 0;
 #X connect 19 0 20 0;
 #X connect 20 0 6 1;
@@ -399,6 +408,10 @@ you set tables);
 #X connect 53 1 55 0;
 #X connect 55 0 61 0;
 #X connect 61 0 56 0;
+#X connect 62 0 51 0;
+#X connect 62 1 66 0;
+#X connect 66 0 64 0;
+#X connect 66 1 65 0;
 #X restore 672 295 pd info;
 #X text 29 498 <num of contour> 20 <contour area> <rotrect corners
 coordinates (8 floats)> <rotrect center position (2 floats)> <rotrect
