@@ -320,7 +320,7 @@ void pix_opencv_contours :: outputBlobs(imageStruct &image){
   if ( m_enable_cvblob )
   {          
     int blob_num=m_contours.size();
-    int blobMatrixWidth=17;
+    int blobMatrixWidth=19;
     int blob_atom_size = 2+blob_num*blobMatrixWidth;
     
     t_atom* blob_atom = new t_atom[blob_atom_size];
@@ -368,7 +368,10 @@ void pix_opencv_contours :: outputBlobs(imageStruct &image){
         }
 
         SETFLOAT(apt+15, m_contours[i].size()); // number of points in segment
-        SETFLOAT(apt+16, (float) length);        
+        SETFLOAT(apt+16, (float) length);       
+         
+        SETFLOAT(apt+17, (float) centroid.x/image.xsize);       // normalized centroid
+        SETFLOAT(apt+18, (float) centroid.y/image.ysize);        
       }
     }
         
