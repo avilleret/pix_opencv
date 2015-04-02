@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-#N canvas 52 71 946 685 8;
-=======
-#N canvas 563 174 946 685 8;
-#X declare -path ../../;
->>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
+#N canvas 777 135 946 685 8;
 #X obj 277 1021 pix_texture;
 #X obj 277 1048 rectangle 4 3;
 #X obj 277 347 pix_rgba;
@@ -27,7 +22,7 @@
 #X msg 353 894 1;
 #X text -190 37 comment;
 #X text -168 77 1.- Create the Gem Window;
-#N canvas 0 0 450 300 gemwin 0;
+#N canvas 0 50 450 300 gemwin 0;
 #X obj 132 136 gemwin;
 #X obj 67 89 outlet;
 #X obj 67 10 inlet;
@@ -46,11 +41,7 @@
 #X connect 6 0 0 0;
 #X connect 7 0 0 0;
 #X restore 304 94 pd gemwin;
-<<<<<<< HEAD
 #X msg 304 61 create;
-=======
-#X msg 304 61 destroy;
->>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
 #X obj -190 155 cnv 15 600 180 empty empty empty 20 12 0 14 -260097
 -66577 0;
 #X text -167 194 2.- Setup your camera;
@@ -96,7 +87,7 @@ change the size of the image accorrding;
 #X obj -186 968 cnv 15 650 50 empty empty empty 20 12 0 14 -258113
 -66577 0;
 #X text -161 984 Here you can hide/show the analisys image;
-#N canvas 0 0 450 300 vswitch 0;
+#N canvas 0 50 450 300 vswitch 0;
 #X obj 144 263 outlet;
 #X obj 36 26 inlet;
 #X obj 260 29 inlet;
@@ -132,10 +123,6 @@ change the size of the image accorrding;
 #X obj 394 860 translateXYZ 0 0 0.2;
 #X obj 454 629 -;
 #X obj 484 626 * 2;
-<<<<<<< HEAD
-=======
-#X obj 503 87 declare -path ../../;
->>>>>>> 09729232bf1a52aa509cf5341d4186ba42576589
 #X connect 0 0 1 0;
 #X connect 2 0 14 0;
 #X connect 3 0 8 0;
