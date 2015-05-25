@@ -57,13 +57,13 @@ pix_opencv_haarcascade :: pix_opencv_haarcascade()
   // initialize font
   cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 1.0, 1.0, 0, 1, 8 );
 
+
   cascade = (CvHaarClassifierCascade*)cvLoad( cascade_name, 0, 0, 0 );
   if( !cascade )
   {
-      post( "ERROR: Could not load classifier cascade\n" );
+      error("ERROR: Could not load classifier cascade from : %s\n", cascade_name );
   }
   else    post( "Loaded classifier cascade from %s", cascade_name );
-
 }
 
 /////////////////////////////////////////////////////////

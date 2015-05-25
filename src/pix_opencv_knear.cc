@@ -249,25 +249,27 @@ pix_opencv_knear :: pix_opencv_knear(t_symbol *path, t_floatarg nsamples)
   rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
   grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
 
-  x_filepath = ( char * ) getbytes( 1024 );
-  sprintf( x_filepath, "%s", path->s_name );
-  x_nsamples = (int)nsamples;
+  if ( path && path != gensym("") && nsamples > 0. ){
+    x_filepath = ( char * ) getbytes( 1024 );
+    sprintf( x_filepath, "%s", path->s_name );
+    x_nsamples = (int)nsamples;
 
-  x_classify = 0;
-  x_pwidth = -1;
-  x_pheight = -1;
+    x_classify = 0;
+    x_pwidth = -1;
+    x_pheight = -1;
 
-  trainData = NULL;
-  trainClasses = NULL;
-  
-  t_canvas* canvas =  canvas_getcurrent();
-  localPath = std::string(canvas_getdir(canvas)->s_name) + "/";
-  
-  try {
-    this->load_patterns();
-  } catch(...) {
-      error( "can't load patterns" );
-      return;
+    trainData = NULL;
+    trainClasses = NULL;
+    
+    t_canvas* canvas =  canvas_getcurrent();
+    localPath = std::string(canvas_getdir(canvas)->s_name) + "/";
+    
+    try {
+      this->load_patterns();
+    } catch(...) {
+        error( "can't load patterns from : %s", path->s_name );
+        return;
+    }
   }
 }
 
