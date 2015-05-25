@@ -1,68 +1,68 @@
-#N canvas 428 140 1265 709 10;
-#X obj 5 12 cnv 15 430 500 empty empty empty 20 12 0 14 -233017 -66577
+#N canvas 426 156 1272 746 10;
+#X obj 5 202 cnv 15 430 500 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X obj 5 -34 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
+#X obj 5 156 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
 0;
-#X text 14 -30 Arguments:;
-#X obj 5 -129 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
+#X text 14 160 Arguments:;
+#X obj 5 61 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X text 35 -10 none;
-#X obj 441 -187 cnv 15 810 700 empty empty empty 20 12 0 14 -228992
--66577 0;
-#X obj 595 165 cnv 15 650 300 empty empty empty 20 12 0 14 -24198 -66577
+#X text 35 180 none;
+#X obj 441 3 cnv 15 810 700 empty empty empty 20 12 0 14 -228992 -66577
 0;
-#X floatatom 727 448 5 0 0 0 - - -;
-#X floatatom 762 448 5 0 0 0 - - -;
-#X floatatom 799 448 5 0 0 0 - - -;
-#X obj 598 370 pix_opencv_haarcascade;
-#X obj 684 169 openpanel;
-#X obj 727 410 route 0 1 2 3 4;
-#X text 840 449 Xcenter Ycenter Radius;
-#X obj 727 429 unpack 0 0 0;
-#X msg 624 170 load \$1;
-#X text 774 171 Load a trained cascade classifier from XML file;
-#X obj 754 169 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#X obj 595 355 cnv 15 650 300 empty empty empty 20 12 0 14 -24198 -66577
+0;
+#X floatatom 727 648 5 0 0 0 - - -, f 5;
+#X floatatom 762 648 5 0 0 0 - - -, f 5;
+#X floatatom 799 648 5 0 0 0 - - -, f 5;
+#X obj 598 560 pix_opencv_haarcascade;
+#X obj 684 359 openpanel;
+#X obj 727 610 route 0 1 2 3 4;
+#X text 840 649 Xcenter Ycenter Radius;
+#X obj 727 629 unpack 0 0 0;
+#X msg 624 360 load \$1;
+#X text 774 361 Load a trained cascade classifier from XML file;
+#X obj 754 359 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#X floatatom 791 266 5 0 0 0 - - -;
-#X floatatom 745 237 5 0 0 0 - - -;
-#X msg 644 203 mode \$1;
-#X obj 705 203 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X floatatom 791 456 5 0 0 0 - - -, f 5;
+#X floatatom 745 427 5 0 0 0 - - -, f 5;
+#X msg 644 393 mode \$1;
+#X obj 705 393 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X msg 654 236 min_size \$1;
-#X msg 668 263 min_neighbors \$1;
-#X text 829 255 Minimum number (minus 1) of neighbor rectangles that
+#X msg 654 426 min_size \$1;
+#X msg 668 453 min_neighbors \$1;
+#X text 829 445 Minimum number (minus 1) of neighbor rectangles that
 makes up an object (default 2);
-#X msg 697 296 scale_factor \$1;
-#X floatatom 815 296 5 0 0 0 - - -;
-#X text 852 290 The factor by which the search window is scaled between
+#X msg 697 486 scale_factor \$1;
+#X floatatom 815 486 5 0 0 0 - - -, f 5;
+#X text 852 480 The factor by which the search window is scaled between
 the subsequent scans (default 1.1);
-#X text 825 411 For each object detected;
-#X floatatom 662 391 5 0 0 0 - - -;
-#X text 701 391 number of objects detected;
-#X text 786 238 Minimum size of object (default 30);
-#X msg 725 325 ftolerance \$1;
-#X floatatom 815 326 5 0 0 0 - - -;
-#X msg 730 349 clear;
-#X text 856 333 temporarily ( default 5 );
-#X text 856 321 number of frames where an object can disappear;
-#X text 775 350 clear markers history;
-#X text 727 200 Mode of operation. Currently the only flag that may
+#X text 825 611 For each object detected;
+#X floatatom 662 591 5 0 0 0 - - -, f 5;
+#X text 701 591 number of objects detected;
+#X text 786 428 Minimum size of object (default 30);
+#X msg 725 515 ftolerance \$1;
+#X floatatom 815 516 5 0 0 0 - - -, f 5;
+#X msg 730 539 clear;
+#X text 856 523 temporarily ( default 5 );
+#X text 856 511 number of frames where an object can disappear;
+#X text 775 540 clear markers history;
+#X text 727 390 Mode of operation. Currently the only flag that may
 be specified is CV_HAAR_DO_CANNY_PRUNING ( 0 );
-#X text 16 22 This object considers a contour to be analyzed any group
+#X text 16 212 This object considers a contour to be analyzed any group
 of white pixels in a black background \, for this reason you will find
 useful to use pix_threshold to obtain a correct input for pix_opencv_contours_boundingrect.
 ;
-#X text 17 75 pix_opencv_contours_convexhull works detecting the bigest
+#X text 17 265 pix_opencv_contours_convexhull works detecting the bigest
 white area in the input image \, sometimes you will need to use pix_opencv_morphology
 to transform the contours of the shape to be analyzed..;
-#X text 13 -120 pix_opencv_contours_convexhull :: Finds convexhull
-of the bigest contour of a binary image.;
-#X obj 633 -174 gemhead;
-#X obj 598 469 pix_texture;
-#X obj 598 488 square 2;
-#X obj 1025 432 cnv 15 220 70 empty empty empty 20 12 0 14 -195568
+#X text 13 70 pix_opencv_contours_convexhull :: Finds convexhull of
+the bigest contour of a binary image.;
+#X obj 633 16 gemhead;
+#X obj 598 659 pix_texture;
+#X obj 598 678 square 2;
+#X obj 1025 622 cnv 15 220 70 empty empty empty 20 12 0 14 -195568
 -66577 0;
-#N canvas 0 22 454 304 gemwin 0;
+#N canvas 0 50 454 304 gemwin 0;
 #X obj 67 89 outlet;
 #X obj 67 10 inlet;
 #X obj 65 41 route create;
@@ -92,32 +92,32 @@ of the bigest contour of a binary image.;
 #X connect 9 0 6 0;
 #X connect 10 0 7 0;
 #X connect 10 2 9 0;
-#X restore 1035 476 pd gemwin;
-#X msg 1035 458 create;
-#X obj 446 470 pix_texture;
-#X obj 446 489 square 2;
-#X obj 598 106 separator;
-#X obj 645 -147 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
+#X restore 1035 666 pd gemwin;
+#X msg 1035 648 create;
+#X obj 446 660 pix_texture;
+#X obj 446 679 square 2;
+#X obj 598 296 separator;
+#X obj 645 43 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
 -1;
-#X obj 702 28 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
+#X obj 702 218 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
 -1 -1;
-#X floatatom 684 -7 5 0 10000 1 frame# - -;
-#X obj 645 -118 openpanel;
-#X msg 645 -98 open \$1;
-#X obj 633 11 pix_film;
-#X msg 651 -55 auto \$1;
-#X obj 651 -73 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
+#X floatatom 684 183 5 0 10000 1 frame# - -, f 5;
+#X obj 645 72 openpanel;
+#X msg 645 92 open \$1;
+#X obj 633 201 pix_film;
+#X msg 651 135 auto \$1;
+#X obj 651 117 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
 1;
-#X text 1033 438 Create window and render;
-#X msg 746 -72 colorspace RGBA;
-#X msg 764 -52 colorspace RGB;
-#X msg 783 -33 colorspace Grey;
-#X obj 746 -100 loadbang;
-#X obj 598 87 pix_separator;
-#X obj 446 109 separator;
-#X obj 446 90 pix_separator;
-#X obj 446 128 translateXYZ -2 0 0;
-#X obj 598 125 translateXYZ 2 0 0;
+#X text 1033 628 Create window and render;
+#X msg 746 118 colorspace RGBA;
+#X msg 764 138 colorspace RGB;
+#X msg 783 157 colorspace Grey;
+#X obj 746 90 loadbang;
+#X obj 598 277 pix_separator;
+#X obj 446 299 separator;
+#X obj 446 280 pix_separator;
+#X obj 446 318 translateXYZ -2 0 0;
+#X obj 598 315 translateXYZ 2 0 0;
 #N canvas 1 83 450 300 vswitch 0;
 #X obj 36 237 outlet;
 #X obj 36 26 inlet;
@@ -133,17 +133,19 @@ of the bigest contour of a binary image.;
 #X connect 4 0 0 0;
 #X connect 5 0 0 0;
 #X connect 6 0 4 1;
-#X restore 446 41 pd vswitch;
-#X obj 514 41 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0 1
+#X restore 446 231 pd vswitch;
+#X obj 514 231 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 446 199 pix_video;
+#X obj 446 11 gemhead;
+#X msg 485 124 device 0;
+#X msg 494 155 driver 1;
+#X msg 471 70 dialog;
+#X msg 476 100 device /dev/dv1394-0;
+#X obj 598 334 pix_resize 320 240;
+#X obj 446 250 pix_rgba;
+#X text 741 560 argument : XML cascade file to load \, default is haarcascade_frontalface_alt.xml
 ;
-#X obj 446 9 pix_video;
-#X obj 446 -179 gemhead;
-#X msg 485 -66 device 0;
-#X msg 494 -35 driver 1;
-#X msg 471 -120 dialog;
-#X msg 476 -90 device /dev/dv1394-0;
-#X obj 598 144 pix_resize 320 240;
-#X obj 446 60 pix_rgba;
 #X connect 10 0 43 0;
 #X connect 10 1 29 0;
 #X connect 10 2 12 0;
