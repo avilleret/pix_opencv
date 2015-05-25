@@ -13,3 +13,5 @@ Each external has also its own help file.
 There are severals examples also the `examples` folder.
 
 To use `pix_opencv` in your project, add the folder to the pd search path.
+
+For more informations (esp. on building it from source), see the wiki : https://github.com/avilleret/pix_opencv/wiki.
