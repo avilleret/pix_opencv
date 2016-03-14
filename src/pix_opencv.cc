@@ -18,7 +18,7 @@ void *pix_opencv_new(void)
 
 void pix_opencv_setup(void)
 {
-    verbose(-1,"pix_opencv %s library by Antoine Villeret 2012-2014",VERSION);
+    verbose(-1,"pix_opencv %s library by Antoine Villeret 2012-2016",VERSION);
     verbose(-1,"\tbased on work by Yves Degoyon and Lluis Gomez i Bigorda");
     verbose(-1,"\tbuilt on %s",__DATE__);
 #if HAVE_LIBOPENCV_NONFREE
