@@ -17,7 +17,6 @@ pix_opencv_la_include_HEADERS = Blob.hpp \
 					pix_opencv_clahe.h \
 					pix_opencv_colorfilt.h \
 					pix_opencv_contours_boundingrect.h \
-					pix_opencv_contours_convexhull.h \
 					pix_opencv_contours_convexity.h \
 					pix_opencv_contours.h \
 					pix_opencv_dft.h \
@@ -74,7 +73,6 @@ pix_opencv_la_SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_hough_circles.cc \
 				  pix_opencv_hough_lines.cc \
 				  pix_opencv_hu_moments.cc \
-				  pix_opencv_contours_convexhull.cc \
 				  pix_opencv_colorfilt.cc \
 				  pix_opencv_of_bm.cc \
 				  pix_opencv_of_hs.cc \
