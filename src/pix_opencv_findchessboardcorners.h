@@ -18,7 +18,8 @@ LOG
 #define INCLUDE_PIX_OPENCV_FINDCHESSBOARDCORNERS_H_
 
 #ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
+#include "opencv2/core/core.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 #endif
 
 #include "Base/GemPixObj.h"
@@ -49,6 +50,8 @@ class GEM_EXPORT pix_opencv_findchessboardcorners : public GemPixObj
     	pix_opencv_findchessboardcorners();
     	
     protected:
+
+        void process();
     	
     	//////////
     	// Destructor
@@ -65,34 +68,25 @@ class GEM_EXPORT pix_opencv_findchessboardcorners : public GemPixObj
 		// Setup
 		void 	patternSizeMess (int xsize, int ysize);
 
-
 		// to detect changes in the image size
 		int 	comp_xsize;
 		int		comp_ysize;
-
         
-        CvSize pattern_size; // pattern size (inner corners count in 2D)
-        CvPoint2D32f *corners; // array to store corners coordinates
+        cv::Size pattern_size; // pattern size (inner corners count in 2D)
+        std::vector<cv::Point2f> corners; // array to store corners coordinates
         int cornerCount; // number of corners found
-        int flags; // flags for cvFindChessboardCorners
-        CvSize win; // half of the search window size for cvFindCornerSubPix
-        CvSize zero_zone; // for cvFindCornerSubPix
-        CvTermCriteria criteria; // for cvFindCornerSubPix
+        cv::Size win; // half of the search window size for cvFindCornerSubPix
+        cv::Size zero_zone; // for cvFindCornerSubPix
         t_atom *coord_list;
 
-
     private:
-    
-		t_outlet 	*m_dataout;
+		t_outlet *m_dataout;
     	//////////
     	// Static member functions
 		static void patternSizeMessCallback(void *data, t_floatarg xsize, t_floatarg ysize);
 
-
-		/////////
-		// IplImage needed
-    	IplImage 	*rgb, *tmp_color, *gray, *tmp_gray;
-	
+        cv::Mat gray;
+        bool patternfound;
 };
 
 #endif	// for header file

@@ -18,6 +18,8 @@
 #include "pix_opencv_findchessboardcorners.h"
 #include <stdio.h>
 
+#include <opencv2/calib3d.hpp>
+
 CPPEXTERN_NEW(pix_opencv_findchessboardcorners)
 
 /////////////////////////////////////////////////////////
@@ -29,6 +31,9 @@ CPPEXTERN_NEW(pix_opencv_findchessboardcorners)
 // Constructor
 //
 /////////////////////////////////////////////////////////
+
+using namespace cv;
+
 pix_opencv_findchessboardcorners :: pix_opencv_findchessboardcorners()
 { 
   //inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("minarea"));
@@ -37,18 +42,10 @@ pix_opencv_findchessboardcorners :: pix_opencv_findchessboardcorners()
   //m_countout = outlet_new(this->x_obj, 0);
   comp_xsize  = 320;
   comp_ysize  = 240;
-  gray = NULL;
-  tmp_color = NULL;
-  tmp_gray = NULL;
-  rgb = NULL;
   
-  pattern_size = cvSize(6,7);
-  corners = new CvPoint2D32f[pattern_size.width * pattern_size.height];
-  cornerCount = 0;
-  win = cvSize(11, 11); 
-  zero_zone = cvSize(-1,-1);
-  flags = CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS;
-  criteria = cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1);
+  pattern_size = cv::Size(6,7);
+  win = cv::Size(11, 11); 
+  zero_zone = cv::Size(-1,-1);
   coord_list = new t_atom[pattern_size.width * pattern_size.height * 2]; // all coordinates are packed in one list [x0 y0 x1 y1 .. xn yn(
   
 }
@@ -59,11 +56,7 @@ pix_opencv_findchessboardcorners :: pix_opencv_findchessboardcorners()
 /////////////////////////////////////////////////////////
 pix_opencv_findchessboardcorners :: ~pix_opencv_findchessboardcorners()
 { 
-    	//Destroy cv_images to clean memory
-    	if (gray) cvReleaseImage(&gray);
-    	if (rgb) cvReleaseImage(&rgb);
-    	if (tmp_color) cvReleaseImage(&tmp_color);
-		if (tmp_gray) cvReleaseImage(&tmp_gray);
+  delete coord_list;
 }
 
 /////////////////////////////////////////////////////////
@@ -72,116 +65,52 @@ pix_opencv_findchessboardcorners :: ~pix_opencv_findchessboardcorners()
 /////////////////////////////////////////////////////////
 void pix_opencv_findchessboardcorners :: processRGBAImage(imageStruct &image)
 {
-  if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!rgb)) 
-  {
-
-	this->comp_xsize = image.xsize;
-	this->comp_ysize = image.ysize;
-
-    //Destroy cv_images to clean memory
-    if(gray) cvReleaseImage(&gray);
-    if(rgb) cvReleaseImage(&rgb);
-    if(tmp_color) cvReleaseImage(&tmp_color);
-
-	// Create images with new sizes
-	rgb = cvCreateImage(cvSize(image.xsize,image.ysize), IPL_DEPTH_8U, 4);
-	tmp_gray = cvCreateImage(cvSize(image.xsize,image.ysize), IPL_DEPTH_8U, 1);
-    }
-    
-    // no need to copy a lot of memory, just point to it...
-    rgb->imageData = (char*) image.data;    
-    cvCvtColor( rgb, tmp_gray, CV_RGBA2GRAY);
-    
-	//~ printf("find corner...*/\n");
-	int found = cvFindChessboardCorners( tmp_gray, pattern_size, corners, &cornerCount, flags);
-	//~ printf(" found : %d\n",found);
-	
-	
-	if ( found ) {
-		//~ printf("find corner sub pix...\n");
-		cvFindCornerSubPix( tmp_gray, corners, cornerCount, win, zero_zone, criteria);
-	}
-	
-	// Draw corners on the image
-	//cvCvtColor( gray, tmp_color, CV_GRAY2RGBA);
-	cvDrawChessboardCorners( rgb, pattern_size, corners, cornerCount, found);
-	//cvCvtColor( tmp_color, gray, CV_RGBA2GRAY);
-	
-    // send out corners screen coordinates if all corners have been found
-    if (found) {
-		int i;
-		CvPoint2D32f *pt;
-		pt = (CvPoint2D32f *) corners;
-		for ( i=0; i<pattern_size.width * pattern_size.height ; i++ )
-		{
-			 SETFLOAT(&coord_list[i*2], pt->x);
-			 SETFLOAT(&coord_list[i*2+1], pt->y);
-			 pt++;
-		}
-		outlet_list( m_dataout, 0, pattern_size.width * pattern_size.height*2, coord_list );
-	}
+  cv::Mat img = cv::Mat(cv::Size(image.xsize,image.ysize), CV_8UC4, image.data);    
+  cv::cvtColor( img, gray, CV_RGBA2GRAY);
+  process();
+  cv::drawChessboardCorners(img, pattern_size, cv::Mat(corners), patternfound);
 }
 
 void pix_opencv_findchessboardcorners :: processRGBImage(imageStruct &image)
 {
-	// TODO
-    error("cant't support RGB image for now");
+  cv::Mat img = cv::Mat(cv::Size(image.xsize, image.ysize), CV_8UC3, image.data);
+  cv::cvtColor(img, gray, CV_RGB2GRAY);
+  process();
+  cv::drawChessboardCorners(img, pattern_size, cv::Mat(corners), patternfound);
 }
 
 void pix_opencv_findchessboardcorners :: processYUVImage(imageStruct &image)
 {
-	// TODO
-	error( "pix_opencv_findchessboardcorners : yuv format not supported" );
+  // TODO
+  error( "pix_opencv_findchessboardcorners : yuv format not supported" );
 }
     	
 void pix_opencv_findchessboardcorners :: processGrayImage(imageStruct &image)
 { 
-  if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!gray)) 
-  {
+  gray = cv::Mat(cv::Size(image.xsize, image.ysize), CV_8UC1, image.data);
+  process();
+  drawChessboardCorners(gray, pattern_size, Mat(corners), patternfound);
+}
 
-	this->comp_xsize = image.xsize;
-	this->comp_ysize = image.ysize;
-
-    //Destroy cv_images to clean memory
-    if(gray) cvReleaseImage(&gray);
-    if(rgb) cvReleaseImage(&rgb);
-    if(tmp_color) cvReleaseImage(&tmp_color);
-    if(tmp_gray) cvReleaseImage(&tmp_gray);
-
-	// Create images with new sizes
-	gray = cvCreateImage(cvSize(image.xsize,image.ysize), IPL_DEPTH_8U, 1);
-	tmp_color = cvCreateImage(cvSize(image.xsize,image.ysize), IPL_DEPTH_8U, 4);
-    }
-    
-    // no need to copy a lot of memory, just point to it...
-    gray->imageData = (char*) image.data;    
-	//~ printf("find corner...*/\n");
-	int found = cvFindChessboardCorners( gray, pattern_size, corners, &cornerCount, flags);
-	//~ printf(" found : %d\n",found);
-	
-	
-	if ( found ) {
-		//~ printf("find corner sub pix...\n");
-		cvFindCornerSubPix( gray, corners, cornerCount, win, zero_zone, criteria);
-	}
-	
-	// Draw corners on the image
-	cvCvtColor( gray, tmp_color, CV_GRAY2RGBA);
-	cvDrawChessboardCorners( tmp_color, pattern_size, corners, cornerCount, found);
-	cvCvtColor( tmp_color, gray, CV_RGBA2GRAY);
+void pix_opencv_findchessboardcorners::process()
+{
+	patternfound = findChessboardCorners(gray, pattern_size, corners,
+        CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE
+        + CALIB_CB_FAST_CHECK);
+	if(patternfound)
+	  cornerSubPix(gray, corners, Size(11, 11), Size(-1, -1),
+	    TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
 	
     // send out corners screen coordinates if all corners have been found
-    if (found) {
-		int i;
-		CvPoint2D32f *pt;
-		pt = (CvPoint2D32f *) corners;
-		for ( i=0; i<pattern_size.width * pattern_size.height ; i++ )
+    if (patternfound) {
+		int i=0;
+		for (const auto& pt : corners)
 		{
-			 SETFLOAT(&coord_list[i*2], pt->x);
-			 SETFLOAT(&coord_list[i*2+1], pt->y);
-			 pt++;
+		  SETFLOAT(&coord_list[i*2], pt.x);
+		  SETFLOAT(&coord_list[i*2+1], pt.y);
+		  i++;
 		}
-		outlet_list( m_dataout, 0, pattern_size.width * pattern_size.height*2, coord_list );
+		outlet_list( m_dataout, 0, corners.size()*2, coord_list );
 	}
 }
 
@@ -199,8 +128,6 @@ void pix_opencv_findchessboardcorners :: patternSizeMess (int xsize, int ysize)
 	// update corners array & output list size
 	delete coord_list;
 	coord_list = new t_atom[pattern_size.width * pattern_size.height * 2];
-	delete corners;
-	corners = new CvPoint2D32f[pattern_size.width * pattern_size.height];
 }
 
 /////////////////////////////////////////////////////////
