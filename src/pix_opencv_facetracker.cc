@@ -88,7 +88,7 @@ pix_opencv_facetracker :: pix_opencv_facetracker() :  m_fcheck(false), \
   for ( int i = 0; i<13 ; i++) m_arraysname[i]=NULL;
   
   t_canvas* canvas=canvas_getcurrent();
-  char *basename=canvas_getdir(canvas)->s_name;
+  const char *basename=canvas_getdir(canvas)->s_name;
   
   m_tracker.Load((std::string(basename) + "/model/face2.tracker").c_str());
   m_tri = IO::LoadTri((std::string(basename) + "/model/face.tri").c_str());

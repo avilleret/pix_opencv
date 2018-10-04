@@ -167,7 +167,7 @@ void pix_opencv_contours_boundingrect :: processRGBAImage(imageStruct &image)
         int count = contours->total; // This is number point in contour
         CvRect rect;
 
-	rect = cvContourBoundingRect( contours, 1);
+	rect = cvBoundingRect( contours, 1);
 
 	if ( ( (rect.width*rect.height) > minarea ) && ( (rect.width*rect.height) < maxarea ) ) 
         {
@@ -317,7 +317,7 @@ void pix_opencv_contours_boundingrect :: processRGBImage(imageStruct &image)
         int count = contours->total; // This is number point in contour
         CvRect rect;
 
-	rect = cvContourBoundingRect( contours, 1);
+	rect = cvBoundingRect( contours, 1);
 	if ( ( (rect.width*rect.height) > minarea ) && ( (rect.width*rect.height) < maxarea ) ) 
         {
 
@@ -471,7 +471,7 @@ void pix_opencv_contours_boundingrect :: processGrayImage(imageStruct &image)
         int count = contours->total; // This is number point in contour
         CvRect rect;
 
-	rect = cvContourBoundingRect( contours, 1);
+	rect = cvBoundingRect( contours, 1);
 	if ( ( (rect.width*rect.height) > minarea ) && ( (rect.width*rect.height) < maxarea ) ) 
         {
 

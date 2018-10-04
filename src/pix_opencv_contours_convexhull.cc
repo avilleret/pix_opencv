@@ -7,8 +7,8 @@
 // Implementation file
 //
 //    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
+//    Copyright (c) Gï¿½nther Geiger.
+//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::fï¿½r::umlï¿½ute. IEM
 //    Copyright (c) 2002 James Tittle & Chris Clepper
 //    For information on usage and redistribution, and for a DISCLAIMER OF ALL
 //    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
@@ -118,7 +118,7 @@ void pix_opencv_contours_convexhull :: processRGBAImage(imageStruct &image)
         {
         CvRect rect;
 	int count = contours->total; 
-	rect = cvContourBoundingRect(contours, 1);
+	rect = cvBoundingRect(contours, 1);
 	if  ( (rect.width*rect.height) > area ) 
 		{
 		selected = i;
@@ -138,7 +138,7 @@ void pix_opencv_contours_convexhull :: processRGBAImage(imageStruct &image)
         CvSize size;
         CvRect rect;
 
-	rect = cvContourBoundingRect( contours, 1);
+	rect = cvBoundingRect( contours, 1);
 	if ( (k==selected) ) {
         
         
@@ -285,7 +285,7 @@ void pix_opencv_contours_convexhull :: processRGBImage(imageStruct &image)
         {
         CvRect rect;
 	int count = contours->total; 
-	rect = cvContourBoundingRect(contours, 1);
+	rect = cvBoundingRect(contours, 1);
 	if  ( (rect.width*rect.height) > area ) 
 		{
 		selected = i;
@@ -305,7 +305,7 @@ void pix_opencv_contours_convexhull :: processRGBImage(imageStruct &image)
         CvSize size;
         CvRect rect;
 
-	rect = cvContourBoundingRect( contours, 1);
+	rect = cvBoundingRect( contours, 1);
 	if ( (k==selected) ) {
         
         
@@ -446,7 +446,7 @@ void pix_opencv_contours_convexhull :: processGrayImage(imageStruct &image)
         {
         CvRect rect;
 	int count = contours->total; 
-	rect = cvContourBoundingRect(contours, 1);
+	rect = cvBoundingRect(contours, 1);
 	if  ( (rect.width*rect.height) > area ) 
 		{
 		selected = i;
@@ -466,7 +466,7 @@ void pix_opencv_contours_convexhull :: processGrayImage(imageStruct &image)
         CvSize size;
         CvRect rect;
 
-	rect = cvContourBoundingRect( contours, 1);
+	rect = cvBoundingRect( contours, 1);
 	if ( (k==selected) ) {
         
         

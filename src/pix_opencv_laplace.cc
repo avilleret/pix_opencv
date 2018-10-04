@@ -100,13 +100,13 @@ void pix_opencv_laplace :: processRGBAImage(imageStruct &image)
     
     cvCvtColor( rgba, rgb, CV_RGBA2RGB);
 
-    cvCvtPixToPlane( rgb, planes[0], planes[1], planes[2], 0 );
+    cvSplit( rgb, planes[0], planes[1], planes[2], 0 );
     for( i = 0; i < 3; i++ )
     {
        cvLaplace( planes[i], laplace, aperture_size );
        cvConvertScaleAbs( laplace, planes[i], 1, 0 );
     }
-    cvCvtPlaneToPix( planes[0], planes[1], planes[2], 0, colorlaplace );
+    cvMerge( planes[0], planes[1], planes[2], 0, colorlaplace );
     colorlaplace->origin = rgb->origin;
 
     cvCvtColor( colorlaplace, rgba, CV_RGB2RGBA);
@@ -140,13 +140,13 @@ void pix_opencv_laplace :: processRGBImage(imageStruct &image)
     // FEM UNA COPIA DEL PACKET A image->imageData ... http://www.cs.iit.edu/~agam/cs512/lect-notes/opencv-intro/opencv-intro.html aqui veiem la estructura de IplImage
     memcpy( rgb->imageData, image.data, image.xsize*image.ysize*3 );
 
-    cvCvtPixToPlane( rgb, planes[0], planes[1], planes[2], 0 );
+    cvSplit( rgb, planes[0], planes[1], planes[2], 0 );
     for( i = 0; i < 3; i++ )
     {
        cvLaplace( planes[i], laplace, 3 );
        cvConvertScaleAbs( laplace, planes[i], 1, 0 );
     }
-    cvCvtPlaneToPix( planes[0], planes[1], planes[2], 0, colorlaplace );
+    cvMerge( planes[0], planes[1], planes[2], 0, colorlaplace );
     colorlaplace->origin = rgb->origin;
 
     //cvShowImage(wndname, cedge);
@@ -188,13 +188,13 @@ void pix_opencv_laplace :: processGrayImage(imageStruct &image)
 
     cvCvtColor( grey, rgb, CV_GRAY2RGB);
 
-    cvCvtPixToPlane( rgb, planes[0], planes[1], planes[2], 0 );
+    cvSplit( rgb, planes[0], planes[1], planes[2], 0 );
     for( i = 0; i < 3; i++ )
     {
        cvLaplace( planes[i], laplace, 3 );
        cvConvertScaleAbs( laplace, planes[i], 1, 0 );
     }
-    cvCvtPlaneToPix( planes[0], planes[1], planes[2], 0, colorlaplace );
+    cvMerge( planes[0], planes[1], planes[2], 0, colorlaplace );
     colorlaplace->origin = rgb->origin;
 
 

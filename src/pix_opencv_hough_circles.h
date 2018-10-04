@@ -17,7 +17,8 @@ LOG
 #define INCLUDE_PIX_OPENCV_HOUGH_CIRCLES_H_
 
 #ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
+#include "opencv2/core/core_c.h"
+#include "opencv2/imgproc/imgproc_c.h"
 #endif
 
 #include "Base/GemPixObj.h"

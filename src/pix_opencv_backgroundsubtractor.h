@@ -16,17 +16,15 @@ LOG
 #ifndef INCLUDE_PIX_OPENCV_BACKGROUNDSUBTRACTOR_H_
 #define INCLUDE_PIX_OPENCV_BACKGROUNDSUBTRACTOR_H_
 
-#include "opencv2/opencv.hpp"
-#if HAVE_LIBOPENCV_CL    
-#include "opencv2/ocl/ocl.hpp"
-#endif /* HAVE_LIBOPENCV_CL */
+#include <opencv2/bgsegm.hpp>
 
 #include "Base/GemPixObj.h"
 #include <RTE/MessageCallbacks.h>
 #include "Gem/Exception.h"
 
 #include <iostream>
-
+#include <functional>
+#include <map>
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
 CLASS
@@ -71,16 +69,29 @@ class GEM_EXPORT pix_opencv_backgroundsubtractor: public GemPixObj
     virtual void  stopRendering();
     
   private:
-    cv::Ptr<cv::BackgroundSubtractor> m_fgbgMOG;
-    cv::Ptr<cv::BackgroundSubtractorGMG> m_fgbgGMG;
+    cv::Ptr<cv::bgsegm::BackgroundSubtractorMOG> m_fgbgMOG;
+    cv::Ptr<cv::bgsegm::BackgroundSubtractorGMG> m_fgbgGMG;
 
-#if HAVE_LIBOPENCV_CL    
-    cv::ocl::MOG m_oclMOG;
-    cv::ocl::MOG2 m_oclMOG2;
-    //~ cv::ocl::GMG m_oclGMG;
-    cv::ocl::oclMat d_input, d_fgmask;
-#endif /* HAVE_LIBOPENCV_CL */
-    
+
+    struct MOGparam
+    {
+      std::string name;
+      std::string description; 
+      std::function<float(const cv::bgsegm::BackgroundSubtractorMOG&)> get;
+      std::function<void(cv::bgsegm::BackgroundSubtractorMOG&, float)> set;
+    };
+
+    struct GMGparam
+    {
+      std::string name;
+      std::string description; 
+      std::function<float(const cv::bgsegm::BackgroundSubtractorGMG&)> get;
+      std::function<void(cv::bgsegm::BackgroundSubtractorGMG&, float)> set;
+    };
+  
+    std::vector<MOGparam> m_mog_params;
+    std::vector<GMGparam> m_gmg_params;
+
     cv::Mat m_fgmask, m_segm;
     
     std::string m_algoName;

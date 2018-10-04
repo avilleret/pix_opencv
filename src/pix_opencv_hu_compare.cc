@@ -121,7 +121,7 @@ void pix_opencv_hu_compare :: processRGBA_RGBA(imageStruct &left, imageStruct &r
     size=0;
     for( ; contourr != 0; contourr = contourr->h_next )
     {
-       rect = cvContourBoundingRect( contourr, 1);
+       rect = cvBoundingRect( contourr, 1);
        if ( rect.width*rect.height > size && rect.width*rect.height < (comp_xsize-2)*(comp_ysize-2))
        {
           x_bcontourr = contourr;
@@ -143,7 +143,7 @@ void pix_opencv_hu_compare :: processRGBA_RGBA(imageStruct &left, imageStruct &r
     contourlp=contourl;
     for( ; contourlp != 0; contourlp = contourlp->h_next )
     {
-        rect = cvContourBoundingRect( contourlp, 1);
+        rect = cvBoundingRect( contourlp, 1);
         if ( rect.width*rect.height > x_minsize && rect.width*rect.height < (comp_xsize-2)*(comp_ysize-2))
         {
            ndist = cvMatchShapes( x_bcontourr, contourlp, x_method, 0 );
@@ -234,7 +234,7 @@ void pix_opencv_hu_compare :: processRGB_RGB(imageStruct &left, imageStruct &rig
     size=0;
     for( ; contourr != 0; contourr = contourr->h_next )
     {
-       rect = cvContourBoundingRect( contourr, 1);
+       rect = cvBoundingRect( contourr, 1);
        if ( rect.width*rect.height > size && rect.width*rect.height < (comp_xsize-2)*(comp_ysize-2))
        {
           x_bcontourr = contourr;
@@ -255,7 +255,7 @@ void pix_opencv_hu_compare :: processRGB_RGB(imageStruct &left, imageStruct &rig
     contourlp=contourl;
     for( ; contourlp != 0; contourlp = contourlp->h_next )
     {
-        rect = cvContourBoundingRect( contourlp, 1);
+        rect = cvBoundingRect( contourlp, 1);
         if ( rect.width*rect.height > x_minsize && rect.width*rect.height < (comp_xsize-2)*(comp_ysize-2))
         {
            ndist = cvMatchShapes( x_bcontourr, contourlp, x_method, 0 );
@@ -339,7 +339,7 @@ void pix_opencv_hu_compare :: processGray_Gray(imageStruct &left, imageStruct &r
     size=0;
     for( ; contourr != 0; contourr = contourr->h_next )
     {
-       rect = cvContourBoundingRect( contourr, 1);
+       rect = cvBoundingRect( contourr, 1);
        if ( rect.width*rect.height > size && rect.width*rect.height < (comp_xsize-2)*(comp_ysize-2))
        {
           x_bcontourr = contourr;
@@ -359,7 +359,7 @@ void pix_opencv_hu_compare :: processGray_Gray(imageStruct &left, imageStruct &r
     contourlp=contourl;
     for( ; contourlp != 0; contourlp = contourlp->h_next )
     {
-        rect = cvContourBoundingRect( contourlp, 1);
+        rect = cvBoundingRect( contourlp, 1);
         if ( rect.width*rect.height > x_minsize && rect.width*rect.height < (comp_xsize-2)*(comp_ysize-2))
         {
            ndist = cvMatchShapes( x_bcontourr, contourlp, x_method, 0 );

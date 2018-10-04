@@ -15,7 +15,7 @@ LOG
 #define INCLUDE_PIX_OPENCV_CONTOURS_H_
 
 #ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 #endif
 
 #include "Base/GemPixObj.h"

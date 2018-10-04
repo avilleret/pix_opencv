@@ -15,7 +15,7 @@ LOG
 #define INCLUDE_PIX_OPENCV_TRACKKNN_H_
 
 #ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
+#include <opencv2/bgsegm.hpp>
 #endif
 
 #include "Base/GemPixObj.h"

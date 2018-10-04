@@ -23,7 +23,7 @@ AM_INIT_AUTOMAKE([1.10 foreign])
 AC_ARG_WITH([pd],       [  --with-pd=</path/to/pd> where to look for pd-headers and and -libs])
 AC_ARG_WITH([gem],       [  --with-gem=</path/to/gem> where to look for gem-headers and and -libs])
 AC_ARG_WITH([extension],[  --with-extension=<ext>  enforce a certain extension for the dynamic library (e.g. dll)])
-AC_ARG_WITH([facetracker],[  --with-facetracker=</path/to/gem>  where to look for facetracker-headers and -libs])
+AC_ARG_WITH([facetracker],[  --with-facetracker=</path/to/facetracker>  where to look for facetracker-headers and -libs])
 
 ARCH=$(uname -m)
 KERN=$(uname -s)

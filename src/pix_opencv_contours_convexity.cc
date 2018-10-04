@@ -118,7 +118,7 @@ void pix_opencv_contours_convexity :: processRGBAImage(imageStruct &image)
         {
         CvRect rect;
 	int count = contours->total; 
-	rect = cvContourBoundingRect(contours, 1);
+	rect = cvBoundingRect(contours, 1);
 	if  ( (rect.width*rect.height) > area ) 
 		{
 		selected = i;
@@ -138,7 +138,7 @@ void pix_opencv_contours_convexity :: processRGBAImage(imageStruct &image)
         CvSize size;
         CvRect rect;
 
-	rect = cvContourBoundingRect( contours, 1);
+	rect = cvBoundingRect( contours, 1);
 	if ( (k==selected) ) {
         
         
@@ -146,22 +146,9 @@ void pix_opencv_contours_convexity :: processRGBAImage(imageStruct &image)
         // Alloc memory for contour point set.    
         PointArray = (CvPoint*)malloc( count*sizeof(CvPoint) );
                 
-        // Alloc memory for indices of convex hull vertices.
-        hull = (int*)malloc(sizeof(int)*count);
-        
         // Get contour point set.
     //fprintf(stderr,"cvCvtSeqToArray\n");
         cvCvtSeqToArray(contours, PointArray, CV_WHOLE_SEQ);
-        
-                
-        // Find convex hull for curent contour.
-    //fprintf(stderr,"cvConvexHull\n");
-        cvConvexHull( PointArray,
-                      count,
-                      NULL,
-                      CV_COUNTER_CLOCKWISE,
-                      hull,
-                      &hullsize);
         
         // Find convex hull for current contour.
         // This required for cvConvexityDefects().
@@ -172,7 +159,7 @@ void pix_opencv_contours_convexity :: processRGBAImage(imageStruct &image)
         
         // This required for cvConvexityDefects().
         // Otherwise cvConvexityDefects() falled.
-        if( hullsize < 4 )
+        if( seqhull->total < 4 )
             continue;
          
         // Find defects of convexity of current contours.                        
@@ -289,8 +276,6 @@ void pix_opencv_contours_convexity :: processRGBImage(imageStruct &image)
     CvSeq* seqhull;
     CvSeq* defects;
     CvSeq* contours;
-    int* hull;
-    int hullsize;
     CvPoint* PointArray;
     CvConvexityDefect* defectArray;
     CvMemStorage* stor02;
@@ -313,7 +298,7 @@ void pix_opencv_contours_convexity :: processRGBImage(imageStruct &image)
         {
         CvRect rect;
 	int count = contours->total; 
-	rect = cvContourBoundingRect(contours, 1);
+	rect = cvBoundingRect(contours, 1);
 	if  ( (rect.width*rect.height) > area ) 
 		{
 		selected = i;
@@ -333,7 +318,7 @@ void pix_opencv_contours_convexity :: processRGBImage(imageStruct &image)
         CvSize size;
         CvRect rect;
 
-	rect = cvContourBoundingRect( contours, 1);
+	rect = cvBoundingRect( contours, 1);
 	if ( (k==selected) ) {
         
         
@@ -341,23 +326,11 @@ void pix_opencv_contours_convexity :: processRGBImage(imageStruct &image)
         // Alloc memory for contour point set.    
         PointArray = (CvPoint*)malloc( count*sizeof(CvPoint) );
                 
-        // Alloc memory for indices of convex hull vertices.
-        hull = (int*)malloc(sizeof(int)*count);
-        
         // Get contour point set.
     //fprintf(stderr,"cvCvtSeqToArray\n");
         cvCvtSeqToArray(contours, PointArray, CV_WHOLE_SEQ);
         
                 
-        // Find convex hull for curent contour.
-    //fprintf(stderr,"cvConvexHull\n");
-        cvConvexHull( PointArray,
-                      count,
-                      NULL,
-                      CV_COUNTER_CLOCKWISE,
-                      hull,
-                      &hullsize);
-        
         // Find convex hull for current contour.
         // This required for cvConvexityDefects().
     //fprintf(stderr,"cvConvexHull2\n");
@@ -367,7 +340,7 @@ void pix_opencv_contours_convexity :: processRGBImage(imageStruct &image)
         
         // This required for cvConvexityDefects().
         // Otherwise cvConvexityDefects() falled.
-        if( hullsize < 4 )
+        if( seqhull->total < 4 )
             continue;
          
         // Find defects of convexity of current contours.                        
@@ -423,13 +396,14 @@ void pix_opencv_contours_convexity :: processRGBImage(imageStruct &image)
         cvDrawContours( rgb, contours, CV_RGB(255,0,0), CV_RGB(0,255,0), 2, 2, CV_AA, cvPoint(0,0)  );
         
         // Draw convex hull for current contour.        
-        for(i=0; i<hullsize-1; i++)
+	CvSeq* hull = seqhull->h_next;
+        for(; hull != NULL; hull=hull->h_next)
         {
-            cvLine(rgb, PointArray[hull[i]], 
-                            PointArray[hull[i+1]],CV_RGB(255,255,255),1, CV_AA, 0 );
+            cvLine(rgb, PointArray[int(*hull->h_prev->ptr)], 
+                            PointArray[int(*hull->ptr)],CV_RGB(255,255,255),1, CV_AA, 0 );
         }
-        cvLine(rgb, PointArray[hull[hullsize-1]],
-                             PointArray[hull[0]],CV_RGB(255,255,255),1, CV_AA, 0 );
+        cvLine(rgb, PointArray[int(*hull->ptr)],
+                    PointArray[int(*seqhull->ptr)],CV_RGB(255,255,255),1, CV_AA, 0 );
         
           
         // Free memory.          
@@ -511,7 +485,7 @@ void pix_opencv_contours_convexity :: processGrayImage(imageStruct &image)
         {
         CvRect rect;
 	int count = contours->total; 
-	rect = cvContourBoundingRect(contours, 1);
+	rect = cvBoundingRect(contours, 1);
 	if  ( (rect.width*rect.height) > area ) 
 		{
 		selected = i;
@@ -531,7 +505,7 @@ void pix_opencv_contours_convexity :: processGrayImage(imageStruct &image)
         CvSize size;
         CvRect rect;
 
-	rect = cvContourBoundingRect( contours, 1);
+	rect = cvBoundingRect( contours, 1);
 	if ( (k==selected) ) {
         
         
@@ -546,16 +520,6 @@ void pix_opencv_contours_convexity :: processGrayImage(imageStruct &image)
     //fprintf(stderr,"cvCvtSeqToArray\n");
         cvCvtSeqToArray(contours, PointArray, CV_WHOLE_SEQ);
         
-                
-        // Find convex hull for curent contour.
-    //fprintf(stderr,"cvConvexHull\n");
-        cvConvexHull( PointArray,
-                      count,
-                      NULL,
-                      CV_COUNTER_CLOCKWISE,
-                      hull,
-                      &hullsize);
-        
         // Find convex hull for current contour.
         // This required for cvConvexityDefects().
     //fprintf(stderr,"cvConvexHull2\n");
@@ -565,7 +529,7 @@ void pix_opencv_contours_convexity :: processGrayImage(imageStruct &image)
         
         // This required for cvConvexityDefects().
         // Otherwise cvConvexityDefects() falled.
-        if( hullsize < 4 )
+        if( seqhull->total < 4 )
             continue;
          
         // Find defects of convexity of current contours.                        

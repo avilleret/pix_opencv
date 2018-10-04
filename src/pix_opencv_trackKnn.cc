@@ -21,6 +21,8 @@
 
 #include "pix_opencv_trackKnn.h"
 
+#include <map>
+
 using namespace cv;
 using namespace std;
 

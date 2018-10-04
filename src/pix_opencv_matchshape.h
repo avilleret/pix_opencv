@@ -17,8 +17,8 @@ LOG
 #define INCLUDE_PIX_OPENCV_MATCHSHAPE_H_
 
 #ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
-
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc.hpp>
 #endif
 
 #include "Base/GemPixObj.h"

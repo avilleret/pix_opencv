@@ -107,14 +107,14 @@ void pix_opencv_haarcascade :: processRGBAImage(imageStruct &image)
     
     static CvScalar colors[] = 
     {
-        {{0,0,255}},
-        {{0,128,255}},
-        {{0,255,255}},
-        {{0,255,0}},
-        {{255,128,0}},
-        {{255,255,0}},
-        {{255,0,0}},
-        {{255,0,255}}
+        cvScalar(0,0,255),
+        cvScalar(0,128,255),
+        cvScalar(0,255,255),
+        cvScalar(0,255,0),
+        cvScalar(255,128,0),
+        cvScalar(255,255,0),
+        cvScalar(255,0,0),
+        cvScalar(255,0,255)
     };
 
     int i, im;
@@ -222,14 +222,14 @@ void pix_opencv_haarcascade :: processRGBImage(imageStruct &image)
     
     static CvScalar colors[] = 
     {
-        {{0,0,255}},
-        {{0,128,255}},
-        {{0,255,255}},
-        {{0,255,0}},
-        {{255,128,0}},
-        {{255,255,0}},
-        {{255,0,0}},
-        {{255,0,255}}
+        cvScalar(0,0,255),
+        cvScalar(0,128,255),
+        cvScalar(0,255,255),
+        cvScalar(0,255,0),
+        cvScalar(255,128,0),
+        cvScalar(255,255,0),
+        cvScalar(255,0,0),
+        cvScalar(255,0,255)
     };
 
     int i, im;
@@ -341,14 +341,14 @@ void pix_opencv_haarcascade :: processGrayImage(imageStruct &image)
     
     static CvScalar colors[] = 
     {
-        {{0,0,255}},
-        {{0,128,255}},
-        {{0,255,255}},
-        {{0,255,0}},
-        {{255,128,0}},
-        {{255,255,0}},
-        {{255,0,0}},
-        {{255,0,255}}
+        cvScalar(0,0,255),
+        cvScalar(0,128,255),
+        cvScalar(0,255,255),
+        cvScalar(0,255,0),
+        cvScalar(255,128,0),
+        cvScalar(255,255,0),
+        cvScalar(255,0,0),
+        cvScalar(255,0,255)
     };
 
     int i;

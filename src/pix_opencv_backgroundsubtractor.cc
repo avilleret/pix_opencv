@@ -33,36 +33,113 @@ CPPEXTERN_NEW(pix_opencv_backgroundsubtractor);
 // Constructor
 //
 /////////////////////////////////////////////////////////
-pix_opencv_backgroundsubtractor :: pix_opencv_backgroundsubtractor() : m_forceCPU(false) { 
-  initModule_video();
-  setUseOptimized(true);
-  setNumThreads(8);
-  
-  vector<string> algorithms;
-  Algorithm::getList(algorithms);
-  string model = "BackgroundSubtractor.";
 
-  for (size_t i=0; i < algorithms.size(); i++){
-    if ( model.compare(0,model.length(),algorithms[i],0,model.length()) == 0 ){ // && npos >= model.length() ){
-        m_bgsub_algos.push_back(algorithms[i]);
-    }
-  }
+pix_opencv_backgroundsubtractor :: pix_opencv_backgroundsubtractor() : m_forceCPU(false) { 
   
-  if ( m_bgsub_algos.size() == 0){
-    throw(GemException("Can't find any background subtractor algorithm."));
-  }
+  m_bgsub_algos.push_back("BackgroundSubtractor.GMG");
+  m_bgsub_algos.push_back("BackgroundSubtractor.MOG");
   
-  if ( m_bgsub_algos[0] == "BackgroundSubtractor.GMG"){
-    m_fgbgGMG = Algorithm::create<BackgroundSubtractorGMG>(m_bgsub_algos[0]);
-  } else {
-    m_fgbgMOG = Algorithm::create<BackgroundSubtractor>(m_bgsub_algos[0]);
-  }
-  if (m_fgbgMOG.empty() && m_fgbgGMG.empty())
-  {
-    throw(GemException("Failed to create BackgroundSubtractor Algorithm."));
-  }
+  m_fgbgGMG = bgsegm::createBackgroundSubtractorGMG();
+  m_fgbgMOG = bgsegm::createBackgroundSubtractorMOG();
   
   m_dataout = outlet_new(this->x_obj, 0); 
+
+  m_mog_params = {
+      MOGparam{ 
+        "history",  
+        "(int) Length of the history", 
+        /*[](const bgsegm::BackgroundSubtractorMOG& alg) { return float(alg.getHistory()); },
+        [](bgsegm::BackgroundSubtractorMOG& alg, float val) { alg.setHistory(int(val)); }
+        */
+        &bgsegm::BackgroundSubtractorMOG::getHistory, 
+        &bgsegm::BackgroundSubtractorMOG::setHistory 
+      },
+      MOGparam{ 
+        "nmixtures" , 
+        "(int) Number of Gaussian mixtures", 
+        &bgsegm::BackgroundSubtractorMOG::getNMixtures, 
+        &bgsegm::BackgroundSubtractorMOG::setNMixtures 
+      },
+      MOGparam{ 
+        "backgroundratio", 
+        "(float) Background ratio", 
+        &bgsegm::BackgroundSubtractorMOG::getBackgroundRatio, 
+        &bgsegm::BackgroundSubtractorMOG::setBackgroundRatio 
+      },
+      MOGparam{ 
+        "noisesigma", 
+        "(float) Noise strength (standard deviation of the brightness or each color channel). 0 means some automatic value.", 
+        &bgsegm::BackgroundSubtractorMOG::getNoiseSigma, 
+        &bgsegm::BackgroundSubtractorMOG::setNoiseSigma 
+      }
+    };
+
+  m_gmg_params = {
+    GMGparam{
+      "maxfeatures",
+      "(int) : total number of distinct colors to maintain in histogram",
+      &bgsegm::BackgroundSubtractorGMG::getMaxFeatures,
+      &bgsegm::BackgroundSubtractorGMG::setMaxFeatures
+    },
+    GMGparam{
+      "defaultlearningrate",
+      "(float) : learning rate of the algorithm",
+      &bgsegm::BackgroundSubtractorGMG::getDefaultLearningRate,
+      &bgsegm::BackgroundSubtractorGMG::setDefaultLearningRate
+    },
+    GMGparam{
+      "numframes",
+      "(int) : number of frames used to initialize background model",
+      &bgsegm::BackgroundSubtractorGMG::getNumFrames,
+      &bgsegm::BackgroundSubtractorGMG::setNumFrames
+    },
+    GMGparam{
+      "quantizationlevels",
+      "(int) : parameter used for quantization of color-space",
+      &bgsegm::BackgroundSubtractorGMG::getQuantizationLevels,
+      &bgsegm::BackgroundSubtractorGMG::setQuantizationLevels
+    },
+    GMGparam{
+      "backgroundprior",
+      "(float) : prior probability that each individual pixel is a background pixel",
+      &bgsegm::BackgroundSubtractorGMG::getBackgroundPrior,
+      &bgsegm::BackgroundSubtractorGMG::setBackgroundPrior
+    },
+    GMGparam{
+      "smoothingraius",
+      "(int) : kernel radius used for morphological operations",
+      &bgsegm::BackgroundSubtractorGMG::getSmoothingRadius,
+      &bgsegm::BackgroundSubtractorGMG::setSmoothingRadius
+    },
+    GMGparam{
+      "decisionthreshold",
+      "(float) : value of decision threshold",
+      &bgsegm::BackgroundSubtractorGMG::getDecisionThreshold,
+      &bgsegm::BackgroundSubtractorGMG::setDecisionThreshold
+    },
+    GMGparam{
+      "updatebackgroundmodel",
+      "(bool) : status of background model update",
+      &bgsegm::BackgroundSubtractorGMG::getUpdateBackgroundModel,
+      &bgsegm::BackgroundSubtractorGMG::setUpdateBackgroundModel
+      /*
+      [](const bgsegm::BackgroundSubtractorGMG& alg) { return float(alg.getUpdateBackgroundModel()); },
+      [](bgsegm::BackgroundSubtractorGMG& alg, float val) { alg.setUpdateBackgroundModel(val>0); }        
+      */
+    },
+    GMGparam{
+      "minval",
+      "(float) : minimum value taken on by pixels in image sequence",
+      &bgsegm::BackgroundSubtractorGMG::getMinVal,
+      &bgsegm::BackgroundSubtractorGMG::setMinVal
+    },
+    GMGparam{
+      "maxval",
+      "(float) : maximum value taken on by pixels in image sequence.",
+      &bgsegm::BackgroundSubtractorGMG::getMaxVal,
+      &bgsegm::BackgroundSubtractorGMG::setMaxVal
+    }
+  };
 }
 
 /////////////////////////////////////////////////////////
@@ -79,34 +156,11 @@ pix_opencv_backgroundsubtractor :: ~pix_opencv_backgroundsubtractor()
 /////////////////////////////////////////////////////////
 
 void pix_opencv_backgroundsubtractor :: startRendering(){
-
-#if HAVE_LIBOPENCV_CL
-  ocl::DevicesInfo devicesInfo;
-  ocl::getOpenCLDevices(devicesInfo);
-  post("Found %d OpenCL device(s).", devicesInfo.size());
-  for ( size_t i = 0; i < devicesInfo.size(); i++){
-    post("%s %s", devicesInfo[i]->deviceVendor.c_str(), devicesInfo[i]->deviceName.c_str());
-  }
- 
-  if ( devicesInfo.size() == 0 || m_forceCPU ){
-    post("can't find OpenCL device, switch to CPU mode");
-    m_gpuMode = false;
-  } else {
-    m_gpuMode = true;
-  }
-#else
-  verbose(2,"no OpenCL support, it could be very slow !");
-#endif
-
   m_rendering = true;
 }
 
 void pix_opencv_backgroundsubtractor :: stopRendering(){
   m_rendering = false;
-
-  //~ this crashes when no OCL device is used
-  //~m_oclMOG.release();
-  //~m_oclMOG2.release();
 }
 
 /////////////////////////////////////////////////////////
@@ -127,33 +181,10 @@ void pix_opencv_backgroundsubtractor :: processImage(imageStruct &image)
     return;
   }
   
-#if HAVE_LIBOPENCV_CL    
-  if ( m_gpuMode ) {
-    try  {
-      d_input = input;
-      if ( m_algoName == "MOG" ){
-        m_oclMOG( d_input, d_fgmask );
-      } else if ( m_algoName == "MOG2" ){
-        m_oclMOG2( d_input, d_fgmask, 0.01f );
-      } else { 
-        error("there is no GPU version of algo %s", m_algoName.c_str());
-        m_gpuMode = false;
-        return;
-      }
-      d_fgmask.download(m_fgmask);
-    } catch (cv::Exception& e) {
-      error("can't use OpenCL, do you have OpenCL driver installed ?");
-      error("error %d : %s", e.code, e.err.c_str());
-      m_gpuMode = false;
-      return;
-    }
-#else
-  if ( 0 ) {
-#endif /* HAVE_LIBOPENCV_CL */
-  } else if (!m_fgbgMOG.empty()){
-    (*m_fgbgMOG)(input, m_fgmask);
+  if (!m_fgbgMOG.empty()){
+    m_fgbgMOG->apply(input, m_fgmask);
   } else if (!m_fgbgGMG.empty()) {
-    (*m_fgbgGMG)(input, m_fgmask);
+    m_fgbgGMG->apply(input, m_fgmask);
   } else {
     error("Please load a valid algorithm before processing.");
     return;
@@ -171,44 +202,43 @@ void pix_opencv_backgroundsubtractor :: processImage(imageStruct &image)
 }
 
 void pix_opencv_backgroundsubtractor :: paramHelpMess(){
-  vector<string> paramList;
-  if (!m_fgbgMOG.empty()){
-    m_fgbgMOG->getParams(paramList);
-    post("%s parameters help :",m_fgbgMOG->name().c_str());
-    for (size_t i=0; i < paramList.size(); i++){
-      post("%s : %s", paramList[i].c_str(), m_fgbgMOG->paramHelp(paramList[i]).c_str());
-    }
-  } else if (!m_fgbgGMG.empty()) {
-    m_fgbgGMG->getParams(paramList);
-    post("%s parameters help :",m_fgbgGMG->name().c_str());
-    for (size_t i=0; i < paramList.size(); i++){
-      post("%s : %s", paramList[i].c_str(), m_fgbgGMG->paramHelp(paramList[i]).c_str());
-    }
-  } else {
-    error("Please load a valid algorithm before requesting paramHelp.");
-    return;
+  post("MOG parameters :");
+  for(auto& param : m_mog_params)
+  {
+    post("%s : %s", param.name.c_str(), param.description.c_str());
+  }
+
+  post("GMG parameters :");
+  for(auto& param : m_gmg_params)
+  {
+    post("%s : %s", param.name.c_str(), param.description.c_str());
   }
 }
 
 void pix_opencv_backgroundsubtractor :: enumParamsMess(){
-  vector<string> paramList;
-  if (!m_fgbgMOG.empty()){
-    m_fgbgMOG->getParams(paramList);
-  } else if ( !m_fgbgGMG.empty() ){
-    m_fgbgGMG->getParams(paramList);
-  } else {
-    error("please choose an algo before enumerating parameters.");
-    return;
-  }
 
   t_atom a_prop[2];
-  SETFLOAT(a_prop, paramList.size());
-  outlet_anything( m_dataout, gensym("params"), 1, a_prop);
-  
-  for (size_t i=0; i < paramList.size(); i++){
-    SETSYMBOL(a_prop, gensym(paramList[i].c_str()));
-    SETFLOAT(a_prop+1,0.);
-    outlet_anything(m_dataout, gensym("paramList"), 2, a_prop);
+
+  if(m_algoName == "MOG")
+  {
+    SETFLOAT(a_prop, m_mog_params.size());
+    outlet_anything( m_dataout, gensym("params"), 1, a_prop);
+
+    for (auto& p : m_mog_params){
+      SETSYMBOL(a_prop, gensym(p.name.c_str()));
+      SETFLOAT(a_prop+1, p.get(*m_fgbgMOG));
+      outlet_anything(m_dataout, gensym("paramList"), 2, a_prop);
+    }
+  } else if(m_algoName == "GMG")
+  {
+    SETFLOAT(a_prop, m_gmg_params.size());
+    outlet_anything( m_dataout, gensym("params"), 1, a_prop);
+
+    for (auto& p : m_gmg_params){
+      SETSYMBOL(a_prop, gensym(p.name.c_str()));
+      SETFLOAT(a_prop+1, p.get(*m_fgbgGMG));
+      outlet_anything(m_dataout, gensym("paramList"), 2, a_prop);
+    }
   }
 }
 
@@ -228,75 +258,71 @@ void pix_opencv_backgroundsubtractor :: setParamMess(t_symbol *s, int argc, t_at
     error("currently support only float parameter values"); // I don't know the signification of output of paramType(), so only support float
   }
   
-  vector<string> paramList;
-   if (!m_fgbgMOG.empty()){
-    m_fgbgMOG->getParams(paramList);
-  } else if ( !m_fgbgGMG.empty() ){
-    m_fgbgGMG->getParams(paramList);
-  } else {
-    error("please choose an algo before enumerating parameters.");
-    return;
-  }
   size_t i;
-  for (i=0; i < paramList.size(); i++){
-    if ( paramList[i] == paramName->s_name ) break;
-  }
-  if ( i == paramList.size()){
-    error("can't find parameter %s", paramName->s_name);
-    return;
-  }
-
   float val = atom_getfloat(argv+1);
-  try {
-    if (!m_fgbgMOG.empty()){
-      m_fgbgMOG->set(paramList[i], val);
-    } else if ( !m_fgbgGMG.empty() ) {
-      m_fgbgGMG->set(paramList[i], val);
-    }
-  } catch (cv::Exception& e) {
-    error("can't set parameter %s value",paramList[i].c_str());
-    error("error %d : %s", e.code, e.err.c_str());
-    return;
+
+  if(m_algoName == "MOG")
+  {
+    for(auto& p : m_mog_params)
+    {
+      if(paramName->s_name == p.name)
+      {
+        p.set(*m_fgbgMOG, val);
+        return;
+      }
+    }  
+  } 
+  else if ( m_algoName == "GMG" )
+  {
+    for(auto& p : m_gmg_params)
+    {
+      if(paramName->s_name == p.name)
+      {
+        p.set(*m_fgbgGMG, val);
+        return;
+      }
+    } 
   }
+  
+  error("can't find parameter %s", paramName->s_name);
 }
 
 void pix_opencv_backgroundsubtractor :: getParamMess(t_symbol *paramName){
-  vector<string> paramList;
-  if (!m_fgbgMOG.empty()){
-    m_fgbgMOG->getParams(paramList);
-  } else if ( !m_fgbgGMG.empty() ){
-    m_fgbgGMG->getParams(paramList);
-  } else {
-    error("please choose an algo before enumerating parameters.");
-    return;
+
+  if(m_algoName == "MOG")
+  {
+    for(auto& p : m_mog_params)
+    {
+      if(paramName->s_name == p.name)
+      {
+        float val = p.get(*m_fgbgMOG);
+
+        t_atom a_val[2];
+        SETSYMBOL(a_val, paramName);
+        SETFLOAT(a_val+1, val);
+        outlet_anything(m_dataout, gensym("param"), 2, a_val);
+
+        return;
+      }
+    }  
+  } 
+  else if ( m_algoName == "GMG" )
+  {
+    for(auto& p : m_gmg_params)
+    {
+      if(paramName->s_name == p.name)
+      {
+        float val = p.get(*m_fgbgGMG);
+
+        t_atom a_val[2];
+        SETSYMBOL(a_val, paramName);
+        SETFLOAT(a_val+1, val);
+        outlet_anything(m_dataout, gensym("param"), 2, a_val);  
+        return;
+      }
+    } 
   }
-  size_t i;
-  for (i=0; i < paramList.size(); i++){
-    if ( paramList[i] == paramName->s_name ) break;
-  }
-  if ( i == paramList.size()){
-    error("can't find parameter %s", paramName->s_name);
-    return;
-  }
-  double val=0;
-  try {
-    if (!m_fgbgMOG.empty()){
-      val = m_fgbgMOG->get<double>(paramList[i]);
-    } else if ( !m_fgbgGMG.empty() ){
-      val = m_fgbgGMG->get<double>(paramList[i]);
-    }    
-  } catch (cv::Exception& e) {
-    error("can't get parameter %s value",paramList[i].c_str());
-    error("error %d : %s", e.code, e.err.c_str());
-    return;
-  }
-  
-  t_atom a_val[2];
-  SETSYMBOL(a_val, paramName);
-  SETFLOAT(a_val+1, val);
-  outlet_anything(m_dataout, gensym("param"), 2, a_val);
-  
-  
+  error("can't find parameter %s", paramName->s_name);
 }
 
 void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* argv){
@@ -313,20 +339,13 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
     return;
   }
   
-  if ( !m_fgbgMOG.empty() ) m_fgbgMOG.release();
-  if ( !m_fgbgGMG.empty() ) m_fgbgGMG.release();
-  
   m_algoName = "NONE";
   
   if ( argv[0].a_type == A_FLOAT ){
     int id_max = m_bgsub_algos.size()-1;
     int id = atom_getfloat(argv);
     if ( id > id_max ) id = id_max;
-    if ( m_bgsub_algos[id] == "BackgroundSubtractor.GMG"){
-      m_fgbgGMG = Algorithm::create<BackgroundSubtractorGMG>(m_bgsub_algos[id]);
-    } else {
-      m_fgbgMOG = Algorithm::create<BackgroundSubtractor>(m_bgsub_algos[id]);
-    }
+
     if (m_fgbgMOG.empty() && m_fgbgGMG.empty())
     {
       error("Failed to create %s Algorithm.", m_bgsub_algos[id].c_str());
@@ -337,11 +356,7 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
   } else if ( argv[0].a_type == A_SYMBOL ) {
     t_symbol* algoSym = atom_getsymbol(argv);
     string algo = algoSym->s_name;
-    if ( algo == "BackgroundSubtractor.GMG"){
-      m_fgbgGMG = Algorithm::create<BackgroundSubtractorGMG>(algo);
-    } else {
-      m_fgbgMOG = Algorithm::create<BackgroundSubtractor>(algo);
-    }
+
     if (m_fgbgMOG.empty() && m_fgbgGMG.empty())
     {
       error("Failed to create %s Algorithm.", algo.c_str());

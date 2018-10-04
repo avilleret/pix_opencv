@@ -171,7 +171,7 @@ void pix_opencv_motempl :: processRGBAImage(imageStruct &image)
     cvCvtScale( mhi, mask, 255./mhi_duration,
                 (mhi_duration - timestamp)*255./mhi_duration );
     cvZero( motion );
-    cvCvtPlaneToPix( mask, 0, 0, 0, motion );
+    cvMerge( mask, 0, 0, 0, motion );
 
     // calculate motion gradient orientation and valid orientation mask
     cvCalcMotionGradient( mhi, mask, orient, max_time_delta, min_time_delta, aperture );
@@ -345,7 +345,7 @@ void pix_opencv_motempl :: processRGBImage(imageStruct &image)
     cvCvtScale( mhi, mask, 255./mhi_duration,
                 (mhi_duration - timestamp)*255./mhi_duration );
     cvZero( motion );
-    cvCvtPlaneToPix( mask, 0, 0, 0, motion );
+    cvMerge( mask, 0, 0, 0, motion );
 
     // calculate motion gradient orientation and valid orientation mask
     cvCalcMotionGradient( mhi, mask, orient, max_time_delta, min_time_delta, aperture );
@@ -523,7 +523,7 @@ void pix_opencv_motempl :: processGrayImage(imageStruct &image)
     cvCvtScale( mhi, mask, 255./mhi_duration,
                 (mhi_duration - timestamp)*255./mhi_duration );
     cvZero( motion );
-    cvCvtPlaneToPix( mask, 0, 0, 0, motion );
+    cvMerge( mask, 0, 0, 0, motion );
 
     // calculate motion gradient orientation and valid orientation mask
     cvCalcMotionGradient( mhi, mask, orient, max_time_delta, min_time_delta, aperture );

@@ -5,8 +5,8 @@ LOG
     Change pix to greyscale
 
     Copyright (c) 1997-1999 Mark Danks. mark@danks.org
-    Copyright (c) Günther Geiger. geiger@epy.co.at
-    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM. zmoelnig@iem.kug.ac.at
+    Copyright (c) Gï¿½nther Geiger. geiger@epy.co.at
+    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::fï¿½r::umlï¿½ute. IEM. zmoelnig@iem.kug.ac.at
     Copyright (c) 2002 James Tittle & Chris Clepper
     For information on usage and redistribution, and for a DISCLAIMER OF ALL
     WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
@@ -17,8 +17,8 @@ LOG
 #define INCLUDE_PIX_OPENCV_CONTOURS_CONVEXITY_H_
 
 #ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
-#include "opencv2/legacy/compat.hpp"
+#include "opencv2/core/core_c.h"
+#include "opencv2/imgproc/imgproc_c.h"
 #endif
 
 #include "Base/GemPixObj.h"
