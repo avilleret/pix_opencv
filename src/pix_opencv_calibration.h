@@ -17,7 +17,8 @@ LOG
 #define INCLUDE_pix_opencv_calibration_H_
 
 #ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
+#include "opencv2/core/core_c.h"
+#include "opencv2/imgproc/imgproc_c.h"
 #endif
 
 #include "Base/GemPixObj.h"
@@ -73,10 +74,6 @@ class GEM_EXPORT pix_opencv_calibration : public GemPixObj
 	void 	waitMess (int wait);
 	void 	findChessFlagMess(int adaptThres, int normalize, int filter);
 	void 	resetCorrectionMatrix();
-
-	// to detect changes in the image size
-	int 	comp_xsize;
-	int		comp_ysize;
 	
 	int	success_count, /* number of images on wich we correctly found corners */
 		board_view_nb, /* number of views to take */
@@ -106,15 +103,23 @@ class GEM_EXPORT pix_opencv_calibration : public GemPixObj
 	/////////
 
 	// CvMat needed
-	CvMat 	*image_points, 
-			*object_points, 
-			*point_counts, 
-			*intrinsic_matrix, 
-			*distortion_coeffs;
+	cv::Mat	m_image_points;
+  cv::Mat m_object_points;
+	cv::Mat m_point_counts;
+	cv::Mat m_intrinsic_matrix;
+	cv::Mat m_distortion_coeffs;
 
-	/////////
-	// IplImage needed
-    IplImage 	*find_rgb, *find_gray, *rgb, *gray, *tmp, *mapx, *mapy;
+  cv::Mat find_rgb;
+  cv::Mat find_gray;
+  cv::Mat rgb;
+  cv::Mat gray;
+  cv::Mat tmp;
+  cv::Mat m_mapx;
+  cv::Mat m_mapy;
+
+  // to detect changes in the image size
+  int   m_comp_xsize;
+  int   m_comp_ysize;
 };
 
 #endif	// for header file
