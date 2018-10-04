@@ -37,9 +37,6 @@ pix_opencv_la_include_HEADERS = Blob.hpp \
 					pix_opencv_matchshape.h \
 					pix_opencv_morphology.h \
 					pix_opencv_motempl.h \
-					pix_opencv_of_bm.h \
-					pix_opencv_of_hs.h \
-					pix_opencv_of_lk.h \
 					pix_opencv_opticalflow.h \
 					pix_opencv_patreco.h \
 					pix_opencv_pgh_compare.h \
