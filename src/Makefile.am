@@ -10,7 +10,6 @@ pix_opencv_la_include_HEADERS = Blob.hpp \
 					blobtrack.h \
 					pix_opencv_athreshold.h \
 					pix_opencv_backgroundsubtractor.h \
-					pix_opencv_bgstats.h \
 					pix_opencv_bgsubstract.h \
 					pix_opencv_blobtrack.h \
 					pix_opencv_calibration.h \
@@ -69,7 +68,6 @@ pix_opencv_la_SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_threshold.cc \
 				  pix_opencv_floodfill.cc \
 				  pix_opencv_athreshold.cc \
-				  pix_opencv_bgstats.cc \
 				  pix_opencv_camshift.cc \
 				  pix_opencv_hu_compare.cc \
 				  pix_opencv_pgh_compare.cc \
