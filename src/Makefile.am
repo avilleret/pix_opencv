@@ -86,7 +86,9 @@ pix_opencv_la_SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_clahe.cc \
 				  pix_opencv.cc \
 				  pix_opencv_surf.cc \
-				  pix_opencv_facetracker.cc
+				  pix_opencv_facetracker.cc \ 
+				  pix_opencv_calibration.cc
+
 
 #~ Override pix_opencv.la target to add ".WAIT" but it doesn't seems to work...
 #~pix_opencv.la: .WAIT $(pix_opencv_la_OBJECTS) $(pix_opencv_la_DEPENDENCIES) $(EXTRA_pix_opencv_la_DEPENDENCIES) 

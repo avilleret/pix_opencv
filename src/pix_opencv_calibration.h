@@ -59,15 +59,13 @@ class GEM_EXPORT pix_opencv_calibration : public GemPixObj
 	virtual void 	processYUVImage(imageStruct &image);
    	virtual void 	processGrayImage(imageStruct &image);
    	
-   	void findCorners ( IplImage *image );
-    void computeCalibration ( IplImage *image );
+   	void findCorners ( cv::Mat& image );
+    void computeCalibration ( cv::Mat& image );
    	    	
 	//////////
    	// Set the new edge threshold
-	void 	loadIntraMess(t_symbol *filename);
-	void 	loadDistMess(t_symbol *filename);
-	void 	writeIntraMess(t_symbol *filename);
-	void 	writeDistMess(t_symbol *filename);
+	void 	loadMess(t_symbol *filename);
+	void 	writeMess(t_symbol *filename);
 	void 	floatCalibrationhMess (float calib_flag);
 	void 	patternSizeMess (float xsize, float ysize);
 	void 	viewMess (int view);
@@ -77,7 +75,7 @@ class GEM_EXPORT pix_opencv_calibration : public GemPixObj
 	
 	int	success_count, /* number of images on wich we correctly found corners */
 		board_view_nb, /* number of views to take */
-		calibration, /* calibration flag */
+		m_calibration, /* calibration flag */
 		patternSize[2], /* size of the calibration chessboard */
 		frame, /* number of frames analysed for chessboard corner */
 		wait_n_frame, /* number of frames to wait between two take */
@@ -90,10 +88,8 @@ class GEM_EXPORT pix_opencv_calibration : public GemPixObj
     
    	//////////
    	// Static member functions
-	static void	loadIntraMessCallback(void *data, t_symbol* filename);
-	static void	loadDistMessCallback(void *data, t_symbol* filename);
-	static void	writeIntraMessCallback(void *data, t_symbol* filename);
-	static void	writeDistMessCallback(void *data, t_symbol* filename);
+	static void	loadMessCallback(void *data, t_symbol* filename);
+	static void	writeMessCallback(void *data, t_symbol* filename);
 	static void floatCalibrationMessCallback(void *data, t_floatarg calib_flag);
    	static void patternSizeMessCallback(void *data, t_floatarg xsize, t_floatarg ysize);
    	static void viewMessCallback(void *data, t_floatarg view);

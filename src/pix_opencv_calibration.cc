@@ -7,8 +7,8 @@
 // Implementation file
 //
 //    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
+//    Copyright (c) GÃ¼nther Geiger.
+//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::fÃ¼r::umlÃ¤ute. IEM
 //    Copyright (c) 2002 James Tittle & Chris Clepper
 //    For information on usage and redistribution, and for a DISCLAIMER OF ALL
 //    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
@@ -18,7 +18,11 @@
 // camera calibration function by Antoine Villeret helped by Cyrille Henry
 
 #include "pix_opencv_calibration.h"
+#include <opencv2/calib3d.hpp>
+#include <opencv2/imgproc.hpp>
 #include <stdio.h>
+
+using namespace cv;
 
 CPPEXTERN_NEW(pix_opencv_calibration)
 
@@ -33,30 +37,22 @@ CPPEXTERN_NEW(pix_opencv_calibration)
 pix_opencv_calibration :: pix_opencv_calibration()
 { 
 	m_dataout = outlet_new(this->x_obj, 0);
-
-	find_rgb = NULL;
-	find_gray = NULL;
-	rgb = NULL;
-	gray = NULL;
-	tmp = NULL;
-	mapx = NULL;
-	mapy = NULL;
 	
 	success_count = 0;
 	board_view_nb = 10;
-	calibration = 0; 
+	m_calibration = 0; 
 	patternSize[0] = 6;
 	patternSize[1] = 7;
 	frame = 0;
 	wait_n_frame = 10;
-	findChessFlag = CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS;
+	findChessFlag = CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE + CALIB_CB_FAST_CHECK;
   
 	// allocate storage matrix
 	m_image_points			=	cv::Mat(patternSize[0]*patternSize[1]*board_view_nb, 2, CV_32FC1);
-	object_points			=	cv::Mat(patternSize[0]*patternSize[1]*board_view_nb, 3, CV_32FC1);
-	point_counts			=	cv::Mat(board_view_nb, 1, CV_32SC1);
-	intrinsic_matrix 		= 	cv::Mat(3, 3, CV_32FC1);
-	distortion_coeffs 		= 	cv::Mat(5, 1, CV_32FC1); 
+	m_object_points			=	cv::Mat(patternSize[0]*patternSize[1]*board_view_nb, 3, CV_32FC1);
+	m_point_counts			=	cv::Mat(board_view_nb, 1, CV_32SC1);
+	m_intrinsic_matrix 		= 	cv::Mat(3, 3, CV_32FC1);
+	m_distortion_coeffs 		= 	cv::Mat(5, 1, CV_32FC1); 
 	
 	pix_opencv_calibration :: resetCorrectionMatrix();
 	//~ post("pix_opencv_calibration build on %s at %s", __DATE__, __TIME__);
@@ -77,42 +73,37 @@ pix_opencv_calibration :: ~pix_opencv_calibration()
 /////////////////////////////////////////////////////////
 void pix_opencv_calibration :: processRGBAImage(imageStruct &image)
 { 
-	if ((m_comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!rgb)) { 
+	if ((m_comp_xsize!=image.xsize)||(m_comp_ysize!=image.ysize)) { 
 	
 		m_comp_xsize = image.xsize;
-		this->comp_ysize = image.ysize;
-		if ( calibration ) error ( "image size changed, calibration was cancelled");
-		calibration = 0;
+		m_comp_ysize = image.ysize;
+		if ( m_calibration ) error ( "image size changed, calibration was cancelled");
+		m_calibration = 0;
 
 		// used in findCorners
-		find_rgb = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), CV_8UC4);
-		find_gray = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), CV_8UC1);
+		find_rgb = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_8UC4);
+		find_gray = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_8UC1);
 
 		//create the images with new size
-		rgb = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), CV_8UC4);
-		tmp  = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), CV_8UC4);
-		m_mapx = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), CV_32FC1);
-		m_mapy = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), CV_32FC1);
+		rgb = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_8UC4, image.data);
+		tmp  = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_8UC4);
+		m_mapx = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_32FC1);
+		m_mapy = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_32FC1);
 
 		// create new map
-		cv::initUndistortRectifyMap(this->intrinsic_matrix, this->distortion_coeffs, m_mapx, m_mapy);
+		cv::initUndistortRectifyMap(m_intrinsic_matrix, m_distortion_coeffs, cv::Mat(), cv::Mat(), cv::Size(), CV_32FC1, m_mapx, m_mapy);
     }
     
-    // no need to copy a lot of memory, just point to it...
-    rgb->imageData = (char*) image.data;
-
 	// this will loop until we got enought views (x->board_view_nb) with all corners visible
-	if ( success_count < board_view_nb && calibration != 0 ) {
+	if ( success_count < board_view_nb && m_calibration != 0 ) {
 		findCorners( rgb );
-		image.data = (unsigned char*) rgb->imageData; 
 	 }
-	else if ( success_count >= board_view_nb && calibration != 0 ) {
+	else if ( success_count >= board_view_nb && m_calibration != 0 ) {
 		computeCalibration( rgb );
-		image.data = (unsigned char*) rgb->imageData;
 	 }
-	else if ( this->calibration == 0 ) { 
-		cvRemap(rgb,tmp,mapx,mapy);
-		image.data = (unsigned char*) tmp->imageData;
+	else if ( m_calibration == 0 ) { 
+		cv::remap(rgb,tmp,m_mapx,m_mapy, INTER_NEAREST);
+		image.data = (unsigned char*) gray.data;
 	}
 }
 
@@ -126,48 +117,44 @@ void pix_opencv_calibration :: processYUVImage(imageStruct &image) {
     	
 void pix_opencv_calibration :: processGrayImage(imageStruct &image)
 { 
-	if ((m_comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!gray)) { 
+	if ((m_comp_xsize!=image.xsize)||(m_comp_ysize!=image.ysize)) { 
 		
 		m_comp_xsize = image.xsize;
-		this->comp_ysize = image.ysize;
-		if ( calibration ) { 
+		m_comp_ysize = image.ysize;
+		if ( m_calibration ) { 
 			error ( "image size changed, calibration was cancelled");
-			calibration = 0;
+			m_calibration = 0;
 			
 			t_atom data_out;
-			SETFLOAT(&data_out, calibration);
+			SETFLOAT(&data_out, m_calibration);
 			outlet_anything( this->m_dataout, gensym("calibration"), 1, &data_out);
 		}
 		
 		// used in findCorners
-		find_rgb = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 4);
-		find_gray = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 1);
+		find_rgb = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_8UC4);
+		find_gray = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_8UC1);
 		
 		//create the images with new size
-		gray = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 1);
-		tmp = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), IPL_DEPTH_8U, 1);
-		mapx = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), IPL_DEPTH_32F, 1);
-		mapy = cv::Mat(cv::Size(m_comp_xsize,this->comp_ysize), IPL_DEPTH_32F, 1);
+		gray = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_8UC1, image.data);
+		tmp = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_8UC1);
+		m_mapx = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_32FC1);
+		m_mapy = cv::Mat(cv::Size(m_comp_xsize,m_comp_ysize), CV_32FC1);
 
 		// create new map
-		cvInitUndistortMap(this->intrinsic_matrix, this->distortion_coeffs, m_mapx, m_mapy);
+		cv::Size size;
+		cv::initUndistortRectifyMap(m_intrinsic_matrix, m_distortion_coeffs, cv::Mat(), cv::Mat(), cv::Size(), CV_32FC1, m_mapx, m_mapy);
     }
     
-    // no need to copy a lot of memory, just point to it...
-    gray->imageData = (char*) image.data;
-    
 	// this will loop until we got enought views (x->board_view_nb) with all corners visible
-	if ( success_count < board_view_nb && calibration != 0 ) {
+	if ( success_count < board_view_nb && m_calibration != 0 ) {
 		findCorners( gray );
-		image.data = (unsigned char*) gray->imageData;
 	 }
-	else if ( success_count >= board_view_nb && calibration != 0 ) {
+	else if ( success_count >= board_view_nb && m_calibration != 0 ) {
 		computeCalibration( gray );
-		image.data = (unsigned char*) gray->imageData;
 	 }
-	else if ( this->calibration == 0 ) { 
-		cvRemap(gray,tmp,mapx,mapy);
-		image.data = (unsigned char*) tmp->imageData;
+	else if ( m_calibration == 0 ) { 
+		cv::remap(gray,tmp,m_mapx,m_mapy,INTER_NEAREST);
+		image.data = (unsigned char*) tmp.data;
 	}
 }
 
@@ -175,64 +162,62 @@ void pix_opencv_calibration :: processGrayImage(imageStruct &image)
 // findCorners
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_calibration :: findCorners ( IplImage *image )
+void pix_opencv_calibration :: findCorners ( cv::Mat& image )
 {
 	int					board_point_nb = this->patternSize[0]*this->patternSize[1];
-	CvPoint2D32f		*corners = new CvPoint2D32f[board_point_nb];
-	int					corner_count;
+	std::vector<cv::Point2f> corners;
 	int					step;
 	CvSize				patternSize, image_size;
-	
-	patternSize = cvSize( this->patternSize[0], this->patternSize[1] );
-	image_size = cvSize( image->width, image->height );
+
+	patternSize = cv::Size( this->patternSize[0], this->patternSize[1] );
+	image_size = image.size();
 
 	// find chessboard corners (gray or RGBA image...)
-	int found = cvFindChessboardCorners(image, 
+	int found = cv::findChessboardCorners(image, 
 										patternSize, 
-										corners, 
-										&corner_count, 
+										corners,  
 										findChessFlag);
-	if (image->nChannels == 4) {
-		cvCopy(image, find_rgb) ;
-		cvCvtColor( image , find_gray , CV_RGBA2GRAY); // convert color to gray
+
+	if (image.channels() == 4) {
+		find_rgb = image.clone();
+		cv::cvtColor( image , find_gray , CV_RGBA2GRAY); // convert color to gray
 	} else {
-		cvCopy(image, find_gray) ;
+		find_gray = image.clone();
 	}
 	
 	// get subpixel accuracy on those corners (grayscale image only)
-	cvFindCornerSubPix(find_gray, 
+	cv::cornerSubPix(find_gray, 
 					   corners, 
-					   corner_count, 
 					   cvSize(11,11), 
 					   cvSize(-1,-1), 
 					   cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1));
 
 
 	// draw chessboard corner (color image only)
-	if (image->nChannels == 4) cvDrawChessboardCorners(find_rgb, patternSize, corners, corner_count, found);
+	if (image.channels() == 4) cv::drawChessboardCorners(find_rgb, patternSize, cv::Mat(corners), found);
 	else 
 	{
-		cvCvtColor( find_gray , find_rgb , CV_GRAY2RGBA); // convert gray to color
-		cvDrawChessboardCorners(find_rgb, patternSize, corners, corner_count, found);
+		cvtColor( find_gray , find_rgb , CV_GRAY2RGBA); // convert gray to color
+		drawChessboardCorners(find_rgb, patternSize, cv::Mat(corners), found);
 	}
 	
 	this->frame++;
 	if ( this->frame % this->wait_n_frame == 0 ) { 
 	// update arrays
 
-		if( corner_count == board_point_nb ) {
+		if( corners.size() == board_point_nb ) {
 			step = this->success_count*board_point_nb;
 			for( int i=step, j=0; j<board_point_nb; ++i,++j ) {
-				CV_MAT_ELEM(*this->m_image_points, float,i,0) = corners[j].x; 
-				CV_MAT_ELEM(*this->m_image_points, float,i,1) = corners[j].y; 
-				CV_MAT_ELEM(*this->object_points,float,i,0) = j/this->patternSize[0]; 
-				CV_MAT_ELEM(*this->object_points,float,i,1) = j%this->patternSize[0]; 
-				CV_MAT_ELEM(*this->object_points,float,i,2) = 0.0f;
+				m_image_points.at<float>(i,0) = corners[j].x; 
+				m_image_points.at<float>(i,1) = corners[j].y; 
+				m_object_points.at<float>(i,0) = j/this->patternSize[0]; 
+				m_object_points.at<float>(i,1) = j%this->patternSize[0]; 
+				m_object_points.at<float>(i,2) = 0.0f;
 			}
-			CV_MAT_ELEM(*this->point_counts, int,this->success_count,0) = board_point_nb; 
-			this->success_count++;
+			m_point_counts.at<int>(success_count,0) = board_point_nb; 
+			success_count++;
 
-			cvNot( find_rgb , find_rgb );
+			cv::bitwise_not( find_rgb , find_rgb );
 		}
 		
 		t_atom data_out;
@@ -242,10 +227,10 @@ void pix_opencv_calibration :: findCorners ( IplImage *image )
 	}
 
 	// convert color to gray
-	if (image->nChannels == 1) {
-		cvCvtColor( find_rgb , image, CV_RGBA2GRAY); // convert color to gray
+	if (image.channels() == 1) {
+		cvtColor( find_rgb , image, CV_RGBA2GRAY); // convert color to gray
 	} else {
-		cvCopy(find_rgb, image);
+		image = find_rgb.clone();
 	}	
 
 }
@@ -253,153 +238,146 @@ void pix_opencv_calibration :: findCorners ( IplImage *image )
 // computeCalibration
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_calibration :: computeCalibration ( IplImage *image )
+void pix_opencv_calibration :: computeCalibration ( cv::Mat& image )
 {	
-	//CALIBRATE THE CAMERA! 
-	cvCalibrateCamera2(this->object_points,
-					   this->m_image_points,
-					   this->point_counts,
-					   cvSize( image->width , image->height ),
-					   this->intrinsic_matrix,
-					   this->distortion_coeffs,
-					   NULL, 
-					   NULL,
+	cv::calibrateCamera(m_object_points,
+					   m_image_points,
+					   image.size(),
+					   m_intrinsic_matrix,
+					   m_distortion_coeffs,
+					   cv::Mat(),
+					   cv::Mat(),
+					   cv::Mat(),
+					   cv::Mat(), 
+					   cv::Mat(),
 					   0);
-	m_mapx = cvCreateImage( cvSize( image->width, image->height ), IPL_DEPTH_32F, 1 );
-	m_mapy = cvCreateImage( cvSize( image->width, image->height ), IPL_DEPTH_32F, 1 );
+	m_mapx = cv::Mat( image.size(), CV_32FC1 );
+	m_mapy = cv::Mat( image.size(), CV_32FC1 );
 
-	cvInitUndistortMap(this->intrinsic_matrix, this->distortion_coeffs, m_mapx, m_mapy);
+	cv::Size size;
+	cv::initUndistortRectifyMap(m_intrinsic_matrix, m_distortion_coeffs, cv::Mat(), cv::Mat(), size, CV_32FC1, m_mapx, m_mapy);
 	
 	t_atom intra_out[9];
 	for ( int i = 0 ; i < 9 ; i++ ){
-		SETFLOAT(&intra_out[i], CV_MAT_ELEM( *intrinsic_matrix, float, i%3, i/3));
+		SETFLOAT(&intra_out[i], m_intrinsic_matrix.at<float>(i%3, i/3));
 	}		
 	outlet_anything( this->m_dataout, gensym("intrinsic_matrix"), 9, intra_out);
 	
 	t_atom dist_out[5];
 	for ( int i = 0 ; i < 5 ; i++ ){
-		SETFLOAT(&dist_out[i], CV_MAT_ELEM( *distortion_coeffs, float, i, 0));
+		SETFLOAT(&dist_out[i], m_distortion_coeffs.at<float>(i, 0));
 	}		
 	outlet_anything( this->m_dataout, gensym("distortion_coeffs"), 5, dist_out);
 	
-	calibration = 0;
+	m_calibration = 0;
 	
 	t_atom data_out;
-	SETFLOAT(&data_out, calibration);
+	SETFLOAT(&data_out, m_calibration);
 	outlet_anything( this->m_dataout, gensym("calibration"), 1, &data_out);
 }
-/////////////////////////////////////////////////////////
-// LoadMess
-//
-/////////////////////////////////////////////////////////
 
-void pix_opencv_calibration :: loadIntraMess (t_symbol *filename)
+void pix_opencv_calibration :: loadMess (t_symbol *filename)
 {
-	if ( filename->s_name[0] == 0 ) {
-		error("no filename passed to loadIntra message");
-		return;
-	}
-	if ( filename == NULL ) { error("%s is not a valid matrix", filename->s_name); return;}
-	this->intrinsic_matrix = (CvMat*)cvLoad(filename->s_name, 0, 0, 0);// TODO crash when passing non-XML file
-  
-	if (intrinsic_matrix == NULL) {
-		intrinsic_matrix = 	cvCreateMat(3, 3, CV_32FC1);
+  if ( filename == NULL ) { error("NULL pointer passed to function loadDist"); return;}
+
+  if ( filename->s_name[0] == 0 ) {
+    error("no filename passed to loadDist message");
+    return;
+  }
+
+  FileStorage fs(filename->s_name, FileStorage::READ);
+
+  fs["camera_matrix"] >> m_intrinsic_matrix;
+  fs["dist_coeff"] >> m_distortion_coeffs;
+	
+	if (m_distortion_coeffs.empty()) { 
+		m_distortion_coeffs = 	cv::Mat(5, 1, CV_32FC1);
 		error("can't open file %s", filename->s_name);
 		resetCorrectionMatrix();
 	}
-	else if ( intrinsic_matrix->rows != 3 || intrinsic_matrix->cols != 3 || CV_MAT_TYPE(intrinsic_matrix->type) != CV_32FC1 ) {
-		error("%s is not a valid intrinsic matrix", filename->s_name);
-		intrinsic_matrix = 	cv::Mat(3, 3, CV_32FC1);
-		resetCorrectionMatrix();
-	}
-	else post("load transformation matrix from %s",filename->s_name);
-	
-	t_atom intra_out[9];
-	for ( int i = 0 ; i < 9 ; i++ ){
-		SETFLOAT(&intra_out[i], CV_MAT_ELEM( *intrinsic_matrix, float, i%3, i/3));
-	}		
-	outlet_anything( this->m_dataout, gensym("intrinsic_matrix"), 9, intra_out);
-
-	// reinitialise size to force reinitialisation of mapx and mapy on next frame
-	m_comp_xsize = 0;  
-}
-
-void pix_opencv_calibration :: loadDistMess (t_symbol *filename)
-{
-	if ( filename->s_name[0] == 0 ) {
-		error("no filename passed to loadDist message");
-		return;
-	}
-	if ( filename == NULL ) { error("NULL pointer passed to function loadDist"); return;}
-	distortion_coeffs = (CvMat*)cvLoad(filename->s_name); // TODO crash when passing non-XML file
-	
-	if (distortion_coeffs == NULL) { 
-		distortion_coeffs = 	cvCreateMat(5, 1, CV_32FC1);
-		error("can't open file %s", filename->s_name);
-		resetCorrectionMatrix();
-	}
-	else if( distortion_coeffs->rows != 5 || distortion_coeffs->cols != 1 || CV_MAT_TYPE(distortion_coeffs->type) != CV_32FC1 ) {
+	else if( m_distortion_coeffs.rows != 5 || m_distortion_coeffs.cols != 1 || CV_MAT_TYPE(m_distortion_coeffs.type()) != CV_32FC1 ) {
 		error("%s is not a valid distortions coeffs file", filename->s_name);
-		distortion_coeffs = cv::Mat(3, 3, CV_32FC1);
+		m_distortion_coeffs = cv::Mat(3, 3, CV_32FC1);
 		resetCorrectionMatrix();
 	}
 	else post("load distortion coefficients from %s",filename->s_name);
 
 	t_atom dist_out[5];
 	for ( int i = 0 ; i < 5 ; i++ ){
-		SETFLOAT(&dist_out[i], CV_MAT_ELEM( *distortion_coeffs, float, i, 0));
+		SETFLOAT(&dist_out[i], m_distortion_coeffs.at<float>(i, 0));
 	}		
 	outlet_anything( this->m_dataout, gensym("distortion_coeffs"), 5, dist_out);
+
+	if (m_intrinsic_matrix.empty()) {
+		m_intrinsic_matrix = 	cv::Mat(3, 3, CV_32FC1);
+		error("can't open file %s", filename->s_name);
+		resetCorrectionMatrix();
+	}
+	else if ( m_intrinsic_matrix.rows != 3 || m_intrinsic_matrix.cols != 3 || CV_MAT_TYPE(m_intrinsic_matrix.type()) != CV_32FC1 ) {
+		error("%s is not a valid intrinsic matrix", filename->s_name);
+		m_intrinsic_matrix = 	cv::Mat(3, 3, CV_32FC1);
+		resetCorrectionMatrix();
+	}
+	else post("load transformation matrix from %s",filename->s_name);
+	
+	t_atom intra_out[9];
+	for ( int i = 0 ; i < 9 ; i++ ){
+		SETFLOAT(&intra_out[i], m_intrinsic_matrix.at<float>(i%3, i/3));
+	}		
+	outlet_anything( this->m_dataout, gensym("intrinsic_matrix"), 9, intra_out);
 	
 	// reinitialise size to force reinitialisation of mapx and mapy on next frame
 	m_comp_xsize = 0;  
 }
 
-void pix_opencv_calibration :: writeIntraMess (t_symbol *filename)
+void pix_opencv_calibration :: writeMess (t_symbol *filename)
 {
-	cvSave(filename->s_name,intrinsic_matrix);
-}
+	if(!filename)
+	{
+		error("NULL symbol pointer");
+		return;
+	}
+	FileStorage fs(filename->s_name, FileStorage::WRITE);
 
-void pix_opencv_calibration :: writeDistMess (t_symbol *filename)
-{
-	cvSave(filename->s_name,distortion_coeffs);
+	fs << "camera_matrix" << m_intrinsic_matrix;
+	fs << "dist_coeff" << m_distortion_coeffs;
 }
 
 void pix_opencv_calibration :: floatCalibrationhMess (float calib_flag) 
 {
-	this->calibration=calib_flag;
-	if ( this->calibration == 1 ) {
+	m_calibration=calib_flag;
+	if ( m_calibration == 1 ) {
 		this->success_count = 0;
 		this->frame = 0;
 	}
 	t_atom data_out;
-	SETFLOAT(&data_out, calibration);
+	SETFLOAT(&data_out, m_calibration);
 	outlet_anything( this->m_dataout, gensym("calibration"), 1, &data_out);
 }
 
 void pix_opencv_calibration :: patternSizeMess (float xsize, float ysize)
 {
-	if (calibration) {error("you can't change pattern size during calibration"); return;}
+	if (m_calibration) {error("you can't change pattern size during calibration"); return;}
 	if ( xsize < 3 || ysize < 3 ) {error("patternSize should be at least 3x3"); return;}
 	this->patternSize[0]=xsize;
 	this->patternSize[1]=ysize;
 	
 	// reallocate matrix
 	m_image_points	=	cv::Mat(patternSize[0]*patternSize[1]*board_view_nb, 2, CV_32FC1);
-	object_points	=	cv::Mat(patternSize[0]*patternSize[1]*board_view_nb, 3, CV_32FC1);
-	point_counts	=	cv::Mat(board_view_nb, 1, CV_32SC1);	
+	m_object_points	=	cv::Mat(patternSize[0]*patternSize[1]*board_view_nb, 3, CV_32FC1);
+	m_point_counts	=	cv::Mat(board_view_nb, 1, CV_32SC1);	
 }
 
 void pix_opencv_calibration :: viewMess (int view)
 {     
-	if ( calibration == 1 ) {error("you can't change view number during calibration !"); return;}
+	if ( m_calibration == 1 ) {error("you can't change view number during calibration !"); return;}
 	board_view_nb=view<2?2:view;
 	if (view < 2) error("view should be greater or equal to 2");
 
 	// reallocate matrix
 	m_image_points = cv::Mat(patternSize[0]*patternSize[1]*board_view_nb, 2, CV_32FC1);
-	object_points  = cv::Mat(patternSize[0]*patternSize[1]*board_view_nb, 3, CV_32FC1);
-	point_counts   = cv::Mat(board_view_nb, 1, CV_32SC1);
+	m_object_points  = cv::Mat(patternSize[0]*patternSize[1]*board_view_nb, 3, CV_32FC1);
+	m_point_counts   = cv::Mat(board_view_nb, 1, CV_32SC1);
 }
 
 void pix_opencv_calibration :: waitMess (int wait)
@@ -421,14 +399,10 @@ void pix_opencv_calibration :: findChessFlagMess(int adaptThres, int normalize, 
 /////////////////////////////////////////////////////////
 void pix_opencv_calibration :: obj_setupCallback(t_class *classPtr)
 {
-  class_addmethod(classPtr, (t_method)&pix_opencv_calibration::loadIntraMessCallback,
-  		  gensym("loadIntra"), A_SYMBOL, A_NULL);
-  class_addmethod(classPtr, (t_method)&pix_opencv_calibration::loadDistMessCallback,
-  		  gensym("loadDist"), A_SYMBOL, A_NULL);
-  class_addmethod(classPtr, (t_method)&pix_opencv_calibration::writeIntraMessCallback,
-  		  gensym("writeIntra"), A_SYMBOL, A_NULL);
-  class_addmethod(classPtr, (t_method)&pix_opencv_calibration::writeDistMessCallback,
-  		  gensym("writeDist"), A_SYMBOL, A_NULL);
+  class_addmethod(classPtr, (t_method)&pix_opencv_calibration::loadMessCallback,
+  		  gensym("load"), A_SYMBOL, A_NULL);
+  class_addmethod(classPtr, (t_method)&pix_opencv_calibration::writeMessCallback,
+  		  gensym("write"), A_SYMBOL, A_NULL);
   class_addmethod(classPtr, (t_method)&pix_opencv_calibration::floatCalibrationMessCallback,
   		  gensym("calibration"), A_FLOAT, A_NULL);
   class_addmethod(classPtr, (t_method)&pix_opencv_calibration::patternSizeMessCallback,
@@ -443,21 +417,13 @@ void pix_opencv_calibration :: obj_setupCallback(t_class *classPtr)
   		  gensym("reset"), A_NULL);    
   		    		  	  
 }
-void pix_opencv_calibration :: loadIntraMessCallback(void *data, t_symbol* filename)
+void pix_opencv_calibration :: loadMessCallback(void *data, t_symbol* filename)
 {
-	    GetMyClass(data)->loadIntraMess(filename);
+	    GetMyClass(data)->loadMess(filename);
 }
-void pix_opencv_calibration :: loadDistMessCallback(void *data, t_symbol* filename)
+void pix_opencv_calibration :: writeMessCallback(void *data, t_symbol* filename)
 {
-	    GetMyClass(data)->loadDistMess(filename);
-}
-void pix_opencv_calibration :: writeIntraMessCallback(void *data, t_symbol* filename)
-{
-	    GetMyClass(data)->writeIntraMess(filename);
-}
-void pix_opencv_calibration :: writeDistMessCallback(void *data, t_symbol* filename)
-{
-	    GetMyClass(data)->writeDistMess(filename);
+	    GetMyClass(data)->writeMess(filename);
 }
 void pix_opencv_calibration :: floatCalibrationMessCallback(void *data, t_floatarg calib_flag)
 {
