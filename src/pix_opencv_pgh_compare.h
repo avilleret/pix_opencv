@@ -17,8 +17,8 @@ LOG
 #define INCLUDE_PIX_OPENCV_PGH_COMPARE_H_
 
 #ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
-#include "opencv2/legacy/compat.hpp"
+// #include "opencv2/legacy/legacy.hpp"
+// #include "opencv2/legacy/compat.hpp"
 
 #endif
 

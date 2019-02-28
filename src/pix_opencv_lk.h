@@ -17,7 +17,8 @@ LOG
 #define INCLUDE_PIX_OPENCV_LK_H_
 
 #ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
+// #include "opencv2/legacy/legacy.hpp"
+#include "opencv2/imgproc.hpp"
 #include "opencv2/video/tracking.hpp"
 
 #endif

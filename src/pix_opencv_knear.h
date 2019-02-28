@@ -17,7 +17,7 @@ LOG
 #define INCLUDE_PIX_OPENCV_KNEAR_H_
 
 #ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
+// #include "opencv2/legacy/legacy.hpp"
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/ml/ml.hpp"
 #endif

@@ -16,9 +16,9 @@ LOG
 #ifndef INCLUDE_PIX_OPENCV_ATHRESHOLD_H_
 #define INCLUDE_PIX_OPENCV_ATHRESHOLD_H_
 
-#ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
-#endif
+// #ifndef _EiC
+// #include "opencv2/legacy/legacy.hpp"
+// #endif
 
 #include "Base/GemPixObj.h"
 

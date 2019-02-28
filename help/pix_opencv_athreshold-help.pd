@@ -1,18 +1,19 @@
-#N canvas 67 259 976 687 10;
-#X obj -362 59 cnv 15 430 470 empty empty empty 20 12 0 14 -233017
--66577 0;
-#X obj -362 13 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
+#N canvas 306 29 966 686 10;
+#X declare -lib Gem;
+#X obj 9 206 cnv 15 430 470 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X text -353 17 Arguments:;
-#X obj -363 -83 cnv 15 430 90 empty empty empty 20 12 0 14 -233017
--66577 0;
-#X text -332 37 none;
-#X obj 74 -140 cnv 15 510 670 empty empty empty 20 12 0 14 -228992
--66577 0;
-#X obj 250 -136 gemhead;
-#X obj 234 459 pix_texture;
-#X obj 234 478 square 2;
-#X obj 356 452 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
+#X obj 9 160 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
+0;
+#X text 18 164 Arguments:;
+#X obj 8 64 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
+0;
+#X text 39 184 none;
+#X obj 445 7 cnv 15 510 670 empty empty empty 20 12 0 14 -228992 -66577
+0;
+#X obj 621 11 gemhead;
+#X obj 605 606 pix_texture;
+#X obj 605 625 square 2;
+#X obj 727 599 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
 0;
 #N canvas 0 22 454 304 gemwin 0;
 #X obj 67 89 outlet;
@@ -44,43 +45,42 @@
 #X connect 9 0 6 0;
 #X connect 10 0 7 0;
 #X connect 10 2 9 0;
-#X restore 366 496 pd gemwin;
-#X msg 366 478 destroy;
-#X obj 79 463 pix_texture;
-#X obj 79 483 square 2;
-#X obj 234 171 separator;
-#X obj 262 -109 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
+#X restore 737 643 pd gemwin;
+#X msg 737 625 destroy;
+#X obj 450 610 pix_texture;
+#X obj 450 630 square 2;
+#X obj 605 318 separator;
+#X obj 633 38 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
 -1;
-#X obj 319 66 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
+#X obj 690 213 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
 -1 -1;
-#X floatatom 301 31 5 0 10000 1 frame# - -;
-#X obj 262 -80 openpanel;
-#X msg 262 -60 open \$1;
-#X obj 250 49 pix_film;
-#X msg 268 -17 auto \$1;
-#X obj 268 -35 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
+#X floatatom 672 178 5 0 10000 1 frame# - -;
+#X obj 633 67 openpanel;
+#X msg 633 87 open \$1;
+#X obj 621 196 pix_film;
+#X msg 639 130 auto \$1;
+#X obj 639 112 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
 1;
-#X obj 227 217 cnv 15 350 230 empty empty empty 20 12 0 14 -4034 -66577
+#X obj 598 364 cnv 15 350 230 empty empty empty 20 12 0 14 -4034 -66577
 0;
-#X text 364 458 Create window and render;
-#X obj 234 417 pix_opencv_athreshold;
-#X floatatom 393 388 5 0 0 0 - - -;
-#X msg 288 326 mode \$1;
-#X floatatom 390 360 5 0 0 0 - - -;
-#X text 426 388 ( default 3 );
-#X msg 264 240 method \$1;
-#X msg 286 287 dim \$1;
-#X floatatom 337 290 5 0 0 0 - - -;
-#X text -344 367 written by Yves Degoyon ( ydegoyon@gmail.com );
-#X msg 363 -34 colorspace RGBA;
-#X msg 378 -16 colorspace RGB;
-#X msg 388 4 colorspace Grey;
-#X obj 363 -62 loadbang;
-#X obj 234 142 pix_separator;
-#X obj 79 174 separator;
-#X obj 79 145 pix_separator;
-#X obj 79 199 translateXYZ -2 0 0;
-#X obj 234 196 translateXYZ 2 0 0;
+#X text 735 605 Create window and render;
+#X floatatom 764 535 5 0 0 0 - - -;
+#X msg 659 473 mode \$1;
+#X floatatom 761 507 5 0 0 0 - - -;
+#X text 797 535 ( default 3 );
+#X msg 635 387 method \$1;
+#X msg 657 434 dim \$1;
+#X floatatom 708 437 5 0 0 0 - - -;
+#X text 27 514 written by Yves Degoyon ( ydegoyon@gmail.com );
+#X msg 734 113 colorspace RGBA;
+#X msg 749 131 colorspace RGB;
+#X msg 759 151 colorspace Grey;
+#X obj 734 85 loadbang;
+#X obj 605 289 pix_separator;
+#X obj 450 321 separator;
+#X obj 450 292 pix_separator;
+#X obj 450 346 translateXYZ -2 0 0;
+#X obj 605 343 translateXYZ 2 0 0;
 #N canvas 115 397 321 254 vswitch 0;
 #X obj -109 160 outlet;
 #X obj -109 31 inlet;
@@ -96,93 +96,99 @@
 #X connect 4 0 0 0;
 #X connect 5 0 0 0;
 #X connect 6 0 4 1;
-#X restore 79 84 pd vswitch;
-#X obj 147 85 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0 1
-;
-#X obj 79 52 pix_video;
-#X obj 79 -136 gemhead;
-#X msg 118 -23 device 0;
-#X msg 127 8 driver 1;
-#X msg 104 -77 dialog;
-#X msg 109 -47 device /dev/dv1394-0;
-#X text 373 289 value to correct the theshold;
-#X text 390 346 MaxValue (default 255);
-#X text 367 325 inverse mode ( default 0 );
-#X text -356 -79 Thresholding is used to segment an image by setting
-all pixels whose intensity values are above a threshold to a foreground
+#X restore 450 231 pd vswitch;
+#X obj 518 232 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 453 200 pix_video;
+#X obj 450 11 gemhead;
+#X msg 489 124 device 0;
+#X msg 498 155 driver 1;
+#X msg 475 70 dialog;
+#X msg 480 100 device /dev/dv1394-0;
+#X text 744 436 value to correct the theshold;
+#X text 761 493 MaxValue (default 255);
+#X text 738 472 inverse mode ( default 0 );
+#X text 15 68 Thresholding is used to segment an image by setting all
+pixels whose intensity values are above a threshold to a foreground
 value and all the remaining pixels to a background value.;
-#X text -354 66 Whereas the conventional thresholding operator uses
+#X text 17 213 Whereas the conventional thresholding operator uses
 a global threshold for all pixels \, adaptive thresholding changes
 the threshold dynamically over the image. This more sophisticated version
 of thresholding can accommodate changing lighting conditions in the
 image \, e.g. those occurring as a result of a strong illumination
 gradient or shadows.;
-#X text -325 205 - zero otherwise;
-#X text -351 168 Adaptive thresholding sets a pixel dst(x \, y) value
+#X text 46 352 - zero otherwise;
+#X text 20 315 Adaptive thresholding sets a pixel dst(x \, y) value
 to:;
-#X text -325 190 - MaxValue (see MaxValue inlet) if src(x \, y) > T(x
+#X text 46 337 - MaxValue (see MaxValue inlet) if src(x \, y) > T(x
 \, y);
-#X text -347 238 Where T(x \, y) is a threshold calculated individually
+#X text 24 385 Where T(x \, y) is a threshold calculated individually
 for each pixel. For the method ADAPTIVE_THRESH_MEAN_C the threshold
 value is the mean of a blockSize x blockSize (see blocksize inlet)
 neighborhood of (x \, y) \, minus dim parameter value (see dim message).
 ;
-#X text -347 314 For the method ADAPTIVE_THRESH_GAUSSIAN_C the threshold
+#X text 24 461 For the method ADAPTIVE_THRESH_GAUSSIAN_C the threshold
 value is the weighted sum (i.e. cross-correlation with a Gaussian window)
 of a blockSize x blockSize neighborhood of (x \, y) \, minus dim parameter
 value.;
-#X text 391 374 blockSize;
-#X obj 338 241 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X text 762 521 blockSize;
+#X obj 709 388 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X text 256 218 Thresholding method ( default 0 );
-#X obj 347 327 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X text 627 365 Thresholding method ( default 0 );
+#X obj 718 474 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X text 356 235 0 = CV_ADAPTIVE_THRESH_MEAN_C;
-#X text 356 245 1 = CV_ADAPTIVE_THRESH_GAUSSIAN_C;
-#X obj 79 110 pix_rgba;
-#X text -356 -103 pix_opencv_athreshold :;
+#X text 727 382 0 = CV_ADAPTIVE_THRESH_MEAN_C;
+#X text 727 392 1 = CV_ADAPTIVE_THRESH_GAUSSIAN_C;
+#X obj 450 257 pix_rgba;
+#X text 15 44 pix_opencv_athreshold :;
+#X obj 605 564 ../pix_opencv/pix_opencv_athreshold;
+#X obj 774 13 declare -lib Gem;
+#X obj 564 225 print;
+#X msg 539 190 enumerate;
 #X connect 6 0 20 0;
 #X connect 7 0 8 0;
 #X connect 10 0 11 0;
 #X connect 11 0 10 0;
 #X connect 12 0 13 0;
-#X connect 14 0 42 0;
+#X connect 14 0 41 0;
 #X connect 15 0 18 0;
 #X connect 16 0 17 0;
 #X connect 17 0 20 1;
 #X connect 18 0 19 0;
 #X connect 19 0 20 0;
-#X connect 20 0 43 1;
+#X connect 20 0 42 1;
 #X connect 20 2 16 0;
 #X connect 21 0 20 0;
 #X connect 22 0 21 0;
-#X connect 25 0 7 0;
-#X connect 26 0 25 2;
-#X connect 27 0 25 0;
-#X connect 28 0 25 1;
-#X connect 30 0 25 0;
-#X connect 31 0 25 0;
-#X connect 32 0 31 0;
+#X connect 25 0 68 2;
+#X connect 26 0 68 0;
+#X connect 27 0 68 1;
+#X connect 29 0 68 0;
+#X connect 30 0 68 0;
+#X connect 31 0 30 0;
+#X connect 33 0 20 0;
+#X connect 33 0 44 0;
 #X connect 34 0 20 0;
-#X connect 34 0 45 0;
 #X connect 35 0 20 0;
-#X connect 36 0 20 0;
-#X connect 37 0 34 0;
-#X connect 37 0 22 0;
-#X connect 38 0 14 0;
-#X connect 39 0 41 0;
-#X connect 40 0 39 0;
-#X connect 41 0 12 0;
-#X connect 42 0 25 0;
-#X connect 43 0 67 0;
-#X connect 44 0 43 2;
-#X connect 45 0 43 0;
-#X connect 46 0 45 0;
-#X connect 47 0 45 0;
-#X connect 48 0 45 0;
-#X connect 49 0 45 0;
-#X connect 50 0 45 0;
-#X connect 62 0 30 0;
-#X connect 64 0 27 0;
-#X connect 67 0 40 0;
-#X connect 67 0 38 0;
+#X connect 36 0 33 0;
+#X connect 36 0 22 0;
+#X connect 37 0 14 0;
+#X connect 38 0 40 0;
+#X connect 39 0 38 0;
+#X connect 40 0 12 0;
+#X connect 41 0 68 0;
+#X connect 42 0 66 0;
+#X connect 43 0 42 2;
+#X connect 44 0 42 0;
+#X connect 44 1 70 0;
+#X connect 45 0 44 0;
+#X connect 46 0 44 0;
+#X connect 47 0 44 0;
+#X connect 48 0 44 0;
+#X connect 49 0 44 0;
+#X connect 61 0 29 0;
+#X connect 63 0 26 0;
+#X connect 66 0 39 0;
+#X connect 66 0 37 0;
+#X connect 68 0 7 0;
+#X connect 71 0 44 0;

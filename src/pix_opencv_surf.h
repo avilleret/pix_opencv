@@ -17,9 +17,9 @@ LOG
 #define INCLUDE_PIX_OPENCV_SURF_H_
 
 #ifndef _EiC
-#include "opencv2/nonfree/nonfree.hpp"
-#include "opencv2/legacy/legacy.hpp"
-#include "opencv2/legacy/compat.hpp"
+// #include "opencv2/nonfree/nonfree.hpp"
+// #include "opencv2/legacy/legacy.hpp"
+// #include "opencv2/legacy/compat.hpp"
 #endif
 
 #include "Base/GemPixObj.h"
