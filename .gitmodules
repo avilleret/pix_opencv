@@ -1,0 +1,3 @@
+[submodule "Facetracker"]
+	path = Facetracker
+	url = https://github.com/kylemcdonald/FaceTracker.git
