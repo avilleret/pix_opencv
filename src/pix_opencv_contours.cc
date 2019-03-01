@@ -392,8 +392,8 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
                       
         if (!m_contours[i].empty() && m_contours[i].size() > 2) {
           int size = 2+2*m_contours[i].size();
-          // t_atom* acontours = new t_atom[size];
-          t_atom* apt = new t_atom[size];
+          t_atom* acontours = new t_atom[size];
+          t_atom* apt=acontours;
           SETFLOAT(apt, static_cast<t_float>(m_contours[i].size()));
           SETFLOAT(apt+1, 2.0);
           
@@ -407,10 +407,10 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
             apt+=2;
           }
 
-          outlet_anything(m_dataout_middle, gensym("contour"), size, apt);
-          if(apt) {
-            delete[] apt;
-            apt=NULL;  
+          outlet_anything(m_dataout_middle, gensym("contour"), size, acontours);
+          if(acontours) {
+            delete[] acontours;
+            acontours=NULL;  
           }
         }
       }    

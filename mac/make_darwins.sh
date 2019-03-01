@@ -6,7 +6,7 @@
 #	Usage: 
 #		You need to install pix_opencv [optionally Facetracker] first:
 #		$ cd pix_opencv
-#		$ sh make_darwin.sh
+#		$ sh mac/make_darwin.sh
 #
 
 ROOT=$(pwd)
@@ -139,6 +139,31 @@ function make_binaries()
 	cd $ROOT
 }
 
+
+
+
+
+function make_one()
+{
+	local src=`basename "$1" .o`
+	local obj=pix_opencv_la-$src.o
+	local tar=$src.pd_darwin
+	cd $SRCDIR
+	if [[ ! -f "$src.cc" ]]
+	then
+		echo "$src.cc does not exist. Exiting."
+	else
+		echo "Compiling $src ..."
+		$CXX -DPACKAGE_NAME=\"$TARGET\" -DPACKAGE_TARNAME=\"$TARGET\" -DPACKAGE_VERSION=\"0.4\" -DPACKAGE_STRING=\"$TARGET\ 0.4\" -DPACKAGE_BUGREPORT=\"antoine.villeret@gmail.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"$TARGET\" -DVERSION=\"0.4\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -DHAVE_BGSUB=1 -DHAVE_CLAHE=1 -DHAVE_LIBOPENCV_IMGPROC=1 -DHAVE_LIBOPENCV_OBJDETECT=1 -DHAVE_LIBOPENCV_CALIB3D=1 -DHAVE_LIBOPENCV_VIDEO=1 `pkg-config --cflags {pd,Gem}` -g -O2 -MT $obj -MD -MP -MF .deps/$src.Tpo -c -o $obj $src.cc
+		echo "Linking $src ..."
+		echo "$CXX -o $tar $obj $FTOBJ $LIBS"
+		$CXX -o $tar $obj $LIBS
+		echo "Installing $src ..."
+		ln -f $tar $TARGET_DIR
+	fi
+	cd $ROOT
+}
+
 function make_single_binary()
 {
 	local i
@@ -175,8 +200,8 @@ function link_lib()
 		else
 			if [[ ! -f $TARGET_DIR/$i ]]
 			then
-				echo "$i"
-				ln "$i" $TARGET_DIR
+				basename "$i"
+				ln -f "$i" $TARGET_DIR
 			fi
 		fi
 	done
@@ -188,7 +213,6 @@ then
 	exit 1
 elif [[ ! -d $LIBDIR ]]
 then
-	get_dependencies
 	echo "You need to compile $TARGET first, as in:
 	$ cd $TARGET
 	$ sh autogen.sh
@@ -201,13 +225,20 @@ then
 else
 	get_dependencies
 	make_target_dir
-	get_objects
-	make_binaries
-	link_lib
-	#	Copy missing helpfile to target dir
-	cp $ROOT/${TARGET}-help.pd $TARGET_DIR/${TARGET}-help.pd 
-	#	Copy <model> directory to target dir (for Facetracker)
-	rsync -aP $ROOT/model $TARGET_DIR
-	echo "Try running the following:
-	$ pd -lib Gem:pix_opencv -open $TARGET_DIR/${TARGET}-help.pd"
+	if [[ $1 ]]
+	then
+		echo "making $1"
+		make_one "$1"
+		exit
+	else
+		get_objects
+		make_binaries
+		# link_lib
+		#	Copy missing helpfile to target dir
+		cp $ROOT/${TARGET}-help.pd $TARGET_DIR/${TARGET}-help.pd 
+		#	Copy <model> directory to target dir (for Facetracker)
+		rsync -aP $ROOT/model $SRCDIR/*.pd_darwin $TARGET_DIR
+		echo "Try running the following:
+		$ pd -lib Gem:pix_opencv -open $TARGET_DIR/${TARGET}-help.pd"
+	fi
 fi
