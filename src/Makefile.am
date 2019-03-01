@@ -29,7 +29,6 @@ pix_opencv_la_include_HEADERS = Blob.hpp \
 					pix_opencv_laplace.h \
 					pix_opencv_matchshape.h \
 					pix_opencv_morphology.h \
-					pix_opencv_motempl.h \
 					pix_opencv_opticalflow.h \
 					pix_opencv_patreco.h \
 					pix_opencv_surf.h \
@@ -44,7 +43,6 @@ pix_opencv_la_SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_laplace.cc \
 				  pix_opencv_morphology.cc \
 				  pix_opencv_distrans.cc \
-				  pix_opencv_motempl.cc \
 				  pix_opencv_haarcascade.cc \
 				  pix_opencv_contours_boundingrect.cc \
 				  pix_opencv_bgsubstract.cc \
@@ -67,7 +65,7 @@ pix_opencv_la_SOURCES = pix_opencv_edge.cc \
 				  pix_opencv_clahe.cc \
 				  pix_opencv.cc \
 				  pix_opencv_surf.cc \
-				  pix_opencv_facetracker.cc \ 
+				  pix_opencv_facetracker.cc \
 				  pix_opencv_calibration.cc
 
 

@@ -158,13 +158,13 @@ PKG_CHECK_EXISTS([opencv >= 2.4.5],[AC_DEFINE([HAVE_CLAHE],[1], [Define if openc
 
 AC_CHECK_LIB([opencv_core], [error],,[PKG_CHECK_MODULES([OPENCV],[opencv > 2.0],,[AC_MSG_RESULT(["warning ! can't find OpenCV !"])])])
 AC_CHECK_LIB([opencv_imgproc], [cvCvtColor],,)
-AC_CHECK_LIB([opencv_legacy], [_Z38cvCreateModuleBlobTrackAnalysisHistPVSv],,)
 AC_CHECK_LIB([opencv_objdetect], [cvHaarDetectObjects],,)
 AC_CHECK_LIB([opencv_ml], [_ZN10CvKNearestC1EPK5CvMatS2_S2_bi],,)
 AC_CHECK_LIB([opencv_ocl], [_init],,)
 AC_CHECK_LIB([opencv_calib3d], [cvFindChessboardCorners],,)
 AC_CHECK_LIB([opencv_video], [_ZTSN2cv20BackgroundSubtractorE],,)
-AC_CHECK_LIB([opencv_nonfree],[_ZN2cv18initModule_nonfreeEv],,)
+# AC_CHECK_LIB([opencv_legacy], [_Z38cvCreateModuleBlobTrackAnalysisHistPVSv],,)
+# AC_CHECK_LIB([opencv_nonfree],[_ZN2cv18initModule_nonfreeEv],,)
 
 
 AC_OUTPUT(Makefile src/Makefile)
