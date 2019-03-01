@@ -219,7 +219,7 @@ void pix_opencv_contours :: processImage(imageStruct &image)
       }
       outlet_anything(m_dataout_middle, gensym("convexhull"), list_size, data);
       
-      if (data) delete data;
+      if (data) delete[] data;
       data = NULL;
     }
   }
@@ -278,7 +278,7 @@ void pix_opencv_contours :: processImage(imageStruct &image)
         
         outlet_anything(m_dataout_middle, gensym("convexitydefects"), list_size, data);
         
-        if (data) delete data;
+        if (data) delete[] data;
         data = NULL;
       }
     }
@@ -379,7 +379,7 @@ void pix_opencv_contours :: outputBlobs(imageStruct &image){
     if (count) outlet_anything(m_dataout_right, gensym("cvblob"), count*blobMatrixWidth+2, blob_atom);
     else outlet_float(m_dataout_right, 0);
 
-    if (blob_atom) delete blob_atom;
+    if (blob_atom) delete[] blob_atom;
     blob_atom = NULL;
   }
 }
@@ -387,33 +387,38 @@ void pix_opencv_contours :: outputBlobs(imageStruct &image){
 void pix_opencv_contours :: outputContours(imageStruct &image){
   if ( m_enable_contours ){
     if ( !m_taboutput ){
-      for( size_t i = 0 ; i < m_contours.size() ; i++ )
-      {
-                      
-        if (!m_contours[i].empty() && m_contours[i].size() > 2) {
-          int size = 2+2*m_contours[i].size();
-          t_atom* acontours = new t_atom[size];
-          t_atom* apt=acontours;
-          SETFLOAT(apt, static_cast<t_float>(m_contours[i].size()));
-          SETFLOAT(apt+1, 2.0);
-          
-          apt+=2;
 
-          size_t j;
-          for ( j = 0 ; j < m_contours[i].size() ; j++){
-            cv::Point pt = m_contours[i][j];
-            SETFLOAT(apt,(float) pt.x/image.xsize);
-            SETFLOAT(apt+1,(float) pt.y/image.ysize);
+      if (!m_contours.size()) {
+        /*  There are no contours   */
+      } else {
+        for( size_t i = 0 ; i < m_contours.size() ; i++ )
+        {
+          if (!m_contours[i].empty() && m_contours[i].size() > 2) {
+            int size = 2+2*m_contours[i].size();
+            t_atom* acontours = new t_atom[size];
+            t_atom* apt = acontours;
+            SETFLOAT(apt, static_cast<t_float>(m_contours[i].size()));
+            SETFLOAT(apt+1, 2.0);
+
             apt+=2;
-          }
 
-          outlet_anything(m_dataout_middle, gensym("contour"), size, acontours);
-          if(acontours) {
-            delete[] acontours;
-            acontours=NULL;  
+            size_t j;
+            for ( j = 0 ; j < m_contours[i].size() ; j++){
+              cv::Point pt = m_contours[i][j];
+              SETFLOAT(apt,(float) pt.x/image.xsize);
+              SETFLOAT(apt+1,(float) pt.y/image.ysize);
+              apt+=2;
+            }
+
+            outlet_anything(m_dataout_middle, gensym("contour"), size, acontours);
+            if(acontours) {
+              delete[] acontours;
+              acontours=NULL;
+            }
           }
         }
-      }    
+      }
+
     } else {
   
       //~ put contours in 3 tables.
