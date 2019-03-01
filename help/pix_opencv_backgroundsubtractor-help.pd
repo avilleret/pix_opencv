@@ -1,4 +1,4 @@
-#N canvas 918 248 963 626 10;
+#N canvas 317 152 963 626 10;
 #X obj 20 43 cnv 15 430 380 empty empty empty 20 12 0 14 -228856 -66577
 0;
 #X obj 20 -3 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
@@ -53,10 +53,10 @@
 #X obj 104 367 pix_opencv_bgstats;
 #X obj 104 387 pix_threshold;
 #X msg 511 18 algo \$1;
-#N canvas 320 153 576 492 parameters 1;
+#N canvas 320 153 576 492 parameters 0;
 #X obj 21 21 cnv 15 400 80 empty empty readProperties 20 12 0 14 -233017
 -66577 0;
-#X obj 29 47 hradio 15 1 0 4 \$0-propreadId \$0-propreadId empty 0
+#X obj 29 47 hradio 15 1 0 1 \$0-propreadId \$0-propreadId empty 0
 -8 0 10 -262144 -1 -1 0;
 #X obj 30 70 cnv 15 260 20 empty \$0-propreadName <none> 10 9 0 14
 -203904 -66577 0;
@@ -270,7 +270,7 @@
 -66577 0;
 #X obj 21 111 cnv 15 400 80 empty empty writeProperties 20 12 0 14
 -233017 -66577 0;
-#X obj 29 137 hradio 15 1 0 4 \$0-propwriteId \$0-propwriteId empty
+#X obj 29 137 hradio 15 1 0 1 \$0-propwriteId \$0-propwriteId empty
 0 -8 0 10 -262144 -1 -1 0;
 #X obj 30 160 cnv 15 260 20 empty \$0-propwriteName <none> 10 9 0 14
 -203904 -66577 0;
@@ -310,7 +310,7 @@ outlet of [pix_opencv_backgroundsubtractor].;
 -1;
 #X obj 359 34 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
 -1 -1;
-#X floatatom 353 18 5 0 10000 1 frame# - -, f 5;
+#X floatatom 353 18 5 0 10000 1 frame# - -;
 #X obj 314 -23 openpanel;
 #X obj 302 36 pix_film;
 #N canvas 1 250 299 199 vswitch 0;
@@ -408,7 +408,6 @@ outlet of [pix_opencv_backgroundsubtractor].;
 #X text 561 18 choose algo by id;
 #X msg 518 43 algo BackgroundSubtractor.MOG;
 #X text 700 43 choose algo by name;
-#X obj 488 136 pix_opencv_backgroundsubtractor;
 #X msg 521 85 cpuMode \$1;
 #X obj 521 65 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
@@ -435,21 +434,22 @@ in the Pd's console (not filled for all parameters);
 value;
 #X text 32 213 input : message : setParam <symbol> <float> : set paramter
 value;
+#X obj 488 136 pix_opencv_backgroundsubtractor;
 #X connect 5 0 11 0;
 #X connect 7 0 8 0;
 #X connect 8 0 7 0;
-#X connect 17 0 36 0;
-#X connect 19 0 36 0;
+#X connect 17 0 51 0;
+#X connect 19 0 51 0;
 #X connect 21 0 23 0;
 #X connect 22 0 21 0;
-#X connect 23 0 36 0;
+#X connect 23 0 51 0;
 #X connect 24 0 23 1;
-#X connect 29 0 36 0;
+#X connect 29 0 51 0;
 #X connect 30 0 20 0;
 #X connect 30 1 31 0;
 #X connect 32 0 17 0;
-#X connect 34 0 36 0;
-#X connect 36 0 5 0;
-#X connect 36 1 30 0;
+#X connect 34 0 51 0;
+#X connect 36 0 51 0;
 #X connect 37 0 36 0;
-#X connect 38 0 37 0;
+#X connect 51 0 5 0;
+#X connect 51 1 30 0;
