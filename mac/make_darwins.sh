@@ -159,7 +159,7 @@ function make_one()
 		echo "$CXX -o $tar $obj $FTOBJ $LIBS"
 		$CXX -o $tar $obj $LIBS
 		echo "Installing $src ..."
-		ln -f $tar $TARGET_DIR
+		rsync -aP $tar $TARGET_DIR
 	fi
 	cd $ROOT
 }
@@ -235,9 +235,9 @@ else
 		make_binaries
 		# link_lib
 		#	Copy missing helpfile to target dir
-		cp $ROOT/${TARGET}-help.pd $TARGET_DIR/${TARGET}-help.pd 
 		#	Copy <model> directory to target dir (for Facetracker)
-		rsync -aP $ROOT/model $SRCDIR/*.pd_darwin $TARGET_DIR
+		#	Copy all darwins to target dir
+		rsync -aP $ROOT/${TARGET}-help.pd $ROOT/model $SRCDIR/*.pd_darwin $TARGET_DIR
 		echo "Try running the following:
 		$ pd -lib Gem:pix_opencv -open $TARGET_DIR/${TARGET}-help.pd"
 	fi
