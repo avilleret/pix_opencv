@@ -94,3 +94,7 @@ config.status
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Doxygen directory #
+######################
+doc/

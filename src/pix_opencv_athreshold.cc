@@ -15,8 +15,6 @@
 //
 /////////////////////////////////////////////////////////
 
-#if HAVE_LIBOPENCV_LEGACY
-
 #include "pix_opencv_athreshold.h"
 
 CPPEXTERN_NEW(pix_opencv_athreshold)
@@ -44,7 +42,7 @@ pix_opencv_athreshold :: pix_opencv_athreshold()
   comp_ysize=240;
 
   rgba = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 4);
-  rgb = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
+  rgb  = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
   gray = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
 }
 
@@ -60,6 +58,47 @@ pix_opencv_athreshold :: ~pix_opencv_athreshold()
    cvReleaseImage(&rgb);
 }
 
+void pix_opencv_athreshold :: destroyImages(imageStruct &image)
+{
+  int x = image.xsize;
+  int y = image.ysize;
+
+  if ((this->comp_xsize!=x) || (this->comp_ysize!=y) || (!rgb)) {
+
+  this->comp_xsize = x;
+  this->comp_ysize = y;
+
+  // Destroy cv_images to clean memory
+  if ( rgb ) {
+    cvReleaseImage(&rgba);
+    cvReleaseImage(&gray);
+    cvReleaseImage(&rgb);
+  }
+  // create the orig image with new size
+  rgba = cvCreateImage(cvSize(x,y), IPL_DEPTH_8U, 4);
+  rgb  = cvCreateImage(cvSize(x,y), IPL_DEPTH_8U, 3);
+  gray = cvCreateImage(cvSize(rgb->width,rgb->height), IPL_DEPTH_8U, 1);
+  }
+}
+
+void pix_opencv_athreshold :: processThreshold()
+{
+  // Applies fixed-level thresholding to single-channel array.
+  switch(x_threshold_mode) {
+      case 1:
+         cvAdaptiveThreshold(gray, gray, 
+          (float)max_value, x_threshold_method, CV_THRESH_BINARY_INV, 
+          x_blocksize, x_dim);
+         break;
+      case 0:
+      default:
+         cvAdaptiveThreshold(gray, gray, 
+          (float)max_value, x_threshold_method, CV_THRESH_BINARY, 
+          x_blocksize, x_dim);
+         break;
+  }
+}
+
 /////////////////////////////////////////////////////////
 // processImage
 //
@@ -68,123 +107,49 @@ void pix_opencv_athreshold :: processRGBAImage(imageStruct &image)
 {
   unsigned char *pixels = image.data;
 
-  if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!rgba)) {
+  destroyImages(image);
 
-	this->comp_xsize = image.xsize;
-	this->comp_ysize = image.ysize;
+  memcpy( rgba->imageData, image.data, image.xsize*image.ysize*4 );
+  cvCvtColor(rgba, gray, CV_BGRA2GRAY);
 
-    	//Destroy cv_images to clean memory
-        if ( rgba )
-        {
-	  cvReleaseImage(&rgba);
-    	  cvReleaseImage(&gray);
-    	  cvReleaseImage(&rgb);
-        }
+  processThreshold();
 
-	//create the orig image with new size
-        rgba = cvCreateImage(cvSize(image.xsize,image.ysize), IPL_DEPTH_8U, 4);
-        rgb = cvCreateImage(cvSize(image.xsize,image.ysize), IPL_DEPTH_8U, 3);
-    	gray = cvCreateImage(cvSize(image.xsize,image.ysize), IPL_DEPTH_8U, 1);
-    }
-    memcpy( rgba->imageData, image.data, image.xsize*image.ysize*4 );
-    cvCvtColor(rgba, gray, CV_BGRA2GRAY);
-  
-    // Applies fixed-level thresholding to single-channel array.
-    switch(x_threshold_mode) {
-        case 0:
-           cvAdaptiveThreshold(gray, gray, (float)max_value, x_threshold_method, CV_THRESH_BINARY, x_blocksize, x_dim);
-           break;
-        case 1:
-           cvAdaptiveThreshold(gray, gray, (float)max_value, x_threshold_method, CV_THRESH_BINARY_INV, x_blocksize, x_dim);
-           break;
-    }
-
-    cvCvtColor(gray, rgba, CV_GRAY2BGRA);
-    //copy back the processed frame to image
-    memcpy( image.data, rgba->imageData, image.xsize*image.ysize*4 );
+  cvCvtColor(gray, rgba, CV_GRAY2BGRA);
+  //copy back the processed frame to image
+  memcpy( image.data, rgba->imageData, image.xsize*image.ysize*4 );
 }
 
 void pix_opencv_athreshold :: processRGBImage(imageStruct &image)
 {
   unsigned char *pixels = image.data;
 
-  if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!rgb)) {
+  destroyImages(image);
+  
+  memcpy( rgb->imageData, image.data, image.xsize*image.ysize*3 );
+  cvCvtColor(rgb, gray, CV_RGB2GRAY); 
 
-	this->comp_xsize = image.xsize;
-	this->comp_ysize = image.ysize;
+  processThreshold();
 
-    	//Destroy cv_images to clean memory
-        if ( rgb )
-        {
-	  cvReleaseImage(&rgba);
-    	  cvReleaseImage(&gray);
-    	  cvReleaseImage(&rgb);
-        }
-
-	//create the orig image with new size
-        rgba = cvCreateImage(cvSize(image.xsize,image.ysize), IPL_DEPTH_8U, 4);
-        rgb = cvCreateImage(cvSize(image.xsize,image.ysize), IPL_DEPTH_8U, 3);
-    	gray = cvCreateImage(cvSize(rgb->width,rgb->height), IPL_DEPTH_8U, 1);
-    
-    }
-    memcpy( rgb->imageData, image.data, image.xsize*image.ysize*3 );
-    cvCvtColor(rgb, gray, CV_RGB2GRAY);
-    
-    // Applies fixed-level thresholding to single-channel array.
-    switch(x_threshold_mode) {
-        case 0:
-           cvAdaptiveThreshold(gray, gray, (float)max_value, x_threshold_method, CV_THRESH_BINARY, x_blocksize, x_dim);
-           break;
-        case 1:
-           cvAdaptiveThreshold(gray, gray, (float)max_value, x_threshold_method, CV_THRESH_BINARY_INV, x_blocksize, x_dim);
-           break;
-    }
-
-    cvCvtColor(gray, rgb, CV_GRAY2BGR);
-    memcpy( image.data, rgb->imageData, image.xsize*image.ysize*3 );
+  cvCvtColor(gray, rgb, CV_GRAY2BGR);
+  memcpy( image.data, rgb->imageData, image.xsize*image.ysize*3 );
 }
 
 void pix_opencv_athreshold :: processYUVImage(imageStruct &image)
 {
   post( "pix_opencv_athreshold : yuv format not supported" );
 }
-    	
+      
 void pix_opencv_athreshold :: processGrayImage(imageStruct &image)
 { 
   unsigned char *pixels = image.data;
 
-  if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!rgb)) {
+  destroyImages(image);
 
-	this->comp_xsize = image.xsize;
-	this->comp_ysize = image.ysize;
+  memcpy( gray->imageData, image.data, image.xsize*image.ysize );
+  
+  processThreshold();
 
-    	//Destroy cv_images to clean memory
-        if ( rgb )
-        {
-	  cvReleaseImage(&rgba);
-    	  cvReleaseImage(&gray);
-    	  cvReleaseImage(&rgb);
-        }
-
-	//create the orig image with new size
-        rgba = cvCreateImage(cvSize(image.xsize,image.ysize), IPL_DEPTH_8U, 4);
-        rgb = cvCreateImage(cvSize(image.xsize,image.ysize), IPL_DEPTH_8U, 3);
-    	gray = cvCreateImage(cvSize(rgb->width,rgb->height), IPL_DEPTH_8U, 1);
-    
-    }
-    memcpy( gray->imageData, image.data, image.xsize*image.ysize );
-    
-    // Applies fixed-level thresholding to single-channel array.
-    switch(x_threshold_mode) {
-        case 0:
-           cvAdaptiveThreshold(gray, gray, (float)max_value, x_threshold_method, CV_THRESH_BINARY, x_blocksize, x_dim);
-           break;
-        case 1:
-           cvAdaptiveThreshold(gray, gray, (float)max_value, x_threshold_method, CV_THRESH_BINARY_INV, x_blocksize, x_dim);
-           break;
-    }
-
-    memcpy( image.data, gray->imageData, image.xsize*image.ysize );
+  memcpy( image.data, gray->imageData, image.xsize*image.ysize );
 }
 
 void pix_opencv_athreshold :: floatMaxValueMess (float maxvalue)
@@ -199,8 +164,15 @@ void pix_opencv_athreshold :: floatModeMess (float mode)
 
 void pix_opencv_athreshold :: floatMethodMess (float method)
 {
-  if ( (int)method==CV_ADAPTIVE_THRESH_MEAN_C ) x_threshold_method = CV_ADAPTIVE_THRESH_MEAN_C;
-  if ( (int)method==CV_ADAPTIVE_THRESH_GAUSSIAN_C ) x_threshold_method = CV_ADAPTIVE_THRESH_GAUSSIAN_C;
+  switch( (int)method ) {
+    case CV_ADAPTIVE_THRESH_GAUSSIAN_C:
+      x_threshold_method = CV_ADAPTIVE_THRESH_GAUSSIAN_C;
+      break;  
+    case CV_ADAPTIVE_THRESH_MEAN_C:
+    default:
+      x_threshold_method = CV_ADAPTIVE_THRESH_MEAN_C;
+      break;
+  }
 }
 
 void pix_opencv_athreshold :: floatBlockSizeMess (float blocksize)
@@ -213,7 +185,7 @@ void pix_opencv_athreshold :: floatBlockSizeMess (float blocksize)
 
 void pix_opencv_athreshold :: floatDimMess (float dim)
 {
-  if ( (int)dim>0 ) x_dim = (int)dim;
+  x_dim = (int) dim;
 }
 
 /////////////////////////////////////////////////////////
@@ -223,15 +195,15 @@ void pix_opencv_athreshold :: floatDimMess (float dim)
 void pix_opencv_athreshold :: obj_setupCallback(t_class *classPtr)
 {
   class_addmethod(classPtr, (t_method)&pix_opencv_athreshold::floatModeMessCallback,
-  		  gensym("mode"), A_FLOAT, A_NULL);
+        gensym("mode"), A_FLOAT, A_NULL);
   class_addmethod(classPtr, (t_method)&pix_opencv_athreshold::floatMethodMessCallback,
-  		  gensym("method"), A_FLOAT, A_NULL);
+        gensym("method"), A_FLOAT, A_NULL);
   class_addmethod(classPtr, (t_method)&pix_opencv_athreshold::floatMaxValueMessCallback,
-  		  gensym("max_value"), A_FLOAT, A_NULL);
+        gensym("max_value"), A_FLOAT, A_NULL);
   class_addmethod(classPtr, (t_method)&pix_opencv_athreshold::floatBlockSizeMessCallback,
-  		  gensym("blocksize"), A_FLOAT, A_NULL);
+        gensym("blocksize"), A_FLOAT, A_NULL);
   class_addmethod(classPtr, (t_method)&pix_opencv_athreshold::floatDimMessCallback,
-  		  gensym("dim"), A_FLOAT, A_NULL);
+        gensym("dim"), A_FLOAT, A_NULL);
 }
 
 void pix_opencv_athreshold :: floatModeMessCallback(void *data, t_floatarg mode)
@@ -258,4 +230,3 @@ void pix_opencv_athreshold :: floatDimMessCallback(void *data, t_floatarg dim)
 {
   GetMyClass(data)->floatDimMess((float)dim);
 }
-#endif /*HAVE_LIBOPENCV_LEGACY*/
