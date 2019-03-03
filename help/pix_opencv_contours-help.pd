@@ -75,14 +75,14 @@ point (2 floats)> <depth point (2 floats)> depth;
 #X obj 541 171 rectangle 5.333 4;
 #X obj 514 116 t a a;
 #X msg 617 214 area \$1;
-#N canvas 571 659 1126 291 options 0;
-#X obj 57 147 tgl 15 1 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#N canvas 95 545 1126 291 options 0;
+#X obj 57 147 tgl 15 1 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X msg 57 167 contours \$1;
 #X obj 57 251 outlet;
-#X obj 147 147 tgl 15 1 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 147 147 tgl 15 1 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X obj 247 147 tgl 15 1 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 247 147 tgl 15 1 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X msg 147 167 convexhulls \$1;
 #X msg 247 167 convexitydefects \$1;
@@ -104,7 +104,6 @@ point (2 floats)> <depth point (2 floats)> depth;
 of drawing contours;
 #N canvas 682 180 596 318 draw_contour_gemvertexbuffer 0;
 #X obj 175 193 loadbang;
-#X obj 135 85 translateXYZ -0.5 -0.5 0;
 #X obj 135 62 scaleXYZ 10.6666 -8 1;
 #X obj 135 107 t a b;
 #X obj 135 11 gemhead 1000;
@@ -118,20 +117,25 @@ of drawing contours;
 #X obj 135 -12 r draw_contours;
 #X msg 175 214 draw lineloop;
 #X obj 135 35 alpha;
-#X connect 0 0 12 0;
-#X connect 1 0 3 0;
-#X connect 2 0 1 0;
-#X connect 3 0 6 0;
-#X connect 3 1 5 0;
-#X connect 4 0 13 0;
-#X connect 5 0 6 0;
-#X connect 7 0 5 0;
-#X connect 8 0 9 0;
-#X connect 8 0 10 0;
-#X connect 9 0 6 0;
-#X connect 11 0 4 0;
-#X connect 12 0 6 0;
+#X obj 135 85 translateXYZ -0.5 -0.5 -4;
+#X floatatom 299 52 5 0 0 0 - - -;
+#X floatatom 200 39 5 0 0 0 - - -;
+#X connect 0 0 11 0;
+#X connect 1 0 13 0;
+#X connect 2 0 5 0;
+#X connect 2 1 4 0;
+#X connect 3 0 12 0;
+#X connect 4 0 5 0;
+#X connect 6 0 4 0;
+#X connect 7 0 8 0;
+#X connect 7 0 9 0;
+#X connect 8 0 5 0;
+#X connect 10 0 3 0;
+#X connect 11 0 5 0;
+#X connect 12 0 1 0;
 #X connect 13 0 2 0;
+#X connect 14 0 13 3;
+#X connect 15 0 1 1;
 #X restore 797 147 pd draw_contour_gemvertexbuffer;
 #X obj 797 126 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
@@ -173,7 +177,7 @@ you set tables);
 #X text 534 385 blue = convexhull;
 #X text 534 397 pink = convexhull edge with defects;
 #X text 540 409 red = farthest point from convexhull;
-#N canvas 299 0 981 778 draw_contours 0;
+#N canvas 605 0 981 778 draw_contours 0;
 #X obj 43 253 list split 2;
 #X obj 111 820 GEMglVertex2d;
 #X obj 13 661 list append;
@@ -224,6 +228,10 @@ you set tables);
 #X obj 77 369 t b a;
 #X obj 23 567 GEMglEnd;
 #X obj 102 552 GEMglBegin GL_LINE_LOOP;
+#X obj 75 401 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 115 447 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
 #X connect 0 1 47 0;
 #X connect 2 0 4 0;
 #X connect 3 0 2 0;
@@ -283,9 +291,11 @@ you set tables);
 #X connect 44 0 29 0;
 #X connect 45 0 48 0;
 #X connect 45 1 46 0;
+#X connect 45 1 51 0;
 #X connect 45 2 7 0;
 #X connect 46 0 4 0;
 #X connect 47 0 14 0;
+#X connect 47 0 50 0;
 #X connect 47 1 46 1;
 #X restore 542 323 pd draw_contours;
 #N canvas 82 48 1198 730 info 0;
@@ -323,8 +333,7 @@ you set tables);
 #X text -61 137 numbers of values for each contour;
 #X obj 313 404 list prepend set;
 #X obj 313 424 list trim;
-#X msg 54 513 0.681584 0.808552 0.679688 0.789583 0.704353 0.785198
-0.70625 0.804167;
+#X msg 54 513 0 0 0 0 0 0 0 0;
 #X text 59 495 rotrect corners coordinates;
 #X obj 177 194 list split 1;
 #X obj -140 220 cnv 15 350 20 empty empty empty 20 12 0 14 -4034 -66577
@@ -591,9 +600,9 @@ size (2 floats)> <angle in degrees> <number of points> <contour length>
 #X text 20 558 count <number of contour> <total number of point>;
 #X obj 487 141 pix_buf;
 #X obj 542 196 nbx 5 14 0 1e+37 0 1 empty empty empty 0 -8 0 10 -262144
--1 -1 2 256;
+-1 -1 8 256;
 #X obj 617 196 nbx 5 14 0 1e+37 0 1 empty empty empty 0 -8 0 10 -262144
--1 -1 10 256;
+-1 -1 36 256;
 #X obj 487 171 pix_gray;
 #X text 30 339 Inlet 1: message: area [float];
 #X obj 313 3 declare -lib Gem;
