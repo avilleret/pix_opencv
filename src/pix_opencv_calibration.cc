@@ -52,7 +52,7 @@ pix_opencv_calibration :: pix_opencv_calibration()
 	m_object_points			=	cv::Mat(patternSize[0]*patternSize[1]*board_view_nb, 3, CV_32FC1);
 	m_point_counts			=	cv::Mat(board_view_nb, 1, CV_32SC1);
 	m_intrinsic_matrix 		= 	cv::Mat(3, 3, CV_32FC1);
-	m_distortion_coeffs 		= 	cv::Mat(5, 1, CV_32FC1); 
+	m_distortion_coeffs 	= 	cv::Mat(5, 1, CV_32FC1); 
 	
 	pix_opencv_calibration :: resetCorrectionMatrix();
 	//~ post("pix_opencv_calibration build on %s at %s", __DATE__, __TIME__);
@@ -391,7 +391,7 @@ void pix_opencv_calibration :: findChessFlagMess(int adaptThres, int normalize, 
 	adaptThres=adaptThres<=0?0:adaptThres>=1?1:adaptThres;
 	normalize=normalize<=0?0:normalize>=1?1:normalize;
 	filter=filter<=0?0:filter>=1?1:filter;
-	findChessFlag = CV_CALIB_CB_ADAPTIVE_THRESH * adaptThres + CV_CALIB_CB_NORMALIZE_IMAGE * normalize + CV_CALIB_CB_FILTER_QUADS * filter;
+	findChessFlag = CALIB_CB_ADAPTIVE_THRESH * adaptThres + CALIB_CB_NORMALIZE_IMAGE * normalize + CALIB_CB_FILTER_QUADS * filter;
 }
 /////////////////////////////////////////////////////////
 // static member function
