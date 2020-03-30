@@ -13,81 +13,80 @@ pix_opencv_la_include_HEADERS = Blob.hpp \
 					pix_opencv_bgsubstract.h \
 					pix_opencv_blobtrack.h \
 					pix_opencv_calibration.h \
-					pix_opencv_camshift.h \
+					# pix_opencv_camshift.h \
 					pix_opencv_clahe.h \
 					pix_opencv_colorfilt.h \
-					pix_opencv_contours_boundingrect.h \
-					pix_opencv_contours_convexity.h \
-					pix_opencv_contours.h \
+					# pix_opencv_contours_boundingrect.h \
+					# pix_opencv_contours_convexity.h \
+					# pix_opencv_contours.h \
 					pix_opencv_dft.h \
 					pix_opencv_distrans.h \
 					pix_opencv_edge.h \
 					pix_opencv_facetracker.h \
-					pix_opencv_findchessboardcorners.h \
-					pix_opencv_floodfill.h \
-					pix_opencv_haarcascade.h \
-					pix_opencv_hist_compare.h \
-					pix_opencv_hough_circles.h \
-					pix_opencv_hough_lines.h \
-					pix_opencv_hu_compare.h \
+					# pix_opencv_findchessboardcorners.h \
+					# pix_opencv_floodfill.h \
+					# pix_opencv_haarcascade.h \
+					# pix_opencv_hist_compare.h \
+					# pix_opencv_hough_circles.h \
+					# pix_opencv_hough_lines.h \
+					# pix_opencv_hu_compare.h \
 					pix_opencv_hu_moments.h \
-					pix_opencv_knear.h \
+					# pix_opencv_knear.h \
 					pix_opencv_laplace.h \
-					pix_opencv_lk.h \
-					pix_opencv_matchshape.h \
+					# pix_opencv_lk.h \
+					# pix_opencv_matchshape.h \
 					pix_opencv_morphology.h \
-					pix_opencv_motempl.h \
+					# pix_opencv_motempl.h \
 					pix_opencv_opticalflow.h \
 					pix_opencv_patreco.h \
-					pix_opencv_pgh_compare.h \
+					# pix_opencv_pgh_compare.h \
 					pix_opencv_surf.h \
 					pix_opencv_template.h \
 					pix_opencv_threshold.h \
-					pix_opencv_trackKnn.h \
-					pix_opencv_warpperspective.h
+					# pix_opencv_trackKnn.h \
+					# pix_opencv_warpperspective.h
 
 OVERVIEW=../pix_opencv-help.pd
 
 pix_opencv_la_SOURCES = pix_opencv_edge.cc \
+				  pix_opencv_athreshold.cc \
+				  pix_opencv_backgroundsubtractor.cc \
+				  pix_opencv_bgsubstract.cc \
+				  pix_opencv_blobtrack.cc \
+				  pix_opencv_calibration.cc \
+				  # pix_opencv_camshift.cc \
 				  pix_opencv_laplace.cc \
 				  pix_opencv_morphology.cc \
 				  pix_opencv_distrans.cc \
-				  pix_opencv_motempl.cc \
-				  pix_opencv_haarcascade.cc \
-				  pix_opencv_contours_boundingrect.cc \
-				  pix_opencv_bgsubstract.cc \
-				  pix_opencv_contours_convexity.cc \
+				  # pix_opencv_motempl.cc \
+				  # pix_opencv_haarcascade.cc \
+				  # pix_opencv_contours_boundingrect.cc \
+				  # pix_opencv_contours_convexity.cc \
 				  pix_opencv_dft.cc \
-				  pix_opencv_lk.cc \
-				  pix_opencv_hist_compare.cc \
-				  pix_opencv_knear.cc \
+				  # pix_opencv_lk.cc \
+				  # pix_opencv_hist_compare.cc \
+				  # pix_opencv_knear.cc \
 				  pix_opencv_threshold.cc \
-				  pix_opencv_floodfill.cc \
-				  pix_opencv_athreshold.cc \
-				  pix_opencv_camshift.cc \
-				  pix_opencv_hu_compare.cc \
-				  pix_opencv_pgh_compare.cc \
-				  pix_opencv_hough_circles.cc \
-				  pix_opencv_hough_lines.cc \
+				  # pix_opencv_floodfill.cc \
+				  # pix_opencv_hu_compare.cc \
+				  # pix_opencv_pgh_compare.cc \
+				  # pix_opencv_hough_circles.cc \
+				  # pix_opencv_hough_lines.cc \
 				  pix_opencv_hu_moments.cc \
 				  pix_opencv_colorfilt.cc \
-				  pix_opencv_of_bm.cc \
-				  pix_opencv_of_hs.cc \
-				  pix_opencv_of_lk.cc \
-				  pix_opencv_calibration.cc \
-				  pix_opencv_warpperspective.cc \
-				  pix_opencv_findchessboardcorners.cc \
-				  pix_opencv_blobtrack.cc \
-				  pix_opencv_contours.cc \
-				  pix_opencv_matchshape.cc \
+				  # pix_opencv_of_bm.cc \
+				  # pix_opencv_of_hs.cc \
+				  # pix_opencv_of_lk.cc \
+				  # pix_opencv_warpperspective.cc \
+				  # pix_opencv_findchessboardcorners.cc \
+				  # pix_opencv_contours.cc \
+				  # pix_opencv_matchshape.cc \
 				  pix_opencv_opticalflow.cc \
-				  pix_opencv_trackKnn.cc \
-				  pix_opencv_backgroundsubtractor.cc \
+				  # pix_opencv_trackKnn.cc \
 				  pix_opencv_clahe.cc \
 				  pix_opencv.cc \
 				  pix_opencv_surf.cc \
-				  pix_opencv_facetracker.cc \ 
-				  pix_opencv_calibration.cc
+				  # pix_opencv_facetracker.cc
 
 
 #~ Override pix_opencv.la target to add ".WAIT" but it doesn't seems to work...
