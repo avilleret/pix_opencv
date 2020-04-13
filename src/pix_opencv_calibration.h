@@ -17,8 +17,10 @@ LOG
 #define INCLUDE_pix_opencv_calibration_H_
 
 #ifndef _EiC
-#include "opencv2/core/core_c.h"
-#include "opencv2/imgproc/imgproc_c.h"
+// #include "opencv2/core/core_c.h"
+#include "opencv2/core.hpp"
+// #include "opencv2/imgproc/imgproc_c.h"
+#include "opencv2/imgproc.hpp"
 #endif
 
 #include "Base/GemPixObj.h"

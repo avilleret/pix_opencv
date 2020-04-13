@@ -167,7 +167,7 @@ void pix_opencv_calibration :: findCorners ( cv::Mat& image )
 	int					board_point_nb = this->patternSize[0]*this->patternSize[1];
 	std::vector<cv::Point2f> corners;
 	int					step;
-	CvSize				patternSize, image_size;
+	Size				patternSize, image_size;
 
 	patternSize = cv::Size( this->patternSize[0], this->patternSize[1] );
 	image_size = image.size();
@@ -180,7 +180,7 @@ void pix_opencv_calibration :: findCorners ( cv::Mat& image )
 
 	if (image.channels() == 4) {
 		find_rgb = image.clone();
-		cv::cvtColor( image , find_gray , CV_RGBA2GRAY); // convert color to gray
+		cv::cvtColor( image , find_gray , COLOR_RGBA2GRAY); // convert color to gray
 	} else {
 		find_gray = image.clone();
 	}
@@ -188,16 +188,16 @@ void pix_opencv_calibration :: findCorners ( cv::Mat& image )
 	// get subpixel accuracy on those corners (grayscale image only)
 	cv::cornerSubPix(find_gray, 
 					   corners, 
-					   cvSize(11,11), 
-					   cvSize(-1,-1), 
-					   cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1));
+					   Size(11,11), 
+					   Size(-1,-1), 
+					   TermCriteria(TermCriteria::EPS+TermCriteria::MAX_ITER, 30, 0.1));
 
 
 	// draw chessboard corner (color image only)
 	if (image.channels() == 4) cv::drawChessboardCorners(find_rgb, patternSize, cv::Mat(corners), found);
 	else 
 	{
-		cvtColor( find_gray , find_rgb , CV_GRAY2RGBA); // convert gray to color
+		cvtColor( find_gray , find_rgb , COLOR_RGBA2GRAY); // convert gray to color
 		drawChessboardCorners(find_rgb, patternSize, cv::Mat(corners), found);
 	}
 	
@@ -228,7 +228,7 @@ void pix_opencv_calibration :: findCorners ( cv::Mat& image )
 
 	// convert color to gray
 	if (image.channels() == 1) {
-		cvtColor( find_rgb , image, CV_RGBA2GRAY); // convert color to gray
+		cvtColor( find_rgb , image, COLOR_RGBA2GRAY); // convert color to gray
 	} else {
 		image = find_rgb.clone();
 	}	
