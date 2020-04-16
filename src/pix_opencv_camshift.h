@@ -17,9 +17,9 @@ LOG
 #define INCLUDE_PIX_OPENCV_CAMSHIFT_H_
 
 #ifndef _EiC
-#include "opencv2/core/core_c.h"
-#include "opencv2/imgproc/imgproc_c.h"
-#include "opencv2/video/tracking_c.h"
+#include "opencv2/core.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/tracking.hpp"
 #endif
 
 #include "Base/GemPixObj.h"
