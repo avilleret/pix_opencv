@@ -1,23 +1,3 @@
-////////////////////////////////////////////////////////
-//
-// GEM - Graphics Environment for Multimedia
-//
-// zmoelnig@iem.kug.ac.at
-//
-// Implementation file
-//
-//    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
-//    Copyright (c) 2002 James Tittle & Chris Clepper
-//    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-//    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-//
-/////////////////////////////////////////////////////////
-// based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org ) (pix_opencv)
-// Template for pix_opencv class
-
-#if HAVE_BGSUB
 #include "pix_opencv_backgroundsubtractor.h"
 
 using namespace cv;
@@ -175,7 +155,7 @@ void pix_opencv_backgroundsubtractor :: processImage(imageStruct &image)
     input = imgMat;
   } else if ( image.csize == 4 ){
     imgMat = Mat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
-    cvtColor(imgMat, input, CV_RGBA2RGB);
+    cvtColor(imgMat, input, cv::COLOR_RGBA2RGB);
   } else {
     verbose(1,"suport only RGBA or GRAY image");
     return;
@@ -385,5 +365,4 @@ void pix_opencv_backgroundsubtractor :: obj_setupCallback(t_class *classPtr)
   CPPEXTERN_MSG0(classPtr, "paramHelp",  paramHelpMess);
   CPPEXTERN_MSG1(classPtr, "cpuMode",    cpuModeMess,      int);
 }
-#endif /* HAVE_BGSUB */
 

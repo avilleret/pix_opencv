@@ -1,26 +1,9 @@
-/*-----------------------------------------------------------------
-LOG
-    GEM - Graphics Environment for Multimedia
-
-    Threshold filter
-
-    Copyright (c) 1997-1999 Mark Danks. mark@danks.org
-    Copyright (c) Günther Geiger. geiger@epy.co.at
-    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM. zmoelnig@iem.kug.ac.at
-    Copyright (c) 2002 James Tittle & Chris Clepper
-    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-
------------------------------------------------------------------*/
-
-#ifndef INCLUDE_PIX_OPENCV_BACKGROUNDSUBTRACTOR_H_
-#define INCLUDE_PIX_OPENCV_BACKGROUNDSUBTRACTOR_H_
-
+#pragma once
 #include <opencv2/bgsegm.hpp>
 
-#include "Base/GemPixObj.h"
+#include <Base/GemPixObj.h>
 #include <RTE/MessageCallbacks.h>
-#include "Gem/Exception.h"
+#include <Gem/Exception.h>
 
 #include <iostream>
 #include <functional>
@@ -104,4 +87,3 @@ class GEM_EXPORT pix_opencv_backgroundsubtractor: public GemPixObj
     std::vector<std::string> m_bgsub_algos;
   
 };
-#endif	// for header file
