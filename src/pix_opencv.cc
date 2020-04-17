@@ -1,4 +1,10 @@
 #include "m_pd.h"
+#include "pix_opencv_calibration.h"
+
+extern "C" void pix_opencv_calibration_setup();
+extern "C" void pix_opencv_athreshold_setup();
+extern "C" void pix_opencv_backgroundsubtractor_setup();
+extern "C" void pix_opencv_bgsubstract_setup();
 
 extern "C" {
 
@@ -33,6 +39,12 @@ void pix_opencv_setup(void)
 #endif
     pix_opencv_class = class_new(gensym("pix_opencv"), (t_newmethod)pix_opencv_new, 0,
     	sizeof(t_pix_opencv), 0, (t_atomtype) 0);
+
+    pix_opencv_athreshold_setup();
+    pix_opencv_backgroundsubtractor_setup();
+    pix_opencv_bgsubstract_setup();
+    pix_opencv_calibration_setup();
+
 }
 
 } // extern "C"
