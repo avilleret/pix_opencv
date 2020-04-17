@@ -50,10 +50,6 @@ class GEM_EXPORT pix_opencv_athreshold : public GemPixObj
         int x_blocksize;
         int x_dim;
 
-	// to detect changes in the image size
-	int 		comp_xsize;
-	int		comp_ysize;
-
     private:
     
     	//////////
@@ -63,8 +59,4 @@ class GEM_EXPORT pix_opencv_athreshold : public GemPixObj
     	static void    	floatMethodMessCallback(void *data, float method);
     	static void    	floatBlockSizeMessCallback(void *data, float blocksize);
     	static void   	floatDimMessCallback(void *data, float dim);
-
-      cv::Mat rgba;
-      cv::Mat rgb;
-      cv::Mat gray;
 };

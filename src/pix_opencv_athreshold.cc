@@ -1,5 +1,6 @@
 #include "pix_opencv_athreshold.h"
 #include <opencv2/imgproc.hpp>
+#include "pix_opencv_utils.h"
 
 CPPEXTERN_NEW(pix_opencv_athreshold)
 
@@ -21,13 +22,6 @@ pix_opencv_athreshold :: pix_opencv_athreshold()
   x_threshold_method  = cv::ADAPTIVE_THRESH_MEAN_C;
   x_blocksize  = 3;
   x_dim = 0;
-
-  comp_xsize=320;
-  comp_ysize=240;
-
-  rgba = cv::Mat(cv::Size(comp_xsize,comp_ysize), CV_8UC4);
-  rgb = cv::Mat(cv::Size(comp_xsize,comp_ysize), CV_8UC3);
-  gray = cv::Mat(cv::Size(comp_xsize,comp_ysize), CV_8UC1);
 }
 
 /////////////////////////////////////////////////////////
@@ -44,17 +38,8 @@ pix_opencv_athreshold :: ~pix_opencv_athreshold()
 /////////////////////////////////////////////////////////
 void pix_opencv_athreshold :: processImage(imageStruct &image)
 {
-  cv::Mat mat;
-  switch(image.csize)
-  {
-    case 1:
-      mat = cv::Mat(image.ysize, image.xsize, CV_8UC1, image.data);
-    case 4:
-      mat = cv::Mat(image.ysize, image.xsize, CV_8UC4, image.data);
-    default:
-      error("image format not supported");
-      return;
-  }
+  cv::Mat mat = image2mat(image);
+  error("erer");
   
   // Applies fixed-level thresholding to single-channel array.
   switch(x_threshold_mode) {
