@@ -1,22 +1,3 @@
-////////////////////////////////////////////////////////
-//
-// GEM - Graphics Environment for Multimedia
-//
-// zmoelnig@iem.kug.ac.at
-//
-// Implementation file
-//
-//    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
-//    Copyright (c) 2002 James Tittle & Chris Clepper
-//    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-//    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-//
-/////////////////////////////////////////////////////////
-// based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org )
-// camera calibration function by Antoine Villeret helped by Cyrille Henry
-
 #include "pix_opencv_calibration.h"
 #include <opencv2/calib3d.hpp>
 #include <opencv2/imgproc.hpp>
@@ -26,14 +7,6 @@ using namespace cv;
 
 CPPEXTERN_NEW(pix_opencv_calibration)
 
-/////////////////////////////////////////////////////////
-//
-// pix_opencv_calibration
-//
-/////////////////////////////////////////////////////////
-// Constructor
-//
-/////////////////////////////////////////////////////////
 pix_opencv_calibration :: pix_opencv_calibration()
 { 
 	m_dataout = outlet_new(this->x_obj, 0);
@@ -55,22 +28,14 @@ pix_opencv_calibration :: pix_opencv_calibration()
 	m_distortion_coeffs 	= 	cv::Mat(5, 1, CV_32FC1); 
 	
 	pix_opencv_calibration :: resetCorrectionMatrix();
-	//~ post("pix_opencv_calibration build on %s at %s", __DATE__, __TIME__);
 }
 
-/////////////////////////////////////////////////////////
-// Destructor
-//
-/////////////////////////////////////////////////////////
 pix_opencv_calibration :: ~pix_opencv_calibration()
 { 
 
 }
 
-/////////////////////////////////////////////////////////
-// processImage
-//
-/////////////////////////////////////////////////////////
+// FIXME : merge all process*Image into one method
 void pix_opencv_calibration :: processRGBAImage(imageStruct &image)
 { 
 	if ((m_comp_xsize!=image.xsize)||(m_comp_ysize!=image.ysize)) { 

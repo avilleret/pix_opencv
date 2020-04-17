@@ -1,37 +1,16 @@
-/*-----------------------------------------------------------------
-LOG
-    GEM - Graphics Environment for Multimedia
+#pragma once
 
-    Threshold filter
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 
-    Copyright (c) 1997-1999 Mark Danks. mark@danks.org
-    Copyright (c) Günther Geiger. geiger@epy.co.at
-    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM. zmoelnig@iem.kug.ac.at
-    Copyright (c) 2002 James Tittle & Chris Clepper
-    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-
------------------------------------------------------------------*/
-
-#ifndef INCLUDE_pix_opencv_calibration_H_
-#define INCLUDE_pix_opencv_calibration_H_
-
-#ifndef _EiC
-// #include "opencv2/core/core_c.h"
-#include "opencv2/core.hpp"
-// #include "opencv2/imgproc/imgproc_c.h"
-#include "opencv2/imgproc.hpp"
-#endif
-
-#include "Base/GemPixObj.h"
+#include <Base/GemPixObj.h>
 
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
 CLASS
     pix_opencv_calibration
-    
-    Threshold filter
 
+    camera calibration and correction
 KEYWORDS
     pix
     
@@ -58,7 +37,7 @@ class GEM_EXPORT pix_opencv_calibration : public GemPixObj
    	// Do the processing
    	virtual void 	processRGBAImage(imageStruct &image);
    	virtual void 	processRGBImage(imageStruct &image);
-	virtual void 	processYUVImage(imageStruct &image);
+    virtual void 	processYUVImage(imageStruct &image);
    	virtual void 	processGrayImage(imageStruct &image);
    	
    	void findCorners ( cv::Mat& image );
@@ -75,14 +54,13 @@ class GEM_EXPORT pix_opencv_calibration : public GemPixObj
 	void 	findChessFlagMess(int adaptThres, int normalize, int filter);
 	void 	resetCorrectionMatrix();
 	
-	int	success_count, /* number of images on wich we correctly found corners */
-		board_view_nb, /* number of views to take */
-		m_calibration, /* calibration flag */
-		patternSize[2], /* size of the calibration chessboard */
-		frame, /* number of frames analysed for chessboard corner */
-		wait_n_frame, /* number of frames to wait between two take */
-		findChessFlag; // flag for cvFindChessboardCorners
-
+  int	success_count; /* number of images on wich we correctly found corners */
+  int board_view_nb; /* number of views to take */
+  int	m_calibration; /* calibration flag */
+  int	patternSize[2]; /* size of the calibration chessboard */
+  int	frame; /* number of frames analysed for chessboard corner */
+  int	wait_n_frame; /* number of frames to wait between two take */
+  int	findChessFlag; // flag for cvFindChessboardCorners
 
     private:
     
@@ -119,5 +97,3 @@ class GEM_EXPORT pix_opencv_calibration : public GemPixObj
   int   m_comp_xsize;
   int   m_comp_ysize;
 };
-
-#endif	// for header file
