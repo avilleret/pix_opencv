@@ -1,7 +1,6 @@
 #include "pix_opencv_calibration.hpp"
 #include <opencv2/calib3d.hpp>
 #include <opencv2/imgproc.hpp>
-#include <stdio.h>
 
 CPPEXTERN_NEW(pix_opencv_calibration)
 

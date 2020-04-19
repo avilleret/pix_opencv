@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 3.15)
 project(pix_opencv CXX)
 
+set(CMAKE_CXX_STANDARD 11)
+
 set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_backgroundsubtractor.cpp
