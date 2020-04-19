@@ -1,29 +1,6 @@
-/*-----------------------------------------------------------------
-LOG
-    GEM - Graphics Environment for Multimedia
-
-    Color filter
-
-    Copyright (c) 1997-1999 Mark Danks. mark@danks.org
-    Copyright (c) Günther Geiger. geiger@epy.co.at
-    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM. zmoelnig@iem.kug.ac.at
-    Copyright (c) 2002 James Tittle & Chris Clepper
-    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-
------------------------------------------------------------------*/
-
-#ifndef INCLUDE_PIX_OPENCV_COLORFILT_H_
-#define INCLUDE_PIX_OPENCV_COLORFILT_H_
-
-#include <stdio.h>
-
-#ifndef _EiC
-#include "opencv2/core/core_c.h"
-#include "opencv2/imgproc/imgproc_c.h"
-#endif
-
-#include "Base/GemPixObj.h"
+#include <opencv2/core/core_c.h>
+#include <opencv2/imgproc/imgproc_c.h>
+#include <Base/GemPixObj.h>
 
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
@@ -56,10 +33,7 @@ class GEM_EXPORT pix_opencv_colorfilt : public GemPixObj
 
     	//////////
     	// Do the processing
-    	virtual void 	processRGBAImage(imageStruct &image);
-    	virtual void 	processRGBImage(imageStruct &image);
-	virtual void 	processYUVImage(imageStruct &image);
-    	virtual void 	processGrayImage(imageStruct &image); 
+      virtual void 	processImage(imageStruct &image);
     	
 	//////////
     	// Set the new edge threshold
@@ -72,9 +46,7 @@ class GEM_EXPORT pix_opencv_colorfilt : public GemPixObj
 
     	// The color tolerance
         int x_tolerance;
-        unsigned char x_colorR; // RGB components of binary mask
-        unsigned char x_colorG;
-        unsigned char x_colorB;
+        cv::Vec3i x_color;
 
         t_outlet *x_R;  // output R component of selected color
         t_outlet *x_G;  // output G component of selected color
@@ -87,7 +59,8 @@ class GEM_EXPORT pix_opencv_colorfilt : public GemPixObj
 	int		comp_ysize;
 
     private:
-    
+
+      cv::Mat bgr;
     	//////////
     	// Static member functions
     	static void    	floatToleranceMessCallback(void *data, float tolerance);
@@ -96,9 +69,4 @@ class GEM_EXPORT pix_opencv_colorfilt : public GemPixObj
     	static void    	floatBMessCallback(void *data, float b);
     	static void   	pickMessCallback(void *data, float xcur, float ycur);
 
-	/////////
-	// IplImage needed
-    	IplImage 	*rgba, *rgb, *brgb;
 };
-
-#endif	// for header file

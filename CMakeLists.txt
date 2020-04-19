@@ -9,6 +9,7 @@ set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_clahe.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_colorfilt.cpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.cpp
@@ -22,13 +23,20 @@ set(HEADERS
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_clahe.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_colorfilt.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.hpp
 )
 
 find_package(OpenCV 4 REQUIRED)
 
-include_directories(/usr/local/include/Gem)
+set(PUREDATA_INCLUDE_DIRS "" CACHE PATH "Path to folder containing m_pd.h" )
+set(GEM_INCLUDE_DIRS "" CACHE PATH "Path to Gem header folder")
+find_package(PkgConfig)
+pkg_check_modules(PUREDATA pd)
+pkg_check_modules(GEM Gem)
+
+include_directories(${PUREDATA_INCLUDE_DIRS} ${GEM_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 
