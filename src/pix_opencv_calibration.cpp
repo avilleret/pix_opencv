@@ -3,8 +3,6 @@
 #include <opencv2/imgproc.hpp>
 #include <stdio.h>
 
-using namespace cv;
-
 CPPEXTERN_NEW(pix_opencv_calibration)
 
 pix_opencv_calibration :: pix_opencv_calibration()
@@ -18,7 +16,7 @@ pix_opencv_calibration :: pix_opencv_calibration()
 	patternSize[1] = 7;
 	frame = 0;
 	wait_n_frame = 10;
-	findChessFlag = CALIB_CB_ADAPTIVE_THRESH + CALIB_CB_NORMALIZE_IMAGE + CALIB_CB_FAST_CHECK;
+  findChessFlag = cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE | cv::CALIB_CB_FAST_CHECK;
   
 	// allocate storage matrix
 	m_image_points			=	cv::Mat(patternSize[0]*patternSize[1]*board_view_nb, 2, CV_32FC1);
@@ -67,7 +65,7 @@ void pix_opencv_calibration :: processRGBAImage(imageStruct &image)
 		computeCalibration( rgb );
 	 }
 	else if ( m_calibration == 0 ) { 
-		cv::remap(rgb,tmp,m_mapx,m_mapy, INTER_NEAREST);
+    cv::remap(rgb,tmp,m_mapx,m_mapy, cv::INTER_NEAREST);
 		image.data = (unsigned char*) gray.data;
 	}
 }
@@ -118,7 +116,7 @@ void pix_opencv_calibration :: processGrayImage(imageStruct &image)
 		computeCalibration( gray );
 	 }
 	else if ( m_calibration == 0 ) { 
-		cv::remap(gray,tmp,m_mapx,m_mapy,INTER_NEAREST);
+    cv::remap(gray,tmp,m_mapx,m_mapy, cv::INTER_NEAREST);
 		image.data = (unsigned char*) tmp.data;
 	}
 }
@@ -132,7 +130,7 @@ void pix_opencv_calibration :: findCorners ( cv::Mat& image )
 	int					board_point_nb = this->patternSize[0]*this->patternSize[1];
 	std::vector<cv::Point2f> corners;
 	int					step;
-	Size				patternSize, image_size;
+  cv::Size				patternSize, image_size;
 
 	patternSize = cv::Size( this->patternSize[0], this->patternSize[1] );
 	image_size = image.size();
@@ -145,7 +143,7 @@ void pix_opencv_calibration :: findCorners ( cv::Mat& image )
 
 	if (image.channels() == 4) {
 		find_rgb = image.clone();
-		cv::cvtColor( image , find_gray , COLOR_RGBA2GRAY); // convert color to gray
+    cv::cvtColor( image , find_gray , cv::COLOR_RGBA2GRAY); // convert color to gray
 	} else {
 		find_gray = image.clone();
 	}
@@ -153,16 +151,16 @@ void pix_opencv_calibration :: findCorners ( cv::Mat& image )
 	// get subpixel accuracy on those corners (grayscale image only)
 	cv::cornerSubPix(find_gray, 
 					   corners, 
-					   Size(11,11), 
-					   Size(-1,-1), 
-					   TermCriteria(TermCriteria::EPS+TermCriteria::MAX_ITER, 30, 0.1));
+             cv::Size(11,11),
+             cv::Size(-1,-1),
+             cv::TermCriteria(cv::TermCriteria::EPS  | cv::TermCriteria::MAX_ITER, 30, 0.1));
 
 
 	// draw chessboard corner (color image only)
 	if (image.channels() == 4) cv::drawChessboardCorners(find_rgb, patternSize, cv::Mat(corners), found);
 	else 
 	{
-		cvtColor( find_gray , find_rgb , COLOR_RGBA2GRAY); // convert gray to color
+    cvtColor( find_gray , find_rgb , cv::COLOR_RGBA2GRAY); // convert gray to color
 		drawChessboardCorners(find_rgb, patternSize, cv::Mat(corners), found);
 	}
 	
@@ -193,7 +191,7 @@ void pix_opencv_calibration :: findCorners ( cv::Mat& image )
 
 	// convert color to gray
 	if (image.channels() == 1) {
-		cvtColor( find_rgb , image, COLOR_RGBA2GRAY); // convert color to gray
+    cvtColor( find_rgb , image, cv::COLOR_RGBA2GRAY); // convert color to gray
 	} else {
 		image = find_rgb.clone();
 	}	
@@ -250,7 +248,7 @@ void pix_opencv_calibration :: loadMess (t_symbol *filename)
     return;
   }
 
-  FileStorage fs(filename->s_name, FileStorage::READ);
+  cv::FileStorage fs(filename->s_name, cv::FileStorage::READ);
 
   fs["camera_matrix"] >> m_intrinsic_matrix;
   fs["dist_coeff"] >> m_distortion_coeffs;
@@ -302,7 +300,7 @@ void pix_opencv_calibration :: writeMess (t_symbol *filename)
 		error("NULL symbol pointer");
 		return;
 	}
-	FileStorage fs(filename->s_name, FileStorage::WRITE);
+  cv::FileStorage fs(filename->s_name, cv::FileStorage::WRITE);
 
 	fs << "camera_matrix" << m_intrinsic_matrix;
 	fs << "dist_coeff" << m_distortion_coeffs;
@@ -356,7 +354,7 @@ void pix_opencv_calibration :: findChessFlagMess(int adaptThres, int normalize, 
 	adaptThres=adaptThres<=0?0:adaptThres>=1?1:adaptThres;
 	normalize=normalize<=0?0:normalize>=1?1:normalize;
 	filter=filter<=0?0:filter>=1?1:filter;
-	findChessFlag = CALIB_CB_ADAPTIVE_THRESH * adaptThres + CALIB_CB_NORMALIZE_IMAGE * normalize + CALIB_CB_FILTER_QUADS * filter;
+  findChessFlag = cv::CALIB_CB_ADAPTIVE_THRESH * adaptThres + cv::CALIB_CB_NORMALIZE_IMAGE * normalize + cv::CALIB_CB_FILTER_QUADS * filter;
 }
 /////////////////////////////////////////////////////////
 // static member function

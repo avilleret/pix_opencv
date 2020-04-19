@@ -1,8 +1,5 @@
 #include "pix_opencv_backgroundsubtractor.hpp"
 
-using namespace cv;
-using namespace std;
-
 CPPEXTERN_NEW(pix_opencv_backgroundsubtractor);
 
 /////////////////////////////////////////////////////////
@@ -19,38 +16,38 @@ pix_opencv_backgroundsubtractor :: pix_opencv_backgroundsubtractor() : m_forceCP
   m_bgsub_algos.push_back("BackgroundSubtractor.GMG");
   m_bgsub_algos.push_back("BackgroundSubtractor.MOG");
   
-  m_fgbgGMG = bgsegm::createBackgroundSubtractorGMG();
-  m_fgbgMOG = bgsegm::createBackgroundSubtractorMOG();
+  m_fgbgGMG = cv::bgsegm::createBackgroundSubtractorGMG();
+  m_fgbgMOG = cv::bgsegm::createBackgroundSubtractorMOG();
   
   m_dataout = outlet_new(this->x_obj, 0); 
 
   m_mog_params = {
-      MOGparam{ 
+      MOGparam{
         "history",  
         "(int) Length of the history", 
         /*[](const bgsegm::BackgroundSubtractorMOG& alg) { return float(alg.getHistory()); },
         [](bgsegm::BackgroundSubtractorMOG& alg, float val) { alg.setHistory(int(val)); }
         */
-        &bgsegm::BackgroundSubtractorMOG::getHistory, 
-        &bgsegm::BackgroundSubtractorMOG::setHistory 
+        &cv::bgsegm::BackgroundSubtractorMOG::getHistory,
+        &cv::bgsegm::BackgroundSubtractorMOG::setHistory
       },
       MOGparam{ 
         "nmixtures" , 
         "(int) Number of Gaussian mixtures", 
-        &bgsegm::BackgroundSubtractorMOG::getNMixtures, 
-        &bgsegm::BackgroundSubtractorMOG::setNMixtures 
+        &cv::bgsegm::BackgroundSubtractorMOG::getNMixtures,
+        &cv::bgsegm::BackgroundSubtractorMOG::setNMixtures
       },
       MOGparam{ 
         "backgroundratio", 
         "(float) Background ratio", 
-        &bgsegm::BackgroundSubtractorMOG::getBackgroundRatio, 
-        &bgsegm::BackgroundSubtractorMOG::setBackgroundRatio 
+        &cv::bgsegm::BackgroundSubtractorMOG::getBackgroundRatio,
+        &cv::bgsegm::BackgroundSubtractorMOG::setBackgroundRatio
       },
       MOGparam{ 
         "noisesigma", 
         "(float) Noise strength (standard deviation of the brightness or each color channel). 0 means some automatic value.", 
-        &bgsegm::BackgroundSubtractorMOG::getNoiseSigma, 
-        &bgsegm::BackgroundSubtractorMOG::setNoiseSigma 
+        &cv::bgsegm::BackgroundSubtractorMOG::getNoiseSigma,
+        &cv::bgsegm::BackgroundSubtractorMOG::setNoiseSigma
       }
     };
 
@@ -58,50 +55,50 @@ pix_opencv_backgroundsubtractor :: pix_opencv_backgroundsubtractor() : m_forceCP
     GMGparam{
       "maxfeatures",
       "(int) : total number of distinct colors to maintain in histogram",
-      &bgsegm::BackgroundSubtractorGMG::getMaxFeatures,
-      &bgsegm::BackgroundSubtractorGMG::setMaxFeatures
+      &cv::bgsegm::BackgroundSubtractorGMG::getMaxFeatures,
+      &cv::bgsegm::BackgroundSubtractorGMG::setMaxFeatures
     },
     GMGparam{
       "defaultlearningrate",
       "(float) : learning rate of the algorithm",
-      &bgsegm::BackgroundSubtractorGMG::getDefaultLearningRate,
-      &bgsegm::BackgroundSubtractorGMG::setDefaultLearningRate
+      &cv::bgsegm::BackgroundSubtractorGMG::getDefaultLearningRate,
+      &cv::bgsegm::BackgroundSubtractorGMG::setDefaultLearningRate
     },
     GMGparam{
       "numframes",
       "(int) : number of frames used to initialize background model",
-      &bgsegm::BackgroundSubtractorGMG::getNumFrames,
-      &bgsegm::BackgroundSubtractorGMG::setNumFrames
+      &cv::bgsegm::BackgroundSubtractorGMG::getNumFrames,
+      &cv::bgsegm::BackgroundSubtractorGMG::setNumFrames
     },
     GMGparam{
       "quantizationlevels",
       "(int) : parameter used for quantization of color-space",
-      &bgsegm::BackgroundSubtractorGMG::getQuantizationLevels,
-      &bgsegm::BackgroundSubtractorGMG::setQuantizationLevels
+      &cv::bgsegm::BackgroundSubtractorGMG::getQuantizationLevels,
+      &cv::bgsegm::BackgroundSubtractorGMG::setQuantizationLevels
     },
     GMGparam{
       "backgroundprior",
       "(float) : prior probability that each individual pixel is a background pixel",
-      &bgsegm::BackgroundSubtractorGMG::getBackgroundPrior,
-      &bgsegm::BackgroundSubtractorGMG::setBackgroundPrior
+      &cv::bgsegm::BackgroundSubtractorGMG::getBackgroundPrior,
+      &cv::bgsegm::BackgroundSubtractorGMG::setBackgroundPrior
     },
     GMGparam{
       "smoothingraius",
       "(int) : kernel radius used for morphological operations",
-      &bgsegm::BackgroundSubtractorGMG::getSmoothingRadius,
-      &bgsegm::BackgroundSubtractorGMG::setSmoothingRadius
+      &cv::bgsegm::BackgroundSubtractorGMG::getSmoothingRadius,
+      &cv::bgsegm::BackgroundSubtractorGMG::setSmoothingRadius
     },
     GMGparam{
       "decisionthreshold",
       "(float) : value of decision threshold",
-      &bgsegm::BackgroundSubtractorGMG::getDecisionThreshold,
-      &bgsegm::BackgroundSubtractorGMG::setDecisionThreshold
+      &cv::bgsegm::BackgroundSubtractorGMG::getDecisionThreshold,
+      &cv::bgsegm::BackgroundSubtractorGMG::setDecisionThreshold
     },
     GMGparam{
       "updatebackgroundmodel",
       "(bool) : status of background model update",
-      &bgsegm::BackgroundSubtractorGMG::getUpdateBackgroundModel,
-      &bgsegm::BackgroundSubtractorGMG::setUpdateBackgroundModel
+      &cv::bgsegm::BackgroundSubtractorGMG::getUpdateBackgroundModel,
+      &cv::bgsegm::BackgroundSubtractorGMG::setUpdateBackgroundModel
       /*
       [](const bgsegm::BackgroundSubtractorGMG& alg) { return float(alg.getUpdateBackgroundModel()); },
       [](bgsegm::BackgroundSubtractorGMG& alg, float val) { alg.setUpdateBackgroundModel(val>0); }        
@@ -110,14 +107,14 @@ pix_opencv_backgroundsubtractor :: pix_opencv_backgroundsubtractor() : m_forceCP
     GMGparam{
       "minval",
       "(float) : minimum value taken on by pixels in image sequence",
-      &bgsegm::BackgroundSubtractorGMG::getMinVal,
-      &bgsegm::BackgroundSubtractorGMG::setMinVal
+      &cv::bgsegm::BackgroundSubtractorGMG::getMinVal,
+      &cv::bgsegm::BackgroundSubtractorGMG::setMinVal
     },
     GMGparam{
       "maxval",
       "(float) : maximum value taken on by pixels in image sequence.",
-      &bgsegm::BackgroundSubtractorGMG::getMaxVal,
-      &bgsegm::BackgroundSubtractorGMG::setMaxVal
+      &cv::bgsegm::BackgroundSubtractorGMG::getMaxVal,
+      &cv::bgsegm::BackgroundSubtractorGMG::setMaxVal
     }
   };
 }
@@ -149,12 +146,12 @@ void pix_opencv_backgroundsubtractor :: stopRendering(){
 /////////////////////////////////////////////////////////    	
 void pix_opencv_backgroundsubtractor :: processImage(imageStruct &image)
 { 
-  Mat imgMat, input;
+  cv::Mat imgMat, input;
   if ( image.csize == 1 ){
-    imgMat = Mat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
+    imgMat = cv::Mat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
     input = imgMat;
   } else if ( image.csize == 4 ){
-    imgMat = Mat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
+    imgMat = cv::Mat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
     cvtColor(imgMat, input, cv::COLOR_RGBA2RGB);
   } else {
     verbose(1,"suport only RGBA or GRAY image");
@@ -335,7 +332,7 @@ void pix_opencv_backgroundsubtractor :: algoMess(t_symbol *s, int argc, t_atom* 
     }
   } else if ( argv[0].a_type == A_SYMBOL ) {
     t_symbol* algoSym = atom_getsymbol(argv);
-    string algo = algoSym->s_name;
+    std::string algo = algoSym->s_name;
 
     if (m_fgbgMOG.empty() && m_fgbgGMG.empty())
     {
