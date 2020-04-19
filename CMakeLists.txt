@@ -2,26 +2,28 @@ cmake_minimum_required (VERSION 3.15)
 project(pix_opencv CXX)
 
 set(SOURCES
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.cc
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_backgroundsubtractor.cc
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_bgsubstract.cc
-  # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_blobtrack.cc
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.cc
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.cc
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_backgroundsubtractor.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_bgsubstract.cpp
+  # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_blobtrack.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_clahe.cpp
 
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cc
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.cc
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.cpp
 )
 
 set(HEADERS
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.h
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_backgroundsubtractor.h
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_bgsubstract.h
-  # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_blobtrack.h
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.h
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.h
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_backgroundsubtractor.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_bgsubstract.hpp
+  # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_blobtrack.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_clahe.hpp
 
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.h
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.hpp
 )
 
 find_package(OpenCV 4 REQUIRED)
