@@ -3,9 +3,14 @@ project(pix_opencv CXX)
 
 set(CMAKE_CXX_STANDARD 11)
 
+find_package(OpenCV 4 REQUIRED
+  COMPONENTS core imgproc)
+
+find_package(OpenCV 4
+  COMPONENTS bgsegm)
+
 set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_backgroundsubtractor.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_bgsubstract.cpp
   # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_blobtrack.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.cpp
@@ -20,7 +25,6 @@ set(SOURCES
 
 set(HEADERS
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_backgroundsubtractor.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_bgsubstract.hpp
   # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_blobtrack.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.hpp
@@ -32,7 +36,11 @@ set(HEADERS
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.hpp
 )
 
-find_package(OpenCV 4 REQUIRED)
+if(OpenCV_bgsegm_FOUND)
+  add_definitions("-DHAVE_BGSEGM")
+  list(APPEND SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_backgroundsubtractor.cpp)
+  list(APPEND HEADERS ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_backgroundsubtractor.hpp)
+endif()
 
 set(PUREDATA_INCLUDE_DIRS "" CACHE PATH "Path to folder containing m_pd.h" )
 set(GEM_INCLUDE_DIRS "" CACHE PATH "Path to Gem header folder")
