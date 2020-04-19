@@ -1,8 +1,9 @@
+#pragma once
 #include <opencv2/opencv.hpp>
 
-#include "Base/GemPixObj.h"
-#include "RTE/MessageCallbacks.h"
-#include "Gem/Exception.h"
+#include <Base/GemPixObj.h>
+#include <RTE/MessageCallbacks.h>
+#include <Gem/Exception.h>
 
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------

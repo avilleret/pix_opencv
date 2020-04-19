@@ -10,6 +10,7 @@ set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_clahe.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_colorfilt.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_contours.cpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.cpp
@@ -24,6 +25,7 @@ set(HEADERS
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_clahe.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_colorfilt.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_contours.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.hpp
 )

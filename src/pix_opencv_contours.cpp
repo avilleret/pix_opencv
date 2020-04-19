@@ -1,28 +1,6 @@
-////////////////////////////////////////////////////////
-//
-// GEM - Graphics Environment for Multimedia
-//
-// zmoelnig@iem.kug.ac.at
-//
-// Implementation file
-//
-//    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
-//    Copyright (c) 2002 James Tittle & Chris Clepper
-//    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-//    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-//
-/////////////////////////////////////////////////////////
-// based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org ) (pix_opencv)
-// pix_opencv_contours extract and simplify contours of incomming image
-// by Antoine Villeret - 2012
-
-#include "pix_opencv_contours.h"
-#include <stdio.h>
+#include "pix_opencv_contours.hpp"
 #include <RTE/MessageCallbacks.h>
-
-using namespace cv;
+#include "pix_opencv_utils.hpp"
 
 CPPEXTERN_NEW(pix_opencv_contours)
 
@@ -71,43 +49,20 @@ void pix_opencv_contours :: processImage(imageStruct &image)
 { 
   if ( image.xsize < 0 || image.ysize < 0 ) return;
   
-  Mat imgMat2, input;
+  cv::Mat imgMat2;
   std::vector<cv::Mat> split_array;
-    
-  if ( image.csize == 1 ){
-    imgMat2 = Mat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
-    input = imgMat2;
-  } else if ( image.csize == 4 ){
-    imgMat2 = Mat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
-    split(imgMat2,split_array);
-    input = split_array[3]; // select alpha channel to find contours
-  } else {
-    error("suport only RGBA or GRAY image");
-    return;
-  }
+
+  cv::Mat input = image2mat(image);
   cv::Mat imgMat = input.clone(); // copy data because findContours will destroy it...
 
   m_contours.clear();
   m_convexhulls.clear();
   m_area.clear();
-  
-  /*****************/
-  /* Find Contours */
-  /*****************/
 
   std::vector<std::vector<cv::Point> > contours;
   std::vector<cv::Vec4i> hierarchy;
-  cv::findContours(imgMat, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
-  
-  /*
-  std::cout << "hierarchy : \n" << std::endl;
-  std::cout << "id\tnext\tprev\tchild\tparent" << std::endl;
-  for ( size_t i = 0; i < contours.size(); i++ )
-  {
-    std::cout << i << "\t" << hierarchy[i][0] << "\t" << hierarchy[i][1] << "\t" << hierarchy[i][2] << "\t" << hierarchy[i][3] << std::endl;
-  }
-  */
-  
+  cv::findContours(imgMat, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+    
   if ( m_hierarchy_level == -1 ) {  
     for ( size_t i = 0; i < contours.size(); i++ )
     {
@@ -231,55 +186,36 @@ void pix_opencv_contours :: processImage(imageStruct &image)
   {
     for ( size_t i = 0 ; i < m_contours.size() ; i++ )
     {
-      std::vector<cv::Vec4i> defects(m_convexhulls[i].size());
-      
-      cv::Ptr<CvMemStorage> storage = cvCreateMemStorage();
-      cv::InputArray _points = m_contours[i];
-      cv::InputArray _hull = m_convexhulls[i];
-      
-      cv::Mat points =  _points.getMat();
-      cv::Mat hull = _hull.getMat();
-      
-      CvMat c_points = points, c_hull = hull;
-      
-      CvSeq* seq = cvConvexityDefects(&c_points, &c_hull, storage);
-      
+      std::vector<cv::Vec4i> defects;
+      cv::convexityDefects(m_contours[i], m_convexhulls[i], defects);
+
       double norm = sqrtf( image.xsize*image.ysize );
     
-      if ( !seq ) {
-          error("seq undefined...");
-          continue;
-      }
-      
-      int list_size=(int) seq->total*7+2; 
-      
-      if (seq->total > 0) 
+      if (true)
       {
+        int list_size=(int) defects.size()*7+2;
         t_atom* data = new t_atom[list_size];
         
-        SETFLOAT(data, seq->total); // number of defect for current contour
+        SETFLOAT(data, defects.size()); // number of defect for current contour
         SETFLOAT(data+1, 7); // a defect is represented by 7 values : start point (x,y), end point (x,y), farthest point (x,y) and defect depth
         
-          cv::SeqIterator<CvConvexityDefect> it = cv::Seq<CvConvexityDefect>(seq).begin(); // TODO : crash sometimes but don't know why yet...
         t_atom* apt = data+2;
         
-        for ( int j = 0 ; j < seq->total ; j++, ++it )
+        for ( const auto& defect : defects)
         {
-          CvConvexityDefect& defect = *it;
-          SETFLOAT(apt, (float) defect.start->x/image.xsize);
-          SETFLOAT(apt+1, (float) defect.start->y/image.ysize);
-          SETFLOAT(apt+2, (float) defect.end->x/image.xsize);
-          SETFLOAT(apt+3, (float) defect.end->y/image.ysize);
-          SETFLOAT(apt+4, (float) defect.depth_point->x/image.xsize);
-          SETFLOAT(apt+5, (float) defect.depth_point->y/image.ysize);
-          SETFLOAT(apt+6, (float) defect.depth/norm);
+          SETFLOAT(apt,   (float) m_contours[i][defect[0]].x/image.xsize);
+          SETFLOAT(apt+1, (float) m_contours[i][defect[0]].y/image.ysize);
+          SETFLOAT(apt+2, (float) m_contours[i][defect[1]].x/image.xsize);
+          SETFLOAT(apt+3, (float) m_contours[i][defect[1]].y/image.ysize);
+          SETFLOAT(apt+4, (float) m_contours[i][defect[2]].x/image.xsize);
+          SETFLOAT(apt+5, (float) m_contours[i][defect[2]].y/image.ysize);
+          SETFLOAT(apt+6, (float) (defect[3])/(256. * norm));
           apt+=7;
         }
         
         outlet_anything(m_dataout_middle, gensym("convexitydefects"), list_size, data);
         
-        if (data) delete data;
-        data = NULL;
+        delete data;
       }
     }
   }
@@ -337,8 +273,8 @@ void pix_opencv_contours :: outputBlobs(imageStruct &image){
       if (!m_contours[i].empty() && m_contours[i].size() > 2) {
         
         /* compute centroid */
-        Moments mu = moments(m_contours[i]);
-        Point2f centroid;
+        cv::Moments mu = moments(m_contours[i]);
+        cv::Point2f centroid;
         centroid.x=mu.m10/mu.m00;
         centroid.y=mu.m01/mu.m00;
         cv::RotatedRect rot_rect = cv::minAreaRect(m_contours[i]);
@@ -475,7 +411,7 @@ void pix_opencv_contours :: outputContours(imageStruct &image){
         } 
       }
       
-      vecsize=min(min(vecxsize,vecysize),veczsize);
+      vecsize=std::min(std::min(vecxsize,vecysize),veczsize);
       
       int n=0;      
       
@@ -554,7 +490,7 @@ void pix_opencv_contours :: convexitydefectsMess(double arg)
 void pix_opencv_contours :: hierarchyMess(int arg)
 {
   m_hierarchy_level = arg < -2 ? -1 : arg;
-  m_mode = m_hierarchy_level == -1 ? CV_RETR_LIST : CV_RETR_TREE;
+  m_mode = m_hierarchy_level == -1 ? cv::RETR_LIST : cv::RETR_TREE;
 }
 
 void pix_opencv_contours :: taboutputMess(float arg)

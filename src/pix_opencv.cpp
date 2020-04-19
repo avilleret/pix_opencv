@@ -7,6 +7,7 @@ extern "C" void pix_opencv_bgsubstract_setup();
 extern "C" void pix_opencv_camshift_setup();
 extern "C" void pix_opencv_clahe_setup();
 extern "C" void pix_opencv_colorfilt_setup();
+extern "C" void pix_opencv_contours_setup();
 
 extern "C" {
 
@@ -49,6 +50,7 @@ void pix_opencv_setup(void)
     pix_opencv_camshift_setup();
     pix_opencv_clahe_setup();
     pix_opencv_colorfilt_setup();
+    pix_opencv_contours_setup();
 }
 
 } // extern "C"
