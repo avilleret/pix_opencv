@@ -1,24 +1,5 @@
-////////////////////////////////////////////////////////
-//
-// GEM - Graphics Environment for Multimedia
-//
-// zmoelnig@iem.kug.ac.at
-//
-// Implementation file
-//
-//    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
-//    Copyright (c) 2002 James Tittle & Chris Clepper
-//    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-//    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-//
-/////////////////////////////////////////////////////////
-// based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org ) (pix_opencv)
-// Template for pix_opencv class
-
-#if HAVE_CLAHE
-#include "pix_opencv_clahe.h"
+#include "pix_opencv_clahe.hpp"
+#include "pix_opencv_utils.hpp"
 
 using namespace cv;
 

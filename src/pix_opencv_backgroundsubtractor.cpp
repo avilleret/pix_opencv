@@ -1,4 +1,4 @@
-#include "pix_opencv_backgroundsubtractor.h"
+#include "pix_opencv_backgroundsubtractor.hpp"
 
 using namespace cv;
 using namespace std;

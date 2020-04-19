@@ -1,5 +1,5 @@
-#include "pix_opencv_bgsubstract.h"
-#include "pix_opencv_utils.h"
+#include "pix_opencv_bgsubstract.hpp"
+#include "pix_opencv_utils.hpp"
 #include <opencv2/imgproc.hpp>
 
 CPPEXTERN_NEW(pix_opencv_bgsubstract)

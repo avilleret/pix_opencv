@@ -1,5 +1,5 @@
-#include "pix_opencv_camshift.h"
-#include "pix_opencv_utils.h"
+#include "pix_opencv_camshift.hpp"
+#include "pix_opencv_utils.hpp"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/video/tracking.hpp>
 

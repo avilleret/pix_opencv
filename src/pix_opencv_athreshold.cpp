@@ -1,6 +1,6 @@
-#include "pix_opencv_athreshold.h"
+#include "pix_opencv_athreshold.hpp"
 #include <opencv2/imgproc.hpp>
-#include "pix_opencv_utils.h"
+#include "pix_opencv_utils.hpp"
 
 CPPEXTERN_NEW(pix_opencv_athreshold)
 

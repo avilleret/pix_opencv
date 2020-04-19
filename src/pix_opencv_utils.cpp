@@ -1,4 +1,4 @@
-#include "pix_opencv_utils.h"
+#include "pix_opencv_utils.hpp"
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <Gem/Image.h>
