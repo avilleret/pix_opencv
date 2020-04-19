@@ -1,7 +1,6 @@
 #pragma once
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
-#include <opencv2/tracking.hpp>
 
 #include <Base/GemPixObj.h>
 
@@ -80,12 +79,9 @@ class GEM_EXPORT pix_opencv_camshift : public GemPixObj
     cv::Mat hue;
     cv::Mat mask;
     cv::Mat backproject;
-    CvHistogram *hist;
     cv::Point origin;
     cv::Rect selection;
     cv::Rect trackwindow;
-    CvBox2D trackbox;
-    CvConnectedComp trackcomp;
 
     t_atom x_list[5];
 };

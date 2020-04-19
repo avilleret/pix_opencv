@@ -104,11 +104,11 @@ void pix_opencv_camshift :: processImage(imageStruct &image)
 
     cv::ellipse(mat, trackBox, cv::Scalar(0,0,255), 3, cv::LINE_AA);
 
-    SETFLOAT(&x_list[0], trackbox.center.x);
-    SETFLOAT(&x_list[1], trackbox.center.y);
-    SETFLOAT(&x_list[2], trackbox.size.width);
-    SETFLOAT(&x_list[3], trackbox.size.height);
-    SETFLOAT(&x_list[4], trackbox.angle);
+    SETFLOAT(&x_list[0], trackBox.center.x);
+    SETFLOAT(&x_list[1], trackBox.center.y);
+    SETFLOAT(&x_list[2], trackBox.size.width);
+    SETFLOAT(&x_list[3], trackBox.size.height);
+    SETFLOAT(&x_list[4], trackBox.angle);
     outlet_list(m_dataout, nullptr, 5, x_list);
   }
 }
@@ -198,12 +198,12 @@ void  pix_opencv_camshift :: trackMess(float px, float py)
   if ( ( px<0.0 ) || ( px>comp_xsize ) || ( py<0.0 ) || ( py>comp_ysize ) ) return;
 
   //py = comp_ysize - py;
-  origin = cvPoint((int)px,(int)py);
+  origin = cv::Point((int)px,(int)py);
   rx = ( (int)px-(x_rwidth/2) < 0 )? 0:(int)px-(x_rwidth/2);
   ry = ( (int)py-(x_rheight/2) < 0 )? 0:(int)py-(x_rheight/2);
   w = (rx+x_rwidth>comp_xsize ) ? ( comp_xsize - rx ):x_rwidth;
   h = (ry+x_rheight>comp_ysize ) ? ( comp_ysize - ry ):x_rheight;
-  selection = cvRect(rx,ry,w,h);
+  selection = cv::Rect(rx,ry,w,h);
   post( "pix_opencv_camshift : track point (%f,%f) region (%d %d %d %d)", px, py, rx, ry, w, h );
   x_track = 1;
   x_init = 1;
