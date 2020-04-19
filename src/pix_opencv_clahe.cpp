@@ -37,34 +37,17 @@ pix_opencv_clahe :: ~pix_opencv_clahe()
 
 // StartRendering
 void pix_opencv_clahe :: startRendering(){
-#if HAVE_LIBOPENCV_CL
-  ocl::DevicesInfo devicesInfo;
-  ocl::getOpenCLDevices(devicesInfo);
-  post("Found %d OpenCL device(s).", devicesInfo.size());
-  for ( size_t i = 0; i < devicesInfo.size(); i++){
-    post("%s %s", devicesInfo[i]->deviceVendor.c_str(), devicesInfo[i]->deviceName.c_str());
-  }
- 
-  m_cpuFilter = createCLAHE();
- 
-  if ( devicesInfo.size() == 0 ){
-    post("can't find OpenCL device, switch to CPU mode");
-    m_gpuMode = false;
-  } else {
-    m_oclFilter = ocl::createCLAHE();
-    m_gpuMode = true;
-  }
+
+  m_filter = createCLAHE();
+
   clipLimitMess(m_clipLimit);
   tileGridSizeMess(m_tileGridSize.width,m_tileGridSize.height);
-#else
-  verbose(2,"no OpenCL support, it could be very slow !!");
-#endif /* HAVE_LIBOPENCV_CL */
-
   m_rendering = true;
 }
 
 void pix_opencv_clahe :: stopRendering(){
   m_rendering = false;
+  m_filter.reset();
 }
 
 /////////////////////////////////////////////////////////
@@ -73,71 +56,21 @@ void pix_opencv_clahe :: stopRendering(){
 ///////////////////////////////////////////////////////// 	
 void pix_opencv_clahe :: processImage(imageStruct &image)
 { 
-  if ( image.csize == 1 ){
-    m_gray = Mat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
-  } else if (image.csize == 4) {
-    m_imgMat = Mat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to cv::Mat without copying data
-    cvtColor(m_imgMat,m_gray,CV_RGBA2GRAY);
-  } else {
-    error("only support grayscale and RGBA image");
-  }
+  cv::Mat mat = image2mat(image);
 
-#if HAVE_LIBOPENCV_CL
-  if ( m_gpuMode ) {
-    try  {
-      d_outframe = m_gray;
-      m_oclFilter->apply(d_outframe, d_outframe);
-      d_outframe.download(m_gray);
-    } catch (cv::Exception& e) {
-      error("can't use OpenCL, do you have OpenCL driver installed ?");
-      error("error %d : %s", e.code, e.err.c_str());
-      m_gpuMode = false;
-      return;
-    }
-#else
-  if ( 0 ) {
-#endif /* HAVE_LIBOPENCV_CL */
-  } else {
-    m_cpuFilter->apply(m_gray, m_gray);
-  }
-  
-  if ( image.csize == 4 ){
-    std::vector<Mat> split;
-    cv::split(m_imgMat,split);
-    split.pop_back();
-    split.push_back(m_gray);
-    cv::merge(split,m_imgMat);    
-  }
+  m_filter->apply(mat, mat);
 }
 
 void pix_opencv_clahe :: clipLimitMess(t_float limit){
   m_clipLimit=limit;
-  if ( m_rendering ){
-#if HAVE_LIBOPENCV_CL
-    if ( m_gpuMode ){
-      m_oclFilter->setClipLimit(m_clipLimit);
-#else
-    if ( 0 ) {
-#endif /* HAVE_LIBOPENCV_CL */
-    } else {
-      m_cpuFilter->setClipLimit(m_clipLimit);
-    }
-  }
+  if(m_filter)
+    m_filter->setClipLimit(m_clipLimit);
 }
 
 void pix_opencv_clahe :: tileGridSizeMess(int width, int height){
   m_tileGridSize=cv::Size(MAX(width,1),MAX(height,1));
-  if ( m_rendering ){
-#if HAVE_LIBOPENCV_CL
-    if ( m_gpuMode ){
-      m_oclFilter->setTilesGridSize(m_tileGridSize);
-#else
-    if ( 0 ) {
-#endif /* HAVE_LIBOPENCV_CL */
-    } else {
-      m_cpuFilter->setTilesGridSize(m_tileGridSize);
-    }
-  }
+  if(m_filter)
+    m_filter->setTilesGridSize(m_tileGridSize);
 }
 
 /////////////////////////////////////////////////////////
@@ -149,4 +82,3 @@ void pix_opencv_clahe :: obj_setupCallback(t_class *classPtr)
   CPPEXTERN_MSG1(classPtr, "clipLimit",   clipLimitMess, t_float);
   CPPEXTERN_MSG2(classPtr, "tileGridSize",   tileGridSizeMess, int, int);
 }
-#endif /* HAVE_CLAHE */
