@@ -5,6 +5,7 @@ extern "C" void pix_opencv_calibration_setup();
 extern "C" void pix_opencv_athreshold_setup();
 extern "C" void pix_opencv_backgroundsubtractor_setup();
 extern "C" void pix_opencv_bgsubstract_setup();
+extern "C" void pix_opencv_camshift_setup();
 
 extern "C" {
 
@@ -44,7 +45,7 @@ void pix_opencv_setup(void)
     pix_opencv_backgroundsubtractor_setup();
     pix_opencv_bgsubstract_setup();
     pix_opencv_calibration_setup();
-
+    pix_opencv_camshift_setup();
 }
 
 } // extern "C"

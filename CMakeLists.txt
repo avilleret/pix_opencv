@@ -7,6 +7,7 @@ set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_bgsubstract.cc
   # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_blobtrack.cc
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.cc
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.cc
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cc
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.cc
@@ -18,6 +19,7 @@ set(HEADERS
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_bgsubstract.h
   # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_blobtrack.h
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.h
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.h
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.h
 )

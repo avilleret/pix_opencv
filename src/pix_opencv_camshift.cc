@@ -1,22 +1,7 @@
-
-//
-// GEM - Graphics Environment for Multimedia
-//
-// zmoelnig@iem.kug.ac.at
-//
-// Implementation file
-//
-//    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
-//    Copyright (c) 2002 James Tittle & Chris Clepper
-//    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-//    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-//
-/////////////////////////////////////////////////////////
-
 #include "pix_opencv_camshift.h"
-#include <stdio.h>
+#include "pix_opencv_utils.h"
+#include <opencv2/imgproc.hpp>
+#include <opencv2/video/tracking.hpp>
 
 CPPEXTERN_NEW(pix_opencv_camshift)
 
@@ -49,15 +34,6 @@ pix_opencv_camshift :: pix_opencv_camshift()
   x_vmin = 50;
   x_vmax = 256;
   x_smin = 30;
-
-  rgba = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 4);
-  rgb = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
-  gray = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-  hsv = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
-  hue = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-  mask = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-  backproject = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-  hist = cvCreateHist( 1, &hdims, CV_HIST_ARRAY, &hranges, 1 );
 }
 
 /////////////////////////////////////////////////////////
@@ -66,22 +42,13 @@ pix_opencv_camshift :: pix_opencv_camshift()
 /////////////////////////////////////////////////////////
 pix_opencv_camshift :: ~pix_opencv_camshift()
 {
-  // Destroy cv_images
-  cvReleaseImage(&rgba);
-  cvReleaseImage(&rgb);
-  cvReleaseImage(&gray);
-  cvReleaseImage(&hsv);
-  cvReleaseImage(&hue);
-  cvReleaseImage(&mask);
-  cvReleaseImage(&backproject);
-  cvReleaseHist(&hist);
 }
 
 /////////////////////////////////////////////////////////
 // processImage
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_camshift :: processRGBAImage(imageStruct &image)
+void pix_opencv_camshift :: processImage(imageStruct &image)
 {
   int i, k;
   int im;
@@ -90,252 +57,60 @@ void pix_opencv_camshift :: processRGBAImage(imageStruct &image)
   float hranges_arr[] = {0,180};
   float* hranges = hranges_arr;
 
+  cv::Mat hsv = image2mat_hsv(image);
 
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
-  {
-
-    this->comp_xsize=image.xsize;
-    this->comp_ysize=image.ysize;
-
-    cvReleaseImage(&rgba);
-    cvReleaseImage(&rgb);
-    cvReleaseImage(&gray);
-    cvReleaseImage(&hsv);
-    cvReleaseImage(&hue);
-    cvReleaseImage(&mask);
-    cvReleaseImage(&backproject);
-    cvReleaseHist(&hist);
-
-    rgba = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 4);
-    rgb = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
-    gray = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    hsv = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
-    hue = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    mask = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    backproject = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    hist = cvCreateHist( 1, &hdims, CV_HIST_ARRAY, &hranges, 1 );
-
-  }
-
-  memcpy( rgba->imageData, image.data, image.xsize*image.ysize*4 );
-
-  // Convert to hsv
-  cvCvtColor(rgba, rgb, CV_BGRA2BGR);
-  cvCvtColor(rgb, hsv, CV_BGR2HSV);
 
   if ( x_track  )
   {
-      cvInRangeS( hsv, cvScalar(0,x_smin,MIN(x_vmin,x_vmax),0), cvScalar(180,256,MAX(x_vmin,x_vmax),0), mask );
-      cvSplit( hsv, hue, 0, 0, 0 );
+    cv::inRange(hsv, cv::Scalar(0,x_smin,std::min(x_vmin,x_vmax),0),
+                cv::Scalar(180,256,std::max(x_vmin,x_vmax),0), mask);
+    cv::Mat hue, hist, backproj;
 
-      if ( x_init )
-      {
-       float max_val = 0.f;
-         x_init = 0;
-         cvSetImageROI( hue, selection );
-         cvSetImageROI( mask, selection );
-         cvCalcHist( &hue, hist, 0, mask );
-         cvGetMinMaxHistValue( hist, 0, &max_val, 0, 0 );
-         cvConvertScale( hist->bins, hist->bins, max_val ? 255. / max_val : 0., 0 );
-         cvResetImageROI( hue );
-         cvResetImageROI( mask );
-         trackwindow = selection;
-      }
+    // extract hue (1st channel) from hsv (3 channels)
+    cv::mixChannels({hsv}, {hue}, {0,0});
 
-      cvCalcBackProject( (IplImage**)&(hue), (CvArr*)backproject, (const CvHistogram*)hist );
-      cvAnd( backproject, mask, backproject, 0 );
-      cvCamShift( backproject, trackwindow,
-                  cvTermCriteria( CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 1 ),
-                  &trackcomp, &trackbox );
-      trackwindow = trackcomp.rect;
+    int hsize = 16;
+    float hranges[] = {0,180};
+    const float* phranges = hranges;
 
-      if( x_backproject )
-          cvCvtColor( backproject, rgb, CV_GRAY2BGR );
-      if( !rgb->origin )
-           trackbox.angle = -trackbox.angle;
-      cvEllipseBox( rgb, trackbox, CV_RGB(255,0,0), 3, CV_AA, 0 );
-      SETFLOAT(&x_list[0], trackbox.center.x);
-      SETFLOAT(&x_list[1], trackbox.center.y);
-      SETFLOAT(&x_list[2], trackbox.size.width);
-      SETFLOAT(&x_list[3], trackbox.size.height);
-      SETFLOAT(&x_list[4], trackbox.angle);
-      outlet_list( m_dataout, 0, 5, x_list );
+    if ( x_init )
+    {
+      unsigned char max_val = 255;
+      x_init = 0;
+      cv::Mat roi(hue, selection), maskroi(mask, selection);
+      cv::calcHist(&roi, 1, 0, maskroi, hist, 1, &hsize, &phranges);
+      cv::normalize(hist, hist, 0, max_val, cv::NORM_MINMAX);
+
+      //cv::minMaxLoc(hist, nullptr, &max_val, nullptr, nullptr);
+
+      trackwindow = selection;
+    }
+
+    cv::calcBackProject(&hue, 1, 0, hist, backproj, &phranges);
+    backproj &= mask;
+    cv::RotatedRect trackBox = cv::CamShift(backproj, trackwindow,
+                        cv::TermCriteria( cv::TermCriteria::EPS | cv::TermCriteria::COUNT, 10, 1 ));
+    if( trackwindow.area() <= 1 )
+    {
+        int cols = backproj.cols, rows = backproj.rows, r = (MIN(cols, rows) + 5)/6;
+        trackwindow = cv::Rect(trackwindow.x - r, trackwindow.y - r,
+                           trackwindow.x + r, trackwindow.y + r) &
+                      cv::Rect(0, 0, cols, rows);
+    }
+    if( x_backproject )
+      mat2image(backproj, image);
+
+    cv::Mat mat = image2mat(image);
+
+    cv::ellipse(mat, trackBox, cv::Scalar(0,0,255), 3, cv::LINE_AA);
+
+    SETFLOAT(&x_list[0], trackbox.center.x);
+    SETFLOAT(&x_list[1], trackbox.center.y);
+    SETFLOAT(&x_list[2], trackbox.size.width);
+    SETFLOAT(&x_list[3], trackbox.size.height);
+    SETFLOAT(&x_list[4], trackbox.angle);
+    outlet_list(m_dataout, nullptr, 5, x_list);
   }
-
-  cvCvtColor(rgb, rgba, CV_BGR2BGRA);
-  memcpy( image.data, rgba->imageData, image.xsize*image.ysize*4 );
-}
-
-void pix_opencv_camshift :: processRGBImage(imageStruct &image)
-{ 
-  int i, k;
-  int im;
-  int marked;
-  int hdims = 16;
-  float hranges_arr[] = {0,180};
-  float* hranges = hranges_arr;
-
-
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
-  {
-
-    this->comp_xsize=image.xsize;
-    this->comp_ysize=image.ysize;
-
-    cvReleaseImage(&rgba);
-    cvReleaseImage(&rgb);
-    cvReleaseImage(&gray);
-    cvReleaseImage(&hsv);
-    cvReleaseImage(&hue);
-    cvReleaseImage(&mask);
-    cvReleaseImage(&backproject);
-    cvReleaseHist(&hist);
-
-    rgba = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 4);
-    rgb = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
-    gray = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    hsv = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
-    hue = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    mask = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    backproject = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    hist = cvCreateHist( 1, &hdims, CV_HIST_ARRAY, &hranges, 1 );
-
-  }
-
-  memcpy( rgb->imageData, image.data, image.xsize*image.ysize*3 );
-
-  // Convert to hsv
-  cvCvtColor(rgb, hsv, CV_BGR2HSV);
-
-  if ( x_track  )
-  {
-      cvInRangeS( hsv, cvScalar(0,x_smin,MIN(x_vmin,x_vmax),0), cvScalar(180,256,MAX(x_vmin,x_vmax),0), mask );
-      cvSplit( hsv, hue, 0, 0, 0 );
-
-      if ( x_init )
-      {
-       float max_val = 0.f;
-         x_init = 0;
-         cvSetImageROI( hue, selection );
-         cvSetImageROI( mask, selection );
-         cvCalcHist( &hue, hist, 0, mask );
-         cvGetMinMaxHistValue( hist, 0, &max_val, 0, 0 );
-         cvConvertScale( hist->bins, hist->bins, max_val ? 255. / max_val : 0., 0 );
-         cvResetImageROI( hue );
-         cvResetImageROI( mask );
-         trackwindow = selection;
-      }
-
-      cvCalcBackProject( (IplImage**)&(hue), (CvArr*)backproject, (const CvHistogram*)hist );
-      cvAnd( backproject, mask, backproject, 0 );
-      cvCamShift( backproject, trackwindow,
-                  cvTermCriteria( CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 1 ),
-                  &trackcomp, &trackbox );
-      trackwindow = trackcomp.rect;
-
-      if( x_backproject )
-          cvCvtColor( backproject, rgb, CV_GRAY2BGR );
-      if( !rgb->origin )
-           trackbox.angle = -trackbox.angle;
-      cvEllipseBox( rgb, trackbox, CV_RGB(255,0,0), 3, CV_AA, 0 );
-      SETFLOAT(&x_list[0], trackbox.center.x);
-      SETFLOAT(&x_list[1], trackbox.center.y);
-      SETFLOAT(&x_list[2], trackbox.size.width);
-      SETFLOAT(&x_list[3], trackbox.size.height);
-      SETFLOAT(&x_list[4], trackbox.angle);
-      outlet_list( m_dataout, 0, 5, x_list );
-  }
-
-  memcpy( image.data, rgb->imageData, image.xsize*image.ysize*3 );
-}
-
-void pix_opencv_camshift :: processYUVImage(imageStruct &image)
-{
-  post( "pix_opencv_camshift : yuv format not supported" );
-}
-    	
-void pix_opencv_camshift :: processGrayImage(imageStruct &image)
-{ 
-  int i, k;
-  int im;
-  int marked;
-  int hdims = 16;
-  float hranges_arr[] = {0,180};
-  float* hranges = hranges_arr;
-
-
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
-  {
-
-    this->comp_xsize=image.xsize;
-    this->comp_ysize=image.ysize;
-
-    cvReleaseImage(&rgba);
-    cvReleaseImage(&rgb);
-    cvReleaseImage(&gray);
-    cvReleaseImage(&hsv);
-    cvReleaseImage(&hue);
-    cvReleaseImage(&mask);
-    cvReleaseImage(&backproject);
-    cvReleaseHist(&hist);
-
-    rgba = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 4);
-    rgb = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
-    gray = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    hsv = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
-    hue = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    mask = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    backproject = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    hist = cvCreateHist( 1, &hdims, CV_HIST_ARRAY, &hranges, 1 );
-
-  }
-
-  memcpy( gray->imageData, image.data, image.xsize*image.ysize );
-
-  // Convert to hsv
-  cvCvtColor(gray, rgb, CV_GRAY2BGR);
-  cvCvtColor(rgb, hsv, CV_BGR2HSV);
-
-  if ( x_track  )
-  {
-      cvInRangeS( hsv, cvScalar(0,x_smin,MIN(x_vmin,x_vmax),0), cvScalar(180,256,MAX(x_vmin,x_vmax),0), mask );
-      cvSplit( hsv, hue, 0, 0, 0 );
-
-      if ( x_init )
-      {
-       float max_val = 0.f;
-         x_init = 0;
-         cvSetImageROI( hue, selection );
-         cvSetImageROI( mask, selection );
-         cvCalcHist( &hue, hist, 0, mask );
-         cvGetMinMaxHistValue( hist, 0, &max_val, 0, 0 );
-         cvConvertScale( hist->bins, hist->bins, max_val ? 255. / max_val : 0., 0 );
-         cvResetImageROI( hue );
-         cvResetImageROI( mask );
-         trackwindow = selection;
-      }
-
-      cvCalcBackProject( (IplImage**)&(hue), (CvArr*)backproject, (const CvHistogram*)hist );
-      cvAnd( backproject, mask, backproject, 0 );
-      cvCamShift( backproject, trackwindow,
-                  cvTermCriteria( CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 1 ),
-                  &trackcomp, &trackbox );
-      trackwindow = trackcomp.rect;
-
-      if( x_backproject )
-          memcpy( gray->imageData, backproject->imageData, image.xsize*image.ysize );
-      if( !rgb->origin )
-           trackbox.angle = -trackbox.angle;
-      cvEllipseBox( gray, trackbox, CV_RGB(255,0,0), 3, CV_AA, 0 );
-      SETFLOAT(&x_list[0], trackbox.center.x);
-      SETFLOAT(&x_list[1], trackbox.center.y);
-      SETFLOAT(&x_list[2], trackbox.size.width);
-      SETFLOAT(&x_list[3], trackbox.size.height);
-      SETFLOAT(&x_list[4], trackbox.angle);
-      outlet_list( m_dataout, 0, 5, x_list );
-  }
-
-  memcpy( image.data, gray->imageData, image.xsize*image.ysize );
 }
 
 /////////////////////////////////////////////////////////
@@ -420,31 +195,31 @@ void  pix_opencv_camshift :: trackMess(float px, float py)
 {
   int rx, ry, w, h;
 
-    if ( ( px<0.0 ) || ( px>comp_xsize ) || ( py<0.0 ) || ( py>comp_ysize ) ) return;
+  if ( ( px<0.0 ) || ( px>comp_xsize ) || ( py<0.0 ) || ( py>comp_ysize ) ) return;
 
-    //py = comp_ysize - py;
-    origin = cvPoint((int)px,(int)py);
-    rx = ( (int)px-(x_rwidth/2) < 0 )? 0:(int)px-(x_rwidth/2);
-    ry = ( (int)py-(x_rheight/2) < 0 )? 0:(int)py-(x_rheight/2);
-    w = (rx+x_rwidth>comp_xsize ) ? ( comp_xsize - rx ):x_rwidth;
-    h = (ry+x_rheight>comp_ysize ) ? ( comp_ysize - ry ):x_rheight;
-    selection = cvRect(rx,ry,w,h);
-    post( "pix_opencv_camshift : track point (%f,%f) region (%d %d %d %d)", px, py, rx, ry, w, h );
-    x_track = 1;
-    x_init = 1;
+  //py = comp_ysize - py;
+  origin = cvPoint((int)px,(int)py);
+  rx = ( (int)px-(x_rwidth/2) < 0 )? 0:(int)px-(x_rwidth/2);
+  ry = ( (int)py-(x_rheight/2) < 0 )? 0:(int)py-(x_rheight/2);
+  w = (rx+x_rwidth>comp_xsize ) ? ( comp_xsize - rx ):x_rwidth;
+  h = (ry+x_rheight>comp_ysize ) ? ( comp_ysize - ry ):x_rheight;
+  selection = cvRect(rx,ry,w,h);
+  post( "pix_opencv_camshift : track point (%f,%f) region (%d %d %d %d)", px, py, rx, ry, w, h );
+  x_track = 1;
+  x_init = 1;
 }
 
 void  pix_opencv_camshift :: rWidthMess(float rwidth)
 {
-    if ( (int)rwidth>=0 ) x_rwidth = (int)rwidth;
-    // refresh selection zone
-    trackMess( (float)origin.x, (float)origin.y );
+  if ( (int)rwidth>=0 ) x_rwidth = (int)rwidth;
+  // refresh selection zone
+  trackMess( (float)origin.x, (float)origin.y );
 }
 
 void  pix_opencv_camshift :: rHeightMess(float rheight)
 {
-    if ( (int)rheight>=0 ) x_rheight = (int)rheight;
-    // refresh selection zone
-    trackMess( (float)origin.x, (float)origin.y );
+  if ( (int)rheight>=0 ) x_rheight = (int)rheight;
+  // refresh selection zone
+  trackMess( (float)origin.x, (float)origin.y );
 }
 
