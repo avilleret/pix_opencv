@@ -52,6 +52,10 @@ include_directories(${PUREDATA_INCLUDE_DIRS} ${GEM_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang$")
+  set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} -undefined dynamic_lookup")
+endif()
+
 # set library binary file name and extension
 set_target_properties(${PROJECT_NAME}
   PROPERTIES
