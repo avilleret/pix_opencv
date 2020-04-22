@@ -1,0 +1,11 @@
+stages:
+  - build
+
+build:macos:
+  stage: build
+  script:
+    - mkdir -p build && cd build
+    - cmake .. -DPUREDATA_INCLUDE_DIRS=/Applications/Pd-0.50-2.app/Contents/Resources/src/ -DGEM_INCLUDE_DIRS=~/Documents/Pd/externals/Gem/include/Gem -GNinja 
+    - cmake --build .
+  tags:
+    - macos
