@@ -1,27 +1,7 @@
-/*-----------------------------------------------------------------
-LOG
-    GEM - Graphics Environment for Multimedia
-
-    Distrans algorithm
-
-    Copyright (c) 1997-1999 Mark Danks. mark@danks.org
-    Copyright (c) Günther Geiger. geiger@epy.co.at
-    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM. zmoelnig@iem.kug.ac.at
-    Copyright (c) 2002 James Tittle & Chris Clepper
-    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-
------------------------------------------------------------------*/
-
-#ifndef INCLUDE_PIX_OPENCV_DISTRANS_H_
-#define INCLUDE_PIX_OPENCV_DISTRANS_H_
-
-#ifndef _EiC
-#include "opencv2/core/core_c.h"
-#include "opencv2/imgproc/imgproc_c.h"
-#endif
-
-#include "Base/GemPixObj.h"
+#pragma once
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <Base/GemPixObj.h>
 
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
@@ -34,54 +14,42 @@ KEYWORDS
     pix
     
 DESCRIPTION
-   
+
 -----------------------------------------------------------------*/
 class GEM_EXPORT pix_opencv_distrans : public GemPixObj
 {
-    CPPEXTERN_HEADER(pix_opencv_distrans, GemPixObj)
+  CPPEXTERN_HEADER(pix_opencv_distrans, GemPixObj)
 
-    public:
+public:
 
-	    //////////
-	    // Constructor
-    	pix_opencv_distrans();
-    	
-    protected:
-    	
-    	//////////
-    	// Destructor
-    	virtual ~pix_opencv_distrans();
+  //////////
+  // Constructor
+  pix_opencv_distrans();
 
-    	//////////
-    	// Do the processing
-    	virtual void 	processRGBAImage(imageStruct &image);
-    	virtual void 	processRGBImage(imageStruct &image);
-	virtual void 	processYUVImage(imageStruct &image);
-    	virtual void 	processGrayImage(imageStruct &image); 
-    	
-    	// Some varibales to control mophology voronoi
-    	int 		edge_thresh;
-    	int 		build_voronoi;
-    	int 		mask_size;
+protected:
 
-	// to detect changes in the image size
-	int 		comp_xsize;
-	int		comp_ysize;
-    
+  //////////
+  // Destructor
+  virtual ~pix_opencv_distrans();
 
-    private:
-    
-    	//////////
-    	// Static member functions
-    	static void 	thresholdMessCallback(void *data, t_floatarg pos);
-    	static void 	voronoiMessCallback(void *data, t_floatarg voronoi);
-    	static void 	maskMessCallback(void *data, t_floatarg f);
+  //////////
+  // Do the processing
+  virtual void 	processImage(imageStruct &image);
 
-	// The output and temporary images
-    	IplImage 	*dist, *dist8u1, *dist8u2, *dist8u, *dist32s;
-    	IplImage 	*rgb, *gray, *edge, *labels;
-    	IplImage 	*rgba, *alpha;
-	
+  // Some varibales to control mophology voronoi
+  int 		edge_thresh;
+  int 		mask_size;
+  int     build_voronoi;
+  int     voronoiType;
+  int     dist_type;
+
+private:
+
+  //////////
+  // Static member functions
+  static void 	thresholdMessCallback(void *data, t_floatarg pos);
+  static void 	voronoiMessCallback(void *data, t_floatarg voronoi);
+  static void 	maskMessCallback(void *data, t_floatarg f);
+  static void 	distMessCallback(void *data, t_floatarg f);
+  static void   typeMessCallback(void *data, t_floatarg f);
 };
-
-#endif	// for header file

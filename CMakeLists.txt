@@ -19,6 +19,7 @@ set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_colorfilt.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_contours.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_dft.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_distrans.cpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.cpp
@@ -34,6 +35,7 @@ set(HEADERS
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_colorfilt.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_contours.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_dft.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_distrans.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.hpp
 )
