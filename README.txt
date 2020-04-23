@@ -1,17 +1,17 @@
-`pix_opencv` is a Puredata library for real-time video processing : blob tracking, contours extracting, motion flow computation... It is based on work by Yves Degoyon and Lluis Gomez i Bigorda and uses `OpenCV` and `Gem`
+pix_opencv
+==========
 
-I'm trying to improve `pix_opencv` library since 2012. I add new objects as needed in my projects.
+OpenCV bindings for Puredata/Gem.
 
-`pix_opencv` is open and you can find the sources here : https://github.com/avilleret/pix_opencv
+# Building
+We are now using CMake to build `pix_opencv`.
+So you can build it with : 
 
-You can also find binaries for Windows, Ubuntu and Mac OS X here : https://github.com/avilleret/pix_opencv/releases
-For more informations, please check the Wiki : https://github.com/avilleret/pix_opencv/wiki
-Please report bugs through Github interface : https://github.com/avilleret/pix_opencv/issues
+    mkdir -p build && cd build   # create a new folder and go into
+    cmake ..
+    cmake --build .  # this will produce a pix_opencv.pd_darwin in the build folder
 
-Also you can start with `pix_opencv-overview.pd` which shows all availalbe objects.
-Each external has also its own help file.
-There are severals examples also the `examples` folder.
+On MacOS, CMake might fail to locate Pd and Gem if don't install them in the Unix way (inside /usr/local with their respective `.pc` files in the right place). In that case, you can hint the location by filling the `PUREDATA_INCLUDE_DIRS` variable with the path to the folder where is `m_pd.h` and the `GEM_INCLUDE_DIRS` with the path to the folder of Gem headers. For example, if you have Pd 0.50-2 in `/Applications` folder and if you install Gem from deken in `~/Documents/Pd/externals/`.
 
-To use `pix_opencv` in your project, add the folder to the pd search path.
-
-For more informations (esp. on building it from source), see the wiki : https://github.com/avilleret/pix_opencv/wiki.
+	cmake .. -DPUREDATA_INCLUDE_DIRS=/Applications/Pd-0.50-2.app/Contents/Resources/src/ \ 
+			 -DGEM_INCLUDE_DIRS=~/Documents/Pd/externals/Gem/include/Gem
