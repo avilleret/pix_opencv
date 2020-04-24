@@ -13,6 +13,7 @@ extern "C" void pix_opencv_contours_setup();
 extern "C" void pix_opencv_dft_setup();
 extern "C" void pix_opencv_distrans_setup();
 extern "C" void pix_opencv_edge_setup();
+extern "C" void pix_opencv_facetracker_setup();
 
 extern "C" {
 
@@ -61,6 +62,7 @@ void pix_opencv_setup(void)
     pix_opencv_dft_setup();
     pix_opencv_distrans_setup();
     pix_opencv_edge_setup();
+    pix_opencv_facetracker_setup();
 }
 
 } // extern "C"

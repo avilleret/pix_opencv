@@ -4,10 +4,12 @@ project(pix_opencv CXX)
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(OpenCV 4 REQUIRED
-  COMPONENTS core imgproc)
+  COMPONENTS core imgproc objdetect)
 
 find_package(OpenCV 4
   COMPONENTS bgsegm)
+
+add_subdirectory(FaceTracker)
 
 set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.cpp
@@ -21,6 +23,7 @@ set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_dft.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_distrans.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_edge.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_facetracker.cpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.cpp
@@ -38,6 +41,7 @@ set(HEADERS
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_dft.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_distrans.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_edge.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_facetracker.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.hpp
 )
@@ -80,4 +84,4 @@ elseif(UNIX)
     endif()
 endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS} FaceTracker)

@@ -1,28 +1,7 @@
-/*-----------------------------------------------------------------
-LOG
-    GEM - Graphics Environment for Multimedia
-
-    Threshold filter
-
-    Copyright (c) 1997-1999 Mark Danks. mark@danks.org
-    Copyright (c) Günther Geiger. geiger@epy.co.at
-    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM. zmoelnig@iem.kug.ac.at
-    Copyright (c) 2002 James Tittle & Chris Clepper
-    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-
------------------------------------------------------------------*/
-
-#ifndef INCLUDE_PIX_OPENCV_FACETRACKER_H_
-#define INCLUDE_PIX_OPENCV_FACETRACKER_H_
-
-#ifndef _EiC
-#include "opencv2/opencv.hpp"
-#endif
-
-#include "FaceTracker/Tracker.h"
-
-#include "Base/GemPixObj.h"
+#pragma once
+#include <opencv2/opencv.hpp>
+#include <FaceTracker/Tracker.h>
+#include <Base/GemPixObj.h>
 
 /*-----------------------------------------------------------------
 -------------------------------------------------------------------
@@ -104,4 +83,3 @@ class GEM_EXPORT pix_opencv_facetracker : public GemPixObj
     t_symbol* m_arraysname[13];
              
 };
-#endif	// for header file

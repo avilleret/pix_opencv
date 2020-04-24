@@ -1,24 +1,4 @@
-////////////////////////////////////////////////////////
-//
-// GEM - Graphics Environment for Multimedia
-//
-// zmoelnig@iem.kug.ac.at
-//
-// Implementation file
-//
-//    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
-//    Copyright (c) 2002 James Tittle & Chris Clepper
-//    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-//    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-//
-/////////////////////////////////////////////////////////
-// based on code written by Lluis Gomez i Bigorda ( lluisgomez _at_ hangar _dot_ org ) (pix_opencv)
-// FaceTracker for pix_opencv
-
-#ifdef HAVE_FACETRACKER
-#include "pix_opencv_facetracker.h"
+#include "pix_opencv_facetracker.hpp"
 
 using namespace FACETRACKER;
 
@@ -210,10 +190,10 @@ void pix_opencv_facetracker :: processImage(imageStruct &image)
     im = gray;
   } else if ( image.csize == 3 ) {
     im = cv::Mat( image.ysize, image.xsize, CV_8UC3, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
-    cv::cvtColor(im,gray,CV_RGB2GRAY);
+    cv::cvtColor(im,gray,cv::COLOR_RGB2GRAY);
   } else if ( image.csize == 4 ) {
     im = cv::Mat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
-    cv::cvtColor(im,gray,CV_RGBA2GRAY);
+    cv::cvtColor(im,gray,cv::COLOR_RGBA2GRAY);
   } else { 
     error("pix_opencv_facetracker : unsupported video format %d",image.csize);
     return;
@@ -233,14 +213,14 @@ void pix_opencv_facetracker :: processImage(imageStruct &image)
   }     
   //draw framerate on display image 
   if(m_fnum >= 9){      
-    m_t1 = cvGetTickCount();
-    m_fps = 10.0/((double(m_t1-m_t0)/cvGetTickFrequency())/1e+6); 
+    m_t1 = cv::getTickCount();
+    m_fps = 10.0/((double(m_t1-m_t0)/cv::getTickFrequency())/1e+6);
     m_t0 = m_t1; m_fnum = 0;
   }else m_fnum += 1;
   if(m_show){
     char text[256];
     sprintf(text,"%.2f frames/sec",(float)m_fps);
-    cv::putText(im,text,cv::Point(10,20), CV_FONT_HERSHEY_SIMPLEX,0.5,CV_RGB(255,255,255));
+    cv::putText(im,text,cv::Point(10,20), cv::FONT_HERSHEY_SIMPLEX,0.5,CV_RGB(255,255,255));
   }
 }
 
@@ -299,4 +279,3 @@ void pix_opencv_facetracker :: clampMess(float arg){
 void pix_opencv_facetracker :: filterMess(float arg){
   m_nIter=int(arg);
 }
-#endif /* HAVE_FACETRACKER */
