@@ -2,7 +2,7 @@
 
 using namespace FACETRACKER;
 
-CPPEXTERN_NEW(pix_opencv_facetracker)
+CPPEXTERN_NEW_WITH_GIMME(pix_opencv_facetracker)
 
 static std::vector<int> consecutive(int start, int end) {
 	int n = end - start;
@@ -45,19 +45,20 @@ std::vector<int> pix_opencv_facetracker::getFeatureIndices(int feature) {
 // Constructor
 //
 /////////////////////////////////////////////////////////
-pix_opencv_facetracker :: pix_opencv_facetracker() :  m_fcheck(false), \
-                                                      m_scale(1), \
-                                                      m_fpd(-1), \
-                                                      m_show(true), \
-                                                      m_nIter(5), \
-                                                      m_clamp(3), \
-                                                      m_fTol(0.01), \
-                                                      m_failed(true), \
-                                                      m_fps(-1), \
-                                                      m_t1(0), \
-                                                      m_t0(0), \
-                                                      m_taboutput(0), \
-                                                      m_autoresize(0)
+pix_opencv_facetracker :: pix_opencv_facetracker(int argc,t_atom* argv)
+  :  m_fcheck(false)
+  , m_scale(1)
+  , m_fpd(-1)
+  , m_show(true)
+  , m_nIter(5)
+  , m_clamp(3)
+  , m_fTol(0.01)
+  , m_failed(true)
+  , m_fps(-1)
+  , m_t1(0)
+  , m_t0(0)
+  , m_taboutput(0)
+  , m_autoresize(0)
 { 
 	m_dataout = outlet_new(this->x_obj, 0);
 
@@ -66,13 +67,27 @@ pix_opencv_facetracker :: pix_opencv_facetracker() :  m_fcheck(false), \
   m_wSize2.push_back(11); m_wSize2.push_back(9); m_wSize2.push_back(7);
   
   for ( int i = 0; i<13 ; i++) m_arraysname[i]=NULL;
-  
-  t_canvas* canvas=canvas_getcurrent();
-  const char *basename=canvas_getdir(canvas)->s_name;
-  
-  m_tracker.Load((std::string(basename) + "/model/face2.tracker").c_str());
-  m_tri = IO::LoadTri((std::string(basename) + "/model/face.tri").c_str());
-	m_con = IO::LoadCon((std::string(basename) + "/model/face.con").c_str()); 
+
+  if(argc==3)
+  {
+    if(argv->a_type == A_SYMBOL
+       && (argv+1)->a_type == A_SYMBOL
+       && (argv+2)->a_type == A_SYMBOL)
+    {
+      try
+      {
+        t_canvas* canvas=canvas_getcurrent();
+        std::string basename(canvas_getdir(canvas)->s_name);
+
+        m_tracker.Load((basename + std::string(argv->a_w.w_symbol->s_name) ).c_str());
+        m_tri = IO::LoadTri((basename + std::string((argv+1)->a_w.w_symbol->s_name)).c_str());
+        m_con = IO::LoadCon((basename + std::string((argv+2)->a_w.w_symbol->s_name)).c_str());
+      }
+      catch (const std::exception& e) {
+        std::cerr << "fail to load model: " << e.what() << std::endl;
+      }
+    }
+  }
 }
 
 /////////////////////////////////////////////////////////

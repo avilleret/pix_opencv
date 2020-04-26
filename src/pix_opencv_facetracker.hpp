@@ -25,7 +25,7 @@ class GEM_EXPORT pix_opencv_facetracker : public GemPixObj
 
     //////////
     // Constructor
-    pix_opencv_facetracker();
+    pix_opencv_facetracker(int,t_atom*);
     
   protected:
     
