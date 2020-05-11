@@ -78,10 +78,18 @@ pix_opencv_facetracker :: pix_opencv_facetracker(int argc,t_atom* argv)
       {
         t_canvas* canvas=canvas_getcurrent();
         std::string basename(canvas_getdir(canvas)->s_name);
+        basename+="/";
 
-        m_tracker.Load((basename + std::string(argv->a_w.w_symbol->s_name) ).c_str());
-        m_tri = IO::LoadTri((basename + std::string((argv+1)->a_w.w_symbol->s_name)).c_str());
-        m_con = IO::LoadCon((basename + std::string((argv+2)->a_w.w_symbol->s_name)).c_str());
+        std::string tracker_file = basename + std::string(argv->a_w.w_symbol->s_name);
+        std::string tri_file = basename + std::string((argv+1)->a_w.w_symbol->s_name);
+        std::string con_file = basename + std::string((argv+2)->a_w.w_symbol->s_name);
+
+        std::cout << "load: " << tracker_file << std::endl;
+        m_tracker.Load(tracker_file.c_str());
+        std::cout << "load: " << tri_file << std::endl;
+        m_tri = IO::LoadTri(tri_file.c_str());
+        std::cout << "load: " << con_file << std::endl;
+        m_con = IO::LoadCon(con_file.c_str());
       }
       catch (const std::exception& e) {
         std::cerr << "fail to load model: " << e.what() << std::endl;
