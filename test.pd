@@ -1,4 +1,4 @@
-#N canvas 897 310 450 650 10;
+#N canvas 1304 154 450 650 10;
 #X obj 93 64 pix_opencv_calibration;
 #X obj 93 95 pix_opencv_athreshold;
 #X obj 93 126 pix_opencv_bgsubstract;
@@ -9,3 +9,6 @@
 #X obj 93 281 pix_opencv_contours;
 #X obj 93 312 pix_opencv_dft;
 #X obj 93 343 pix_opencv_distrans;
+#X obj 93 374 pix_opencv_edge;
+#X obj 93 405 pix_opencv_facetracker model/face.tracker model/face.tri
+model/face.con;
