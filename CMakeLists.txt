@@ -12,7 +12,6 @@ add_subdirectory(FaceTracker)
 set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_bgsubstract.cpp
-  # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_blobtrack.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_clahe.cpp
@@ -30,7 +29,6 @@ set(SOURCES
 set(HEADERS
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_bgsubstract.hpp
-  # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_blobtrack.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_calibration.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_camshift.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_clahe.hpp
