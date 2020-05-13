@@ -4,10 +4,8 @@ project(pix_opencv CXX)
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(OpenCV 4 REQUIRED
-  COMPONENTS core imgproc objdetect)
-
-find_package(OpenCV 4
-  COMPONENTS bgsegm)
+  COMPONENTS core imgproc
+  OPTIONAL_COMPONENTS bgsegm)
 
 add_subdirectory(FaceTracker)
 
