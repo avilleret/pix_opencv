@@ -17,6 +17,7 @@ extern "C" void pix_opencv_edge_setup();
 extern "C" void pix_opencv_facetracker_setup();
 #endif
 extern "C" void pix_opencv_findchessboardcorners_setup();
+extern "C" void pix_opencv_floodfill_setup();
 extern "C" void pix_opencv_hu_compare_setup();
 
 extern "C" {
@@ -70,6 +71,7 @@ void pix_opencv_setup(void)
     pix_opencv_facetracker_setup();
 #endif
     pix_opencv_findchessboardcorners_setup();
+    pix_opencv_floodfill_setup();
     pix_opencv_hu_compare_setup();
 }
 

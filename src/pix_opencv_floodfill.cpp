@@ -1,21 +1,5 @@
-
-//
-// GEM - Graphics Environment for Multimedia
-//
-// zmoelnig@iem.kug.ac.at
-//
-// Implementation file
-//
-//    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
-//    Copyright (c) 2002 James Tittle & Chris Clepper
-//    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-//    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-//
-/////////////////////////////////////////////////////////
-
-#include "pix_opencv_floodfill.h"
+#include "pix_opencv_floodfill.hpp"
+#include "pix_opencv_utils.hpp"
 #include <stdio.h>
 
 CPPEXTERN_NEW(pix_opencv_floodfill)
@@ -53,11 +37,6 @@ pix_opencv_floodfill :: pix_opencv_floodfill()
        x_g[i] = rand() & 255;
        x_b[i] = rand() & 255;
   }
-
-  rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-  rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-  grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-
 }
 
 /////////////////////////////////////////////////////////
@@ -66,43 +45,23 @@ pix_opencv_floodfill :: pix_opencv_floodfill()
 /////////////////////////////////////////////////////////
 pix_opencv_floodfill :: ~pix_opencv_floodfill()
 {
-  // Destroy cv_images
-  cvReleaseImage( &rgba );
-  cvReleaseImage( &rgb );
-  cvReleaseImage( &grey );
 }
 
 /////////////////////////////////////////////////////////
 // processImage
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_floodfill :: processRGBAImage(imageStruct &image)
+void pix_opencv_floodfill :: processImage(imageStruct &image)
 {
   int i, k;
   int im;
   int marked;
-  CvConnectedComp comp;
-  int flags = x_connectivity + ( 255 << 8 ) + CV_FLOODFILL_FIXED_RANGE;
+  int flags = x_connectivity + ( 255 << 8 ) + cv::FLOODFILL_FIXED_RANGE;
 
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
-  {
-
-    this->comp_xsize=image.xsize;
-    this->comp_ysize=image.ysize;
-
-    cvReleaseImage( &rgba );
-    cvReleaseImage( &rgb );
-    cvReleaseImage( &grey );
-
-    rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-    rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-  }
-
-  memcpy( rgba->imageData, image.data, image.xsize*image.ysize*4 );
-  cvCvtColor(rgba, grey, CV_BGRA2GRAY);
-  cvCvtColor(rgba, rgb, CV_BGRA2BGR);
-
+  auto grey = image2mat_gray(image);
+  auto rgb = image2mat_bgr(image);
+  // cvCvtColor(rgba, rgb, CV_BGRA2BGR);
+  cv::Rect rect;
   // mark recognized components
   for ( i=0; i<MAX_COMPONENTS; i++ )
   {
@@ -110,154 +69,35 @@ void pix_opencv_floodfill :: processRGBAImage(imageStruct &image)
      {
        if ( x_color )
        {
-          CvPoint seed = cvPoint(x_xcomp[i],x_ycomp[i]);
-          CvScalar color = CV_RGB( x_r[i], x_g[i], x_b[i] );
-          cvFloodFill( rgb, seed, color, CV_RGB( x_lo, x_lo, x_lo ),
-                       CV_RGB( x_up, x_up, x_up ), &comp, flags, NULL );
+          cv::Point seed(x_xcomp[i],x_ycomp[i]);
+          cv::Scalar color = CV_RGB( x_r[i], x_g[i], x_b[i] );
+          cv::floodFill( rgb, seed, color, &rect, CV_RGB( x_lo, x_lo, x_lo ),
+                       CV_RGB( x_up, x_up, x_up ), flags);
        }
        else
        {
-          CvPoint seed = cvPoint(x_xcomp[i],x_ycomp[i]);
-          CvScalar brightness = cvRealScalar((x_r[i]*2 + x_g[i]*7 + x_b[i] + 5)/10);
-          cvFloodFill( grey, seed, brightness, cvRealScalar(x_lo),
-                       cvRealScalar(x_up), &comp, flags, NULL );
+          cv::Point seed(x_xcomp[i],x_ycomp[i]);
+          double brightness = (x_r[i]*2 + x_g[i]*7 + x_b[i] + 5)/10.0;
+          cv::floodFill( grey, seed, brightness,  &rect,
+                         x_lo, x_up, flags);
        }
        SETFLOAT(&x_list[0], i);
-       SETFLOAT(&x_list[1], comp.rect.x);
-       SETFLOAT(&x_list[2], comp.rect.y);
-       SETFLOAT(&x_list[3], comp.rect.width);
-       SETFLOAT(&x_list[4], comp.rect.height);
+       SETFLOAT(&x_list[1], rect.x);
+       SETFLOAT(&x_list[2], rect.y);
+       SETFLOAT(&x_list[3], rect.width);
+       SETFLOAT(&x_list[4], rect.height);
        outlet_list( m_dataout, 0, 5, x_list );
      }
   }
 
   if ( !x_color )
-  {
-    cvCvtColor(grey, rgba, CV_GRAY2BGRA);
+  {  
+    mat2image(grey, image);
   }
   else
   {
-    cvCvtColor(rgb, rgba, CV_BGR2BGRA);
+     mat2image(rgb, image);
   }
-
-  memcpy( image.data, rgba->imageData, image.xsize*image.ysize*4 );
-}
-
-void pix_opencv_floodfill :: processRGBImage(imageStruct &image)
-{ 
-  int i, k;
-  int im;
-  int marked;
-  CvConnectedComp comp;
-  int flags = x_connectivity + ( 255 << 8 ) + CV_FLOODFILL_FIXED_RANGE;
-
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
-  {
-
-    this->comp_xsize=image.xsize;
-    this->comp_ysize=image.ysize;
-
-    cvReleaseImage( &rgba );
-    cvReleaseImage( &rgb );
-    cvReleaseImage( &grey );
-
-    rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-    rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-  }
-
-  memcpy( rgb->imageData, image.data, image.xsize*image.ysize*3 );
-
-  if ( !x_color )
-  {
-    cvCvtColor(rgb, grey, CV_BGR2GRAY);
-  }
-
-  // mark recognized components
-  for ( i=0; i<MAX_COMPONENTS; i++ )
-  {
-     if ( x_xcomp[i] != -1 )
-     {
-       if ( x_color )
-       {
-          CvPoint seed = cvPoint(x_xcomp[i],x_ycomp[i]);
-          CvScalar color = CV_RGB( x_r[i], x_g[i], x_b[i] );
-          cvFloodFill( rgb, seed, color, CV_RGB( x_lo, x_lo, x_lo ),
-                       CV_RGB( x_up, x_up, x_up ), &comp, flags, NULL );
-       }
-       else
-       {
-          CvPoint seed = cvPoint(x_xcomp[i],x_ycomp[i]);
-          CvScalar brightness = cvRealScalar((x_r[i]*2 + x_g[i]*7 + x_b[i] + 5)/10);
-          cvFloodFill( grey, seed, brightness, cvRealScalar(x_lo),
-                       cvRealScalar(x_up), &comp, flags, NULL );
-       }
-       SETFLOAT(&x_list[0], i);
-       SETFLOAT(&x_list[1], comp.rect.x);
-       SETFLOAT(&x_list[2], comp.rect.y);
-       SETFLOAT(&x_list[3], comp.rect.width);
-       SETFLOAT(&x_list[4], comp.rect.height);
-       outlet_list( m_dataout, 0, 5, x_list );
-     }
-  }
-
-  if ( !x_color )
-  {
-    cvCvtColor(grey, rgb, CV_GRAY2BGR);
-  }
-
-  memcpy( image.data, rgb->imageData, image.xsize*image.ysize*3 );
-}
-
-void pix_opencv_floodfill :: processYUVImage(imageStruct &image)
-{
-  post( "pix_opencv_floodfill : yuv format not supported" );
-}
-    	
-void pix_opencv_floodfill :: processGrayImage(imageStruct &image)
-{ 
-  int i, k;
-  int im;
-  int marked;
-  CvConnectedComp comp;
-  int flags = x_connectivity + ( 255 << 8 ) + CV_FLOODFILL_FIXED_RANGE;
-
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
-  {
-
-    this->comp_xsize=image.xsize;
-    this->comp_ysize=image.ysize;
-
-    cvReleaseImage( &rgba );
-    cvReleaseImage( &rgb );
-    cvReleaseImage( &grey );
-
-    rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-    rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    grey = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-  }
-
-  memcpy( grey->imageData, image.data, image.xsize*image.ysize );
-
-  // mark recognized components
-  for ( i=0; i<MAX_COMPONENTS; i++ )
-  {
-     if ( x_xcomp[i] != -1 )
-     {
-       CvPoint seed = cvPoint(x_xcomp[i],x_ycomp[i]);
-       CvScalar brightness = cvRealScalar((x_r[i]*2 + x_g[i]*7 + x_b[i] + 5)/10);
-       cvFloodFill( grey, seed, brightness, cvRealScalar(x_lo),
-                       cvRealScalar(x_up), &comp, flags, NULL );
-       SETFLOAT(&x_list[0], i);
-       SETFLOAT(&x_list[1], comp.rect.x);
-       SETFLOAT(&x_list[2], comp.rect.y);
-       SETFLOAT(&x_list[3], comp.rect.width);
-       SETFLOAT(&x_list[4], comp.rect.height);
-       outlet_list( m_dataout, 0, 5, x_list );
-     }
-  }
-
-  memcpy( image.data, grey->imageData, image.xsize*image.ysize );
 }
 
 /////////////////////////////////////////////////////////
