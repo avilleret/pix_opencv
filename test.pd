@@ -12,3 +12,4 @@
 #X obj 93 374 pix_opencv_edge;
 #X obj 93 405 pix_opencv_facetracker model/face.tracker model/face.tri
 model/face.con;
+#X obj 93 449 pix_opencv_hu_compare;
