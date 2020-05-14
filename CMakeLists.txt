@@ -5,9 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 find_package(OpenCV 4 REQUIRED
   COMPONENTS core imgproc
-  OPTIONAL_COMPONENTS bgsegm)
-
-add_subdirectory(FaceTracker)
+  OPTIONAL_COMPONENTS bgsegm objdetect)
 
 set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.cpp
@@ -20,7 +18,7 @@ set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_dft.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_distrans.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_edge.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_facetracker.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hu_compare.cpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.cpp
@@ -37,7 +35,7 @@ set(HEADERS
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_dft.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_distrans.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_edge.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_facetracker.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hu_compare.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.hpp
 )
@@ -46,6 +44,14 @@ if(OpenCV_bgsegm_FOUND)
   add_definitions("-DHAVE_BGSEGM")
   list(APPEND SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_backgroundsubtractor.cpp)
   list(APPEND HEADERS ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_backgroundsubtractor.hpp)
+endif()
+
+if(OpenCV_objdetect_FOUND)
+  add_definitions("-DHAVE_OBJDETECT")
+  add_subdirectory(FaceTracker)
+  list(APPEND SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_facetracker.cpp)
+  list(APPEND HEADERS   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_facetracker.cpp
+)
 endif()
 
 set(PUREDATA_INCLUDE_DIRS "" CACHE PATH "Path to folder containing m_pd.h" )
