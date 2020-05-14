@@ -14,3 +14,4 @@
 model/face.con;
 #X obj 93 449 pix_opencv_hu_compare;
 #X obj 93 480 pix_opencv_findchessboardcorners;
+#X obj 93 510 pix_opencv_floodfill;
