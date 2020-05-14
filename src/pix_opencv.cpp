@@ -16,6 +16,7 @@ extern "C" void pix_opencv_edge_setup();
 #ifdef HAVE_OBJDETECT
 extern "C" void pix_opencv_facetracker_setup();
 #endif
+extern "C" void pix_opencv_findchessboardcorners_setup();
 extern "C" void pix_opencv_hu_compare_setup();
 
 extern "C" {
@@ -68,6 +69,7 @@ void pix_opencv_setup(void)
 #ifdef HAVE_OBJDETECT
     pix_opencv_facetracker_setup();
 #endif
+    pix_opencv_findchessboardcorners_setup();
     pix_opencv_hu_compare_setup();
 }
 
