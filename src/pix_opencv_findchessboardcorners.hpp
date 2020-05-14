@@ -1,3 +1,4 @@
+#pragma once
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 
@@ -5,19 +6,6 @@
 
 #define MAX_MARKERS 500
 
-/*-----------------------------------------------------------------
--------------------------------------------------------------------
-CLASS
-    pix_opencv_findchessboardcorners
-    
-    Chessboard corners detection
-
-KEYWORDS
-    pix
-    
-DESCRIPTION
-
------------------------------------------------------------------*/
 class GEM_EXPORT pix_opencv_findchessboardcorners : public GemPixObj
 {
     CPPEXTERN_HEADER(pix_opencv_findchessboardcorners, GemPixObj)
