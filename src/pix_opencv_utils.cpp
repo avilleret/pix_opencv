@@ -12,6 +12,9 @@ cv::Mat image2mat(imageStruct& image)
     case 1:
       mat = cv::Mat(image.ysize, image.xsize, CV_8UC1, image.data);
       break;
+    case 2:
+      mat = cv::Mat(image.ysize, image.xsize, CV_8UC2, image.data);
+      break;
     case 3:
       mat = cv::Mat(image.ysize, image.xsize, CV_8UC3, image.data);
       break;
@@ -32,6 +35,10 @@ cv::Mat image2mat_gray(imageStruct& image)
     case 1:
       gray = cv::Mat(image.ysize, image.xsize, CV_8UC1, image.data);
       break;
+    case 2:
+      mat = cv::Mat(image.ysize, image.xsize, CV_8UC2, image.data);
+      cv::cvtColor(mat, gray, cv::COLOR_YUV2GRAY_420);
+      break;
     case 3:
       mat = cv::Mat(image.ysize, image.xsize, CV_8UC3, image.data);
       cv::cvtColor(mat, gray, cv::COLOR_RGB2GRAY);
@@ -44,6 +51,32 @@ cv::Mat image2mat_gray(imageStruct& image)
       error("image format not supported");
   }
   return gray;
+}
+
+cv::Mat image2mat_bgr(imageStruct& image)
+{
+  cv::Mat mat, bgr;
+  switch(image.csize)
+  {
+    case 1:
+      mat = cv::Mat(image.ysize, image.xsize, CV_8UC1, image.data);
+      cv::cvtColor(mat, bgr, cv::COLOR_GRAY2BGR);
+      break;
+    case 2:
+      mat = cv::Mat(image.ysize, image.xsize, CV_8UC2, image.data);
+      cv::cvtColor(mat, bgr, cv::COLOR_YUV2BGR);
+      break;
+    case 3:
+      bgr = cv::Mat(image.ysize, image.xsize, CV_8UC3, image.data);
+      break;
+    case 4:
+      mat = cv::Mat(image.ysize, image.xsize, CV_8UC4, image.data);
+      cv::cvtColor(mat, bgr, cv::COLOR_BGRA2BGR);
+      break;
+    default:
+      error("image format not supported");
+  }
+  return bgr;
 }
 
 cv::Mat image2mat_hsv(imageStruct& image)
