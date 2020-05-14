@@ -4,6 +4,7 @@ stages:
 build:macos:
   stage: build
   script:
+    - git submodule sync && git submodule update --init
     - mkdir -p build && cd build
     - cmake .. -DPUREDATA_INCLUDE_DIRS=/Applications/Pd-0.50-2.app/Contents/Resources/src/ -DGEM_INCLUDE_DIRS=~/Documents/Pd/externals/Gem/include/Gem -GNinja 
     - cmake --build .
