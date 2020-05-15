@@ -54,8 +54,11 @@ if(OpenCV_objdetect_FOUND)
   add_definitions("-DHAVE_OBJDETECT")
   add_subdirectory(FaceTracker)
   list(APPEND SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_facetracker.cpp)
-  list(APPEND HEADERS   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_facetracker.cpp
-)
+  list(APPEND HEADERS ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_facetracker.hpp)
+
+
+  list(APPEND SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_haarcascade.cpp)
+  list(APPEND HEADERS ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_haarcascade.hpp)
 endif()
 
 set(PUREDATA_INCLUDE_DIRS "" CACHE PATH "Path to folder containing m_pd.h" )
