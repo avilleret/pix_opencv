@@ -1,26 +1,5 @@
-/*-----------------------------------------------------------------
-LOG
-    GEM - Graphics Environment for Multimedia
-
-    Hough circles detection algorithm
-
-    Copyright (c) 1997-1999 Mark Danks. mark@danks.org
-    Copyright (c) Günther Geiger. geiger@epy.co.at
-    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM. zmoelnig@iem.kug.ac.at
-    Copyright (c) 2002 James Tittle & Chris Clepper
-    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-
------------------------------------------------------------------*/
-
-#ifndef INCLUDE_PIX_OPENCV_HOUGH_CIRCLES_H_
-#define INCLUDE_PIX_OPENCV_HOUGH_CIRCLES_H_
-
-#ifndef _EiC
-#include "opencv2/core/core_c.h"
-#include "opencv2/imgproc/imgproc_c.h"
-#endif
-
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 #include "Base/GemPixObj.h"
 
 #define MAX_HISTOGRAMS_TO_COMPARE 80
@@ -57,10 +36,7 @@ class GEM_EXPORT pix_opencv_hough_circles : public GemPixObj
 
     	//////////
     	// Do the processing
-    	virtual void 	processRGBAImage(imageStruct &image);
-    	virtual void 	processRGBImage(imageStruct &image);
-	virtual void 	processYUVImage(imageStruct &image);
-    	virtual void 	processGrayImage(imageStruct &image); 
+      virtual void 	processImage(imageStruct &image);
 
         int comp_xsize;
         int comp_ysize;
@@ -93,11 +69,5 @@ class GEM_EXPORT pix_opencv_hough_circles : public GemPixObj
         static void     floatMaxCirclesMessCallback(void *data, t_floatarg maxcircles);
 
 	// The output and temporary images
-        IplImage *rgba, *rgb, *gray;
-        CvFont font;
-        CvMemStorage* x_storage;
-        CvSeq* x_circles;
         t_atom x_list[4];
 };
-
-#endif	// for header file
