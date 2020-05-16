@@ -21,6 +21,7 @@ set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_findchessboardcorners.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_floodfill.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hu_compare.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hist_compare.cpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.cpp
@@ -40,6 +41,7 @@ set(HEADERS
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_findchessboardcorners.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_floodfill.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hu_compare.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hist_compare.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.hpp
 )

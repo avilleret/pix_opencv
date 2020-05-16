@@ -1,26 +1,5 @@
-/*-----------------------------------------------------------------
-LOG
-    GEM - Graphics Environment for Multimedia
-
-    Histogram reognition object using Open CV
-
-    Copyright (c) 1997-1999 Mark Danks. mark@danks.org
-    Copyright (c) Günther Geiger. geiger@epy.co.at
-    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM. zmoelnig@iem.kug.ac.at
-    Copyright (c) 2002 James Tittle & Chris Clepper
-    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-
------------------------------------------------------------------*/
-
-#ifndef INCLUDE_PIX_OPENCV_HIST_COMPARE_H_
-#define INCLUDE_PIX_OPENCV_HIST_COMPARE_H_
-
-#ifndef _EiC
-#include "opencv2/opencv.hpp"
-#include "opencv2/legacy/legacy.hpp"
-#include "opencv2/legacy/compat.hpp"
-#endif
+#pragma once
+#include <opencv2/opencv.hpp>
 
 #include "Base/GemPixObj.h"
 
@@ -37,52 +16,42 @@ KEYWORDS
     pix
     
 DESCRIPTION
-   
+
 -----------------------------------------------------------------*/
 
 class GEM_EXPORT pix_opencv_hist_compare : public GemPixObj
 {
-    CPPEXTERN_HEADER(pix_opencv_hist_compare, GemPixObj)
+  CPPEXTERN_HEADER(pix_opencv_hist_compare, GemPixObj)
 
-    public:
+  public:
 
-	//////////
-	// Constructor
-    	pix_opencv_hist_compare();
-    	
-    protected:
-    	
-    	//////////
-    	// Destructor
-    	virtual ~pix_opencv_hist_compare();
+    //////////
+    // Constructor
+    pix_opencv_hist_compare();
 
-    	//////////
-    	// Do the processing
-    	virtual void 	processImage(imageStruct &image); 
+  protected:
 
-        void  saveMess(float index);
+  //////////
+  // Destructor
+  virtual ~pix_opencv_hist_compare();
 
-        int comp_xsize;
-        int comp_ysize;
+  //////////
+  // Do the processing
+  virtual void 	processImage(imageStruct &image);
 
-        t_outlet *m_dataout;
-        t_outlet *m_measureout;
+  void  saveMess(float index);
 
-    private:
+  t_outlet *m_dataout;
+  t_outlet *m_measureout;
+
+  private:
     
-    	//////////
-    	// Static member functions
-        static void     saveMessCallback(void *data, t_floatarg index);
+    //////////
+    // Static member functions
+    static void     saveMessCallback(void *data, t_floatarg index);
 
-	// The output and temporary images
-        int save_now;
-        int nbsaved;
+    std::vector<std::vector<cv::Mat>> saved_hists;
 
-        CvHistogram *hist;
-        CvHistogram *saved_hist[MAX_HISTOGRAMS_TO_COMPARE];
-        IplImage *rgba, *rgb, *grey, *hsv, *h_plane, *s_plane, *v_plane, *h_saved_plane, *s_saved_plane, *v_saved_plane, *planes[2],*saved_planes[2];
-
-	
+    // The output and temporary images
+    int save_now;
 };
-
-#endif	// for header file

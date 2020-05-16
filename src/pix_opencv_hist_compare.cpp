@@ -1,21 +1,5 @@
-////////////////////////////////////////////////////////
-//
-// GEM - Graphics Environment for Multimedia
-//
-// zmoelnig@iem.kug.ac.at
-//
-// Implementation file
-//
-//    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
-//    Copyright (c) 2002 James Tittle & Chris Clepper
-//    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-//    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-//
-/////////////////////////////////////////////////////////
-
-#include "pix_opencv_hist_compare.h"
+#include "pix_opencv_hist_compare.hpp"
+#include "pix_opencv_utils.hpp"
 
 CPPEXTERN_NEW(pix_opencv_hist_compare)
 
@@ -30,56 +14,11 @@ CPPEXTERN_NEW(pix_opencv_hist_compare)
 
 pix_opencv_hist_compare :: pix_opencv_hist_compare()
 { 
-  comp_xsize=320;
-  comp_ysize=240;
-
   inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("save"));
   m_dataout = outlet_new(this->x_obj, &s_anything);
   m_measureout = outlet_new(this->x_obj, &s_anything);
 
   save_now = 0;
-
-  rgba = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 4);
-  rgb = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
-  grey = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-  hsv = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3 );
-
-  h_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-  s_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-  v_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-  planes[0] = h_plane;
-  planes[1] = s_plane;
-  h_saved_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-  s_saved_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-  v_saved_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-  saved_planes[0] = h_saved_plane;
-  saved_planes[1] = s_saved_plane;
-
-  int h_bins = (int)(comp_xsize/10), s_bins = (int)(comp_ysize/10);
-  {
-     int    hist_size[]  = { h_bins, s_bins };
-     float  h_ranges[]   = { 0, 180 };         // hue is [0,180]
-     float  s_ranges[]   = { 0, 255 };
-     float* ranges[]     = { h_ranges, s_ranges };
-     hist = cvCreateHist(
-            2,
-            hist_size,
-            CV_HIST_ARRAY,
-            ranges,
-            1
-      );
-      int n;
-      for (n=0; n<MAX_HISTOGRAMS_TO_COMPARE; n++) {
-          saved_hist[n] = cvCreateHist(
-                  2,
-                  hist_size,
-                  CV_HIST_ARRAY,
-                  ranges,
-                  1
-          );
-      }
-  }
-  nbsaved=0;
 }
 
 /////////////////////////////////////////////////////////
@@ -88,173 +27,78 @@ pix_opencv_hist_compare :: pix_opencv_hist_compare()
 /////////////////////////////////////////////////////////
 pix_opencv_hist_compare :: ~pix_opencv_hist_compare()
 {
-    //Destroy cv_images to clean memory
-    cvReleaseImage(&rgba);
-    cvReleaseImage(&rgb);
-    cvReleaseImage(&grey);
-    cvReleaseImage(&h_plane);
-    cvReleaseImage(&s_plane);
-    cvReleaseImage(&v_plane);
-    cvReleaseImage(&h_saved_plane);
-    cvReleaseImage(&s_saved_plane);
-    cvReleaseImage(&v_saved_plane);
-
 }
 
 /////////////////////////////////////////////////////////
 // processImage
 //
 /////////////////////////////////////////////////////////
-    	
+
 void pix_opencv_hist_compare :: processImage(imageStruct &image)
 { 
-  int h_bins = (int)(comp_xsize/10), s_bins = (int)(comp_ysize/10);
+  auto mat = image2mat(image);
 
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) {
+  std::vector<cv::Mat> planes;
+  cv::split(mat, planes);
 
-    this->comp_xsize=image.xsize;
-    this->comp_ysize=image.ysize;
+  std::vector<cv::Mat> hist;
+  std::vector<int> hist_size;
+  cv::calcHist(planes, {1}, 0, hist, {hist_size}, {0});
+  cv::equalizeHist(hist, hist);
 
-    //Destroy cv_images to clean memory
-    cvReleaseImage(&rgba);
-    cvReleaseImage(&rgb);
-    cvReleaseImage(&grey);
-    cvReleaseImage(&h_plane);
-    cvReleaseImage(&s_plane);
-    cvReleaseImage(&v_plane);
-    cvReleaseImage(&h_saved_plane);
-    cvReleaseImage(&s_saved_plane);
-    cvReleaseImage(&v_saved_plane);
-
-    //Create cv_images 
-    rgba = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 4);
-    rgb = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3);
-    grey = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    hsv = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 3 );
-      
-      
-    h_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    s_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    v_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    planes[0] = h_plane;
-    planes[1] = s_plane;
-    cvCvtPixToPlane( hsv, h_plane, s_plane, v_plane, 0 );
-    h_saved_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    s_saved_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    v_saved_plane = cvCreateImage(cvSize(comp_xsize,comp_ysize), IPL_DEPTH_8U, 1);
-    saved_planes[0] = h_saved_plane;
-    saved_planes[1] = s_saved_plane;
-      
-    h_bins = (int)(comp_xsize/10);
-    s_bins = (int)(comp_ysize/10);
-    {
-      int    hist_size[]  = { h_bins, s_bins };
-      float  h_ranges[]   = { 0, 180 };         // hue is [0,180]
-      float  s_ranges[]   = { 0, 255 };
-      float* ranges[]     = { h_ranges, s_ranges };
-      if ( hist ) { 
-        cvReleaseHist( &hist );
-        hist = NULL;
-      }
-      
-      hist = cvCreateHist(
-                  2,
-                  hist_size,
-                  CV_HIST_ARRAY,
-                  ranges,
-                  1
-      );
-      int n;
-      for (n=0; n<MAX_HISTOGRAMS_TO_COMPARE; n++) {
-          if ( saved_hist[n] ) {
-            cvReleaseHist( &saved_hist[n] );
-            saved_hist[n] = NULL;
-          }
-          
-          saved_hist[n] = cvCreateHist(
-                    2,
-                    hist_size,
-                    CV_HIST_ARRAY,
-                    ranges,
-                    1
-          );
-      }
-    }
-      
-  }
-  
-  // no need to copy the image, just create valid header and point to image.data...
-  IplImage* imgMat = cvCreateImageHeader( cv::Size(image.xsize, image.ysize), IPL_DEPTH_8U, image.csize);
-  imgMat->imageData = (char*) image.data; 
-  
-  if ( image.csize == 1 ){ // gray
-    cvCvtColor(imgMat, rgb, CV_GRAY2BGR);
-  } else if ( image.csize == 4 ) { //RGBA
-    cvCvtColor(imgMat, rgb, CV_BGRA2BGR);
-  } else {
-    error("support only RGBA or GRAY image");
-    return;
-  }
-
-  // Convert to hsv
-  cvCvtColor( rgb, hsv, CV_BGR2HSV );
-  cvCvtPixToPlane( hsv, h_plane, s_plane, v_plane, 0 );
-  
   // Build the histogram and compute its contents.
   if (save_now>=0) {
-       post("saving histogram %d\n",save_now);
-       cvCvtPixToPlane( hsv, h_saved_plane, s_saved_plane, v_saved_plane, 0 );
-       cvCalcHist( saved_planes, saved_hist[save_now], 0, 0 ); //Compute histogram
-       cvNormalizeHist( saved_hist[save_now], 1.0 );  //Normalize it
-       save_now=-1;
-       nbsaved++;
-   }
-   cvCalcHist( planes, hist, 0, 0 ); //Compute histogram
-   cvNormalizeHist( hist, 1.0 );  //Normalize it
+    post("saving histogram %d\n",save_now);
+    save_now=-1;
+    saved_hists.push_back(hist);
+  }
 
-   if ( nbsaved > 0 ) {
-      double* tato = new double[nbsaved];
-      t_atom* datalist = new t_atom[nbsaved];
-      int nearest = -1;
-      double max  =  0;
+  if (!saved_hists.empty()) {
+    std::vector<t_atom> datalist;
+    datalist.resize(saved_hists.size());
 
-      for ( int n=0; n<nbsaved; n++) {
-        tato[n] = cvCompareHist(hist, saved_hist[n], CV_COMP_INTERSECT);
-        SETFLOAT(&datalist[n], tato[n]);
-        if (tato[n]>max) {
-                max = tato[n];
-                nearest = n;
-        }
+    int nearest = -1;
+    double max  =  0;
+    int n=0;
+    for ( const auto& saved_hist : saved_hists) {
+      double val = cv::compareHist(hist, saved_hist, cv::HISTCMP_INTERSECT);
+      SETFLOAT(&datalist[n], val);
+      if (val>max) {
+        max = val;
+        nearest = n;
       }
-      outlet_float(m_dataout, (float)nearest);
-      outlet_list( m_measureout, 0, nbsaved , datalist );
-      
-      if ( tato ) delete[] tato; tato=NULL;
-      if ( datalist ) delete[] datalist; datalist=NULL;
-   } else {
-      outlet_float(m_dataout, -1.0);
-   }
+      ++n;
+    }
 
-   // Create an image to use to visualize our histogram.
-   int scale = 10;
-   // populate our visualization with little gray squares.
-   float max_value = 0;
-   cvGetMinMaxHistValue( hist, 0, &max_value, 0, 0 );
+    outlet_float(m_dataout, (float)nearest);
+    outlet_list( m_measureout, 0, saved_hists.size() , datalist.data());
 
-   int h = 0;
-   int s = 0;
+  } else {
+    outlet_float(m_dataout, -1.0);
+  }
 
-   for( h = 0; h < h_bins; h++ ) {
-      for( s = 0; s < s_bins; s++ ) {
-          float bin_val = cvQueryHistValue_2D( hist, h, s );
-          int intensity = cvRound( bin_val * 255 / max_value );
-          cvRectangle(
-                imgMat,
-                cvPoint( h*scale, s*scale ),
-                cvPoint( (h+1)*scale - 1, (s+1)*scale - 1),
-                CV_RGB(intensity,intensity,intensity), CV_FILLED, 8 , 0 );
-        }
-   }
+  // Create an image to use to visualize our histogram.
+  int scale = 10;
+  // populate our visualization with little gray squares.
+  double max_value = 0;
+  cv::minMaxLoc(hist, nullptr, &max_value, nullptr, nullptr);
+
+  int h = 0;
+  int s = 0;
+
+  int h_bins = (int)(image.xsize/10), s_bins = (int)(image.ysize/10);
+  for( h = 0; h < h_bins; h++ ) {
+    for( s = 0; s < s_bins; s++ ) {
+      float bin_val = hist[0].at<float>(h, s);
+      int intensity = cvRound( bin_val * 255 / max_value );
+      cv::rectangle(
+            mat,
+            cv::Point( h*scale, s*scale ),
+            cv::Point( (h+1)*scale - 1, (s+1)*scale - 1),
+            CV_RGB(intensity,intensity,intensity), cv::FILLED, 8 , 0 );
+    }
+  }
+  mat2image(mat, image);
 }
 
 /////////////////////////////////////////////////////////
@@ -270,7 +114,7 @@ void pix_opencv_hist_compare :: obj_setupCallback(t_class *classPtr)
 
 void pix_opencv_hist_compare :: saveMess(float index)
 {
-    if (((int)index>=0)&&((int)index<MAX_HISTOGRAMS_TO_COMPARE)) save_now = (int)index;
+  if (((int)index>=0)&&((int)index<MAX_HISTOGRAMS_TO_COMPARE)) save_now = (int)index;
 }
 
 void pix_opencv_hist_compare :: saveMessCallback(void *data, t_floatarg index)
