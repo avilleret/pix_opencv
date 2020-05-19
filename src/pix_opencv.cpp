@@ -21,6 +21,7 @@ extern "C" void pix_opencv_floodfill_setup();
 extern "C" void pix_opencv_haarcascade_setup();
 extern "C" void pix_opencv_hist_compare_setup();
 extern "C" void pix_opencv_hough_circles_setup();
+extern "C" void pix_opencv_hough_lines_setup();
 extern "C" void pix_opencv_hu_compare_setup();
 
 
@@ -79,6 +80,7 @@ void pix_opencv_setup(void)
     pix_opencv_haarcascade_setup();
     pix_opencv_hist_compare_setup();
     pix_opencv_hough_circles_setup();
+    pix_opencv_hough_lines_setup();
     pix_opencv_hu_compare_setup();
 }
 

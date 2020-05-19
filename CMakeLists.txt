@@ -22,6 +22,7 @@ set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_floodfill.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hist_compare.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hough_circles.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hough_lines.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hu_compare.cpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cpp
@@ -43,6 +44,7 @@ set(HEADERS
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_floodfill.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hist_compare.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hough_circles.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hough_lines.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hu_compare.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.hpp

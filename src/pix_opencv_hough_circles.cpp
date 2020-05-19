@@ -47,6 +47,9 @@ void pix_opencv_hough_circles :: processImage(imageStruct &image)
   cv::Mat mat = image2mat(image);
   cv::Mat gray = image2mat_gray(image);
 
+  if( night_mode )
+    mat = cv::Mat::zeros(mat.rows, mat.cols, mat.type());
+
   cv::GaussianBlur(gray, gray, cv::Size(9,9), 0, 0);
   std::vector<cv::Vec3f> circles;
   cv::HoughCircles(gray, circles, cv::HOUGH_GRADIENT,
@@ -68,6 +71,7 @@ void pix_opencv_hough_circles :: processImage(imageStruct &image)
        SETFLOAT(&x_list[3], radius);
        outlet_list( m_dataout, 0, 4, x_list );
   }
+  mat2image(mat, image);
 }
 /////////////////////////////////////////////////////////
 // static member function
