@@ -1,4 +1,4 @@
-#N canvas 1304 154 450 650 10;
+#N canvas 1304 154 450 850 10;
 #X obj 93 64 pix_opencv_calibration;
 #X obj 93 95 pix_opencv_athreshold;
 #X obj 93 126 pix_opencv_bgsubstract;
@@ -12,9 +12,10 @@
 #X obj 93 374 pix_opencv_edge;
 #X obj 93 405 pix_opencv_facetracker model/face.tracker model/face.tri
 model/face.con;
-#X obj 93 604 pix_opencv_hu_compare;
+#X obj 93 635 pix_opencv_hu_compare;
 #X obj 93 449 pix_opencv_findchessboardcorners;
 #X obj 93 480 pix_opencv_floodfill;
 #X obj 93 511 pix_opencv_haarcascade;
 #X obj 93 542 pix_opencv_hist_compare;
 #X obj 93 573 pix_opencv_hough_circles;
+#X obj 93 604 pix_opencv_hough_lines;
