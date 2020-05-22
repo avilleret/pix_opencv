@@ -9,6 +9,8 @@ cache: &global_macos_cache
     policy: pull-push
 
 build_deps:docker_image_x86_64:
+  services:
+    - docker
   stage: build_deps
   before_script:
     - docker info
@@ -41,6 +43,8 @@ build_deps:opencv_macos:
 
 build:linux_x86_64:
   stage: build
+  services:
+    - docker
   dependencies:
     - build_deps:docker_image_x86_64
   before_script:
