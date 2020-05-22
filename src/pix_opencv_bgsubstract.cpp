@@ -17,15 +17,6 @@ pix_opencv_bgsubstract :: pix_opencv_bgsubstract()
   inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("ft1"));
   x_threshold = 13;
   x_set       = 1;
-  comp_xsize  = 0;
-  comp_ysize  = 0;
-  orig      = NULL;
-  gray      = NULL;
-  rgb  	    = NULL;
-  grayLow   = NULL;
-  grayUp    = NULL;
-  prev_gray = NULL;
-  diff_8U   = NULL;
 }
 
 /////////////////////////////////////////////////////////

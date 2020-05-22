@@ -44,10 +44,6 @@ class GEM_EXPORT pix_opencv_bgsubstract : public GemPixObj
     int 		x_threshold;
     int 		x_set;
 
-    // to detect changes in the image size
-    int 	comp_xsize;
-    int		comp_ysize;
-
   private:
     
     //////////
