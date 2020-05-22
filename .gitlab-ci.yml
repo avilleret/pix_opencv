@@ -1,12 +1,81 @@
 stages:
+  - build_deps
   - build
+
+cache: &global_macos_cache
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - 3rdparty/opencv-install
+    policy: pull-push
+
+build_deps:docker_image_x86_64:
+  stage: build_deps
+  before_script:
+    - docker info
+    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+  script:
+    - cd tools/docker 
+    - docker build -f Dockerfile -t avilleret/pd-pix_opencv-devel:latest .  
+    - docker push avilleret/pd-pix_opencv-devel:latest
+  tags: 
+    - shell
+    - linux
+  only:
+    changes:
+      - tools/docker/Dockerfile
+      - tools/docker/scripts/*
+
+build_deps:opencv_macos:
+  stage: build_deps
+  tags:
+    - shell
+    - macos
+  script:
+    - docker/scripts/build-opencv.sh
+  only:
+    changes:
+      - docker/scripts/build-opencv.sh
+  cache:
+    <<: *global_macos_cache
+
+build:linux_x86_64:
+  stage: build
+  dependencies:
+    - build_deps:docker_image_x86_64
+  before_script:
+    - git submodule update --init
+  script: 
+    - docker run -e FTP_URL -e FTP_PASSWORD -e FTP_USER -e CI_COMMIT_TAG -e CI_COMMIT_SHA \
+      -v ${PWD}:/pix_opencv avilleret/pd-pix_opencv-devel:latest /pix_opencv/docker/build_in_docker.sh
+  tags:
+    - shell
+    - linux
+  artifacts:
+    name: pix_opencv
+    paths:
+      - pix_opencv*.tar.gz
 
 build:macos:
   stage: build
+  dependencies:
+    - build_deps:opencv_macos
   script:
     - git submodule sync && git submodule update --init
     - mkdir -p build && cd build
-    - cmake .. -DPUREDATA_INCLUDE_DIRS=/Applications/Pd-0.50-2.app/Contents/Resources/src/ -DGEM_INCLUDE_DIRS=~/Documents/Pd/externals/Gem/include/Gem -GNinja 
+    - cmake .. -GNinja
+        -DPUREDATA_INCLUDE_DIRS=/Applications/Pd-0.50-2.app/Contents/Resources/src/
+        -DGEM_INCLUDE_DIRS=~/Documents/Pd/externals/Gem/include/Gem
+        -DCMAKE_INSTALL_PREFIX=${PWD}/install \
+        -DOPENCV_ROOT=${REPO_ROOT}/3rdparty/opencv-install
     - cmake --build .
+    - cmake --build . --target install
+    - cd install && tar cf ../pd-pix_opencv.zip *
   tags:
     - macos
+  artifacts:
+    name: macos_package
+    paths:
+      - pd-pix_opencv.zip
+  cache:
+    <<: *global_macos_cache
+    policy: pull
