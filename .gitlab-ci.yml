@@ -22,8 +22,9 @@ build_deps:docker_image_x86_64:
     - linux
   only:
     changes:
-      - tools/docker/Dockerfile
-      - tools/docker/scripts/*
+      - docker/Dockerfile
+      - docker/scripts/*
+      - .gitlab-ci.yml
 
 build_deps:opencv_macos:
   stage: build_deps
@@ -46,7 +47,7 @@ build:linux_x86_64:
     - git submodule update --init
   script: 
     - docker run -e FTP_URL -e FTP_PASSWORD -e FTP_USER -e CI_COMMIT_TAG -e CI_COMMIT_SHA 
-      -v ${PWD}:/pix_opencv avilleret/pd-pix_opencv-devel:latest /pix_opencv/docker/build_in_docker.sh
+        -v ${PWD}:/pix_opencv avilleret/pd-pix_opencv-devel:latest /pix_opencv/docker/build_in_docker.sh
   tags:
     - shell
     - linux
