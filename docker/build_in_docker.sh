@@ -49,7 +49,6 @@ if [ -d package ]; then
 
   if [ ! -z $CI_COMMIT_TAG ]
   then
-    set +x # do not show FTP_* variable on command line
-    curl -T "${PIX_OPENCV_ARCHIVE}" ftp://${FTP_USER}:${FTP_PASSWORD}@${FTP_URL}/releases/
+    # ${SCRIPT_FOLDER}/upload_to_deken.sh
   fi
 fi
