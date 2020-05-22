@@ -1,21 +1,5 @@
-////////////////////////////////////////////////////////
-//
-// GEM - Graphics Environment for Multimedia
-//
-// zmoelnig@iem.kug.ac.at
-//
-// Implementation file
-//
-//    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
-//    Copyright (c) 2002 James Tittle & Chris Clepper
-//    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-//    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-//
-/////////////////////////////////////////////////////////
-
-#include "pix_opencv_laplace.h"
+#include "pix_opencv_laplace.hpp"
+#include "pix_opencv_utils.hpp"
 
 CPPEXTERN_NEW(pix_opencv_laplace)
 
@@ -36,14 +20,6 @@ pix_opencv_laplace :: pix_opencv_laplace()
   aperture_size = 3;
   comp_xsize  = 0;
   comp_ysize  = 0;
-
-  rgb = NULL;
-  rgba = NULL;
-  grey = NULL;
-  laplace = NULL;
-  colorlaplace = NULL;
-  for (i=0; i<3; i++) planes[i] = NULL;
-
 }
 
 /////////////////////////////////////////////////////////
@@ -52,155 +28,32 @@ pix_opencv_laplace :: pix_opencv_laplace()
 /////////////////////////////////////////////////////////
 pix_opencv_laplace :: ~pix_opencv_laplace()
 {
-  int i; 
-    	//Destroy cv_images to clean memory
-    	for( i = 0; i < 3; i++ )
-    		cvReleaseImage( &planes[i] );
-    	cvReleaseImage( &rgb );
-    	cvReleaseImage( &rgba );
-    	cvReleaseImage( &grey );
-    	cvReleaseImage( &laplace );
-    	cvReleaseImage( &colorlaplace );
 }
 
 /////////////////////////////////////////////////////////
 // processImage
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_laplace :: processRGBAImage(imageStruct &image)
+void pix_opencv_laplace :: processImage(imageStruct &image)
 {
-  unsigned char *pixels = image.data;
-  int i;
+  cv::Mat mat = image2mat(image);
 
-  if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!rgba)) {
+  if(m_laplacian.size() != mat.size() || m_laplacian.channels() != mat.channels())
+  {
+    m_laplacian = cv::Mat(mat.size(), CV_MAKETYPE(CV_16S,mat.channels()));
+  }
 
-	this->comp_xsize = image.xsize;
-	this->comp_ysize = image.ysize;
+  if(m_out.size() != mat.size()
+     || m_out.type() != mat.type()
+     || m_out.channels() != mat.channels())
+  {
+    m_out = cv::Mat(mat.size(), mat.type());
+  }
 
-    	//Destroy cv_images to clean memory
-    	for( i = 0; i < 3; i++ )
-    		cvReleaseImage( &planes[i] );
-    	cvReleaseImage( &rgb );
-    	cvReleaseImage( &rgba );
-    	cvReleaseImage( &grey );
-    	cvReleaseImage( &laplace );
-    	cvReleaseImage( &colorlaplace );
+  cv::Laplacian(mat, m_laplacian, CV_16S, aperture_size);
+  cv::convertScaleAbs(m_laplacian, m_out, 1, 0);
 
-	//Create cv_images 
-    	for( i = 0; i < 3; i++ )
-     	 	planes[i] = cvCreateImage( cvSize(image.xsize, image.ysize), 8, 1 );
-    	laplace = cvCreateImage( cvSize(image.xsize, image.ysize), IPL_DEPTH_16S, 1 );
-    	colorlaplace = cvCreateImage( cvSize(image.xsize,image.ysize), 8, 3 );
-    	rgb = cvCreateImage( cvSize(image.xsize,image.ysize), 8, 3 );
-    	rgba = cvCreateImage( cvSize(image.xsize,image.ysize), 8, 4 );
-    	grey = cvCreateImage( cvSize(image.xsize,image.ysize), 8, 1 );
-    }
-    // FEM UNA COPIA DEL PACKET A image->imageData ... http://www.cs.iit.edu/~agam/cs512/lect-notes/opencv-intro/opencv-intro.html aqui veiem la estructura de IplImage
-    memcpy( rgba->imageData, image.data, image.xsize*image.ysize*4 );
-    
-    cvCvtColor( rgba, rgb, CV_RGBA2RGB);
-
-    cvSplit( rgb, planes[0], planes[1], planes[2], 0 );
-    for( i = 0; i < 3; i++ )
-    {
-       cvLaplace( planes[i], laplace, aperture_size );
-       cvConvertScaleAbs( laplace, planes[i], 1, 0 );
-    }
-    cvMerge( planes[0], planes[1], planes[2], 0, colorlaplace );
-    colorlaplace->origin = rgb->origin;
-
-    cvCvtColor( colorlaplace, rgba, CV_RGB2RGBA);
-    memcpy( image.data, rgba->imageData, image.xsize*image.ysize*4 );
-}
-
-void pix_opencv_laplace :: processRGBImage(imageStruct &image)
-{
-  unsigned char *pixels = image.data;
-  int i;
-
-  if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!rgb)) {
-
-	this->comp_xsize = image.xsize;
-	this->comp_ysize = image.ysize;
-
-    	//Destroy cv_images to clean memory
-    	for( i = 0; i < 3; i++ )
-    		cvReleaseImage( &planes[i] );
-    	cvReleaseImage( &rgb );
-    	cvReleaseImage( &laplace );
-    	cvReleaseImage( &colorlaplace );
-
-	//Create cv_images 
-    	for( i = 0; i < 3; i++ )
-     	 	planes[i] = cvCreateImage( cvSize(image.xsize, image.ysize), 8, 1 );
-    	laplace = cvCreateImage( cvSize(image.xsize, image.ysize), IPL_DEPTH_16S, 1 );
-    	colorlaplace = cvCreateImage( cvSize(image.xsize,image.ysize), 8, 3 );
-    	rgb = cvCreateImage( cvSize(image.xsize,image.ysize), 8, 3 );
-    }
-    // FEM UNA COPIA DEL PACKET A image->imageData ... http://www.cs.iit.edu/~agam/cs512/lect-notes/opencv-intro/opencv-intro.html aqui veiem la estructura de IplImage
-    memcpy( rgb->imageData, image.data, image.xsize*image.ysize*3 );
-
-    cvSplit( rgb, planes[0], planes[1], planes[2], 0 );
-    for( i = 0; i < 3; i++ )
-    {
-       cvLaplace( planes[i], laplace, 3 );
-       cvConvertScaleAbs( laplace, planes[i], 1, 0 );
-    }
-    cvMerge( planes[0], planes[1], planes[2], 0, colorlaplace );
-    colorlaplace->origin = rgb->origin;
-
-    //cvShowImage(wndname, cedge);
-    memcpy( image.data, colorlaplace->imageData, image.xsize*image.ysize*3 );
-}
-
-void pix_opencv_laplace :: processYUVImage(imageStruct &image)
-{
-  post( "pix_opencv_laplace : yuv format not supported" );
-}
-    	
-void pix_opencv_laplace :: processGrayImage(imageStruct &image)
-{ 
-  unsigned char *pixels = image.data;
-  int i;
-
-  if ((this->comp_xsize!=image.xsize)||(this->comp_ysize!=image.ysize)||(!grey)) {
-
-	this->comp_xsize = image.xsize;
-	this->comp_ysize = image.ysize;
-
-    	//Destroy cv_images to clean memory
-    	for( i = 0; i < 3; i++ )
-    		cvReleaseImage( &planes[i] );
-    	cvReleaseImage( &rgb );
-    	cvReleaseImage( &laplace );
-    	cvReleaseImage( &colorlaplace );
-    	cvReleaseImage( &grey );
-
-	//Create cv_images 
-    	for( i = 0; i < 3; i++ )
-     	 	planes[i] = cvCreateImage( cvSize(image.xsize, image.ysize), 8, 1 );
-    	laplace = cvCreateImage( cvSize(image.xsize, image.ysize), IPL_DEPTH_16S, 1 );
-    	colorlaplace = cvCreateImage( cvSize(image.xsize,image.ysize), 8, 3 );
-    	rgb = cvCreateImage( cvSize(image.xsize,image.ysize), 8, 3 );
-    	grey = cvCreateImage( cvSize(image.xsize,image.ysize), 8, 1 );
-    }
-    memcpy( grey->imageData, image.data, image.xsize*image.ysize );
-
-    cvCvtColor( grey, rgb, CV_GRAY2RGB);
-
-    cvSplit( rgb, planes[0], planes[1], planes[2], 0 );
-    for( i = 0; i < 3; i++ )
-    {
-       cvLaplace( planes[i], laplace, 3 );
-       cvConvertScaleAbs( laplace, planes[i], 1, 0 );
-    }
-    cvMerge( planes[0], planes[1], planes[2], 0, colorlaplace );
-    colorlaplace->origin = rgb->origin;
-
-
-    cvCvtColor( colorlaplace, grey, CV_RGB2GRAY);
-    //cvShowImage(wndname, cedge);
-    memcpy( image.data, grey->imageData, image.xsize*image.ysize );
+  mat2image(m_out, image);
 }
 
 /////////////////////////////////////////////////////////

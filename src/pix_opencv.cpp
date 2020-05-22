@@ -24,6 +24,7 @@ extern "C" void pix_opencv_hough_circles_setup();
 extern "C" void pix_opencv_hough_lines_setup();
 extern "C" void pix_opencv_hu_compare_setup();
 extern "C" void pix_opencv_hu_moments_setup();
+extern "C" void pix_opencv_laplace_setup();
 
 extern "C" {
 
@@ -83,6 +84,7 @@ void pix_opencv_setup(void)
     pix_opencv_hough_lines_setup();
     pix_opencv_hu_compare_setup();
     pix_opencv_hu_moments_setup();
+    pix_opencv_laplace_setup();
 }
 
 } // extern "C"

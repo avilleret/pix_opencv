@@ -25,6 +25,7 @@ set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hough_lines.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hu_compare.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_hu_moments.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_laplace.cpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.cpp
