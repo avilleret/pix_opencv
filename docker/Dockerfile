@@ -15,13 +15,6 @@ RUN rm /usr/local/install_cmake.sh
 # install video capture libraries
 RUN apt-get update -yqq && apt-get install -yqq libavcodec-dev libavutil-dev libavfilter-dev libavformat-dev libswresample-dev libdc1394-22-dev libv4l-dev
 
-# install GStreamer build deps
-RUN apt-get update -yqq && DEBIAN_FRONTEND=noninteractive apt-get install -yqq bison flex gtk-doc-tools autopoint libtool glib2.0 gettext 
-
-COPY scripts/build-gstreamer-1.16.sh /tmp/build-gstreamer.sh
-RUN /tmp/build-gstreamer.sh
-RUN rm /tmp/build-gstreamer.sh
-
 # install video rendering libraries
 RUN apt-get update -yqq && apt-get install -yqq libsdl2-dev libsdl2-2.0-0 libglu1-mesa-dev libglu1-mesa libgles2-mesa-dev
 
