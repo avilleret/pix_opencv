@@ -19,4 +19,6 @@ model/face.con;
 #X obj 93 542 pix_opencv_hist_compare;
 #X obj 93 573 pix_opencv_hough_circles;
 #X obj 93 604 pix_opencv_hough_lines;
-#X obj 93 665 pix_opencv_hu_moments;
+#X obj 93 666 pix_opencv_hu_moments;
+#X obj 93 725 pix_opencv_laplace;
+#X text 93 696 pix_opencv_kneear is missing;
