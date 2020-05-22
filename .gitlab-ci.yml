@@ -45,7 +45,7 @@ build:linux_x86_64:
   before_script:
     - git submodule update --init
   script: 
-    - docker run -e FTP_URL -e FTP_PASSWORD -e FTP_USER -e CI_COMMIT_TAG -e CI_COMMIT_SHA \
+    - docker run -e FTP_URL -e FTP_PASSWORD -e FTP_USER -e CI_COMMIT_TAG -e CI_COMMIT_SHA 
       -v ${PWD}:/pix_opencv avilleret/pd-pix_opencv-devel:latest /pix_opencv/docker/build_in_docker.sh
   tags:
     - shell
@@ -65,7 +65,7 @@ build:macos:
     - cmake .. -GNinja
         -DPUREDATA_INCLUDE_DIRS=/Applications/Pd-0.50-2.app/Contents/Resources/src/
         -DGEM_INCLUDE_DIRS=~/Documents/Pd/externals/Gem/include/Gem
-        -DCMAKE_INSTALL_PREFIX=${PWD}/install \
+        -DCMAKE_INSTALL_PREFIX=${PWD}/install
         -DOPENCV_ROOT=${REPO_ROOT}/3rdparty/opencv-install
     - cmake --build .
     - cmake --build . --target install

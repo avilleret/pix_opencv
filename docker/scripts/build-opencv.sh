@@ -55,7 +55,7 @@ cmake "${PWD}/../opencv" -GNinja \
       -DWITH_VTK=OFF \
       -DBUILD_EXAMPLES=OFF \
       -DOPENCV_EXTRA_MODULES_PATH="${PWD}/../opencv_contrib/modules" \
-      -DBUILD_LIST=calib3d,core,features2d,highgui,imgcodecs,imgproc,objdetect,photo,video,videoio,bgsegm \
+      -DBUILD_LIST=calib3d,core,features2d,highgui,imgcodecs,imgproc,objdetect,video,videoio,bgsegm \
       $CMAKE_OPTS 
 
 cmake --build .
