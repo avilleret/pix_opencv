@@ -4,7 +4,7 @@ FROM ubuntu:18.04
 RUN apt-get update -yqq && apt-get upgrade -yqq
 
 # install build tools
-RUN apt-get update -yqq && apt-get install -yqq build-essential autoconf ninja-build gcc-8 g++-8 git wget
+RUN apt-get update -yqq && apt-get install -yqq build-essential autoconf libtool ninja-build gcc-8 g++-8 git wget
 
 # install CMake 3.17 binary from Kitware (apt provides 3.10)
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.17.2/cmake-3.17.2-Linux-x86_64.sh -O /usr/local/install_cmake.sh
