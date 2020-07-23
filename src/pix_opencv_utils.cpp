@@ -26,10 +26,16 @@ cv::Mat image2mat(imageStruct& image)
   }
   return mat;
 }
-
 cv::Mat image2mat_gray(imageStruct& image)
 {
-  cv::Mat mat, gray;
+  cv::Mat gray;
+  image2mat_gray(image, gray);
+  return gray;
+}
+
+void image2mat_gray(imageStruct& image, cv::Mat& gray)
+{
+  cv::Mat mat;
   switch(image.csize)
   {
     case 1:
@@ -50,12 +56,18 @@ cv::Mat image2mat_gray(imageStruct& image)
     default:
       error("image format not supported");
   }
-  return gray;
 }
 
 cv::Mat image2mat_bgr(imageStruct& image)
 {
-  cv::Mat mat, bgr;
+  cv::Mat bgr;
+  image2mat_bgr(image, bgr);
+  return bgr;
+}
+
+void image2mat_bgr(imageStruct& image, cv::Mat& bgr)
+{
+  cv::Mat mat;
   switch(image.csize)
   {
     case 1:
@@ -76,12 +88,18 @@ cv::Mat image2mat_bgr(imageStruct& image)
     default:
       error("image format not supported");
   }
-  return bgr;
 }
 
 cv::Mat image2mat_hsv(imageStruct& image)
 {
-  cv::Mat mat, hsv, bgr;
+  cv::Mat hsv;
+  image2mat_hsv(image, hsv);
+  return hsv;
+}
+
+void image2mat_hsv(imageStruct& image, cv::Mat& hsv)
+{
+  cv::Mat mat, bgr;
   switch(image.csize)
   {
     case 1:
@@ -98,7 +116,6 @@ cv::Mat image2mat_hsv(imageStruct& image)
     default:
       error("image format not supported");
   }
-  return hsv;
 }
 
 void mat2image(const cv::Mat& mat, imageStruct& image)
