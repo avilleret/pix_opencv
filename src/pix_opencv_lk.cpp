@@ -1,21 +1,6 @@
+#include "pix_opencv_lk.hpp"
+#include "pix_opencv_utils.hpp"
 
-//
-// GEM - Graphics Environment for Multimedia
-//
-// zmoelnig@iem.kug.ac.at
-//
-// Implementation file
-//
-//    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
-//    Copyright (c) 2002 James Tittle & Chris Clepper
-//    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-//    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-//
-/////////////////////////////////////////////////////////
-
-#include "pix_opencv_lk.h"
 #include <stdio.h>
 
 CPPEXTERN_NEW(pix_opencv_lk)
@@ -23,6 +8,8 @@ CPPEXTERN_NEW(pix_opencv_lk)
 /////////////////////////////////////////////////////////
 //
 // pix_opencv_lk
+//
+// see https://docs.opencv.org/master/d2/d1d/samples_2cpp_2lkdemo_8cpp-example.html#a24
 //
 /////////////////////////////////////////////////////////
 // Constructor
@@ -33,17 +20,11 @@ pix_opencv_lk :: pix_opencv_lk()
 { 
   int i;
 
-  comp_xsize=320;
-  comp_ysize=240;
-
   inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("winsize"));
 
   m_dataout = outlet_new(this->x_obj, &s_anything);
   win_size = 10;
 
-  points[0] = 0;
-  points[1] = 0;
-  status = 0;
   count = 0;
   need_to_init = 1;
   night_mode = 0;
@@ -62,22 +43,6 @@ pix_opencv_lk :: pix_opencv_lk()
      x_xmark[i] = -1;
      x_ymark[i] = -1;
   }
-
-  // initialize font
-  cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 1.0, 1.0, 0, 1, 8 );
-
-  rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-  orgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-  rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-  gray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-  ogray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-  prev_gray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-  pyramid = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-  prev_pyramid = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-  points[0] = (CvPoint2D32f*)cvAlloc(MAX_COUNT*sizeof(points[0][0]));
-  points[1] = (CvPoint2D32f*)cvAlloc(MAX_COUNT*sizeof(points[0][0]));
-  status = (char*)cvAlloc(MAX_COUNT);
-
 }
 
 /////////////////////////////////////////////////////////
@@ -86,64 +51,31 @@ pix_opencv_lk :: pix_opencv_lk()
 /////////////////////////////////////////////////////////
 pix_opencv_lk :: ~pix_opencv_lk()
 {
-  // Destroy cv_images
-  cvReleaseImage( &rgba );
-  cvReleaseImage( &orgb );
-  cvReleaseImage( &rgb );
-  cvReleaseImage( &gray );
-  cvReleaseImage( &ogray );
-  cvReleaseImage( &prev_gray );
-  cvReleaseImage( &pyramid );
-  cvReleaseImage( &prev_pyramid );
 }
 
 /////////////////////////////////////////////////////////
 // processImage
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_lk :: processRGBAImage(imageStruct &image)
+void pix_opencv_lk :: processImage(imageStruct &image)
 {
   int i, k;
   int im, oi;
   int marked;
   float dist, odist;
 
+  cv::Mat mat = image2mat(image);
+  gray = image2mat_gray(image);
+
   if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
   {
 
     this->comp_xsize=image.xsize;
     this->comp_ysize=image.ysize;
-
-    cvReleaseImage( &rgba );
-    cvReleaseImage( &orgb );
-    cvReleaseImage( &rgb );
-    cvReleaseImage( &gray );
-    cvReleaseImage( &ogray );
-    cvReleaseImage( &prev_gray );
-    cvReleaseImage( &pyramid );
-    cvReleaseImage( &prev_pyramid );
-
-    rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-    orgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    gray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    ogray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    prev_gray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    pyramid = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    prev_pyramid = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    points[0] = (CvPoint2D32f*)cvAlloc(MAX_COUNT*sizeof(points[0][0]));
-    points[1] = (CvPoint2D32f*)cvAlloc(MAX_COUNT*sizeof(points[0][0]));
-    status = (char*)cvAlloc(MAX_COUNT);
-
   }
 
-  memcpy( rgba->imageData, image.data, image.xsize*image.ysize*4 );
-  cvCvtColor(rgba, rgb, CV_BGRA2RGB);
-  cvCvtColor(rgba, orgb, CV_BGRA2RGB);
-  cvCvtColor(rgba, gray, CV_BGRA2GRAY);
-
   if( night_mode )
-      cvZero( rgb );
+    mat = cv::Scalar(0);
 
   for ( im=0; im<MAX_MARKERS; im++ )
   {
@@ -157,38 +89,21 @@ void pix_opencv_lk :: processRGBAImage(imageStruct &image)
     x_fullrect.y = -comp_ysize/2;
     x_fullrect.width = 2*comp_xsize;
     x_fullrect.height = 2*comp_ysize;
-
-    x_storage = cvCreateMemStorage(0);
-    x_subdiv = cvCreateSubdiv2D( CV_SEQ_KIND_SUBDIV2D, sizeof(*x_subdiv),
-                               sizeof(CvSubdiv2DPoint),
-                               sizeof(CvQuadEdge2D),
-                               x_storage );
-     cvInitSubdivDelaunay2D( x_subdiv, x_fullrect );
+    x_subdiv = cv::Subdiv2D(x_fullrect);
   }
+  const auto termcrit = cv::TermCriteria(cv::TermCriteria::MAX_ITER|cv::TermCriteria::EPS,20,0.03);
 
   if( need_to_init )
   {
-     /* automatic initialization */
-     IplImage* eig = cvCreateImage( cvSize(gray->width,gray->height), 32, 1 );
-     IplImage* temp = cvCreateImage( cvSize(gray->width,gray->height), 32, 1 );
-
-     count = MAX_COUNT;
-     cvGoodFeaturesToTrack( gray, eig, temp, points[1], &count,
-                               quality, min_distance, 0, 3, 0, 0.04 );
-     // cvFindCornerSubPix( gray, points[1], count,
-     //      cvSize(win_size,win_size), cvSize(-1,-1),
-     //      cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03));
-     cvReleaseImage( &eig );
-     cvReleaseImage( &temp );
-
-     add_remove_pt = 0;
+    cv::goodFeaturesToTrack(gray, points[1], MAX_COUNT, 0.01, 10, cv::Mat(), 3, 3, 0, 0.04);
+    cv::cornerSubPix(gray, points[1], cv::Size(win_size,win_size), cv::Size(-1,-1), termcrit);
+    add_remove_pt = 0;
   }
-  else if( count > 0 )
+  else if( !points[0].empty() )
   {
-     cvCalcOpticalFlowPyrLK( prev_gray, gray, prev_pyramid, pyramid,
-              points[0], points[1], count, cvSize(win_size,win_size), 3, status, 0,
-              cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03), flags );
-     flags |= CV_LKFLOW_PYR_A_READY;
+    std::vector<float> err;
+     cv::calcOpticalFlowPyrLK(prev_gray, gray, points[0], points[1],
+         status, err, cv::Size(win_size,win_size), 3, termcrit, 0, 0.001 );
      for( i = k = 0; i < count; i++ )
      {
         if( add_remove_pt )
@@ -209,14 +124,14 @@ void pix_opencv_lk :: processRGBAImage(imageStruct &image)
          points[1][k++] = points[1][i];
          if ( delaunay == 0 ) // add all the points
          {
-            cvSubdivDelaunay2DInsert( x_subdiv, points[1][i] );
-            cvCalcSubdivVoronoi2D( x_subdiv );
+           x_subdiv.insert(points[1][i]);
+           // x_subdiv.calcVoronoi();
          }
          // only add points included in (color-threshold)<p<(color+treshold)
          if ( ( delaunay > 0 ) && ( x_xmark[delaunay-1] != -1 ) )
          {
-            int px = cvPointFrom32f(points[1][i]).x;
-            int py = cvPointFrom32f(points[1][i]).y;
+            int px = cv::Point2f(points[1][i]).x;
+            int py = cv::Point2f(points[1][i]).y;
             int ppx, ppy;
 
             // eight connected pixels
@@ -227,28 +142,28 @@ void pix_opencv_lk :: processRGBAImage(imageStruct &image)
                 if ( ( ppx < 0 ) || ( ppx >= comp_xsize ) ) continue;
                 if ( ( ppy < 0 ) || ( ppy >= comp_ysize ) ) continue;
 
-                uchar red = ((uchar*)(orgb->imageData + orgb->widthStep*ppx))[ppy*3];
-                uchar green = ((uchar*)(orgb->imageData + orgb->widthStep*ppx))[ppy*3+1];
-                uchar blue = ((uchar*)(orgb->imageData + orgb->widthStep*ppx))[ppy*3+2];
+                cv::Scalar color = mat.at<cv::Scalar>(ppy, ppx);
+                cv::Scalar pcolor = mat.at<cv::Scalar>(x_ymark[delaunay-1],x_xmark[delaunay-1]);
 
-                uchar pred = ((uchar*)(orgb->imageData + orgb->widthStep*x_xmark[delaunay-1]))[x_ymark[delaunay-1]*3];
-                uchar pgreen = ((uchar*)(orgb->imageData + orgb->widthStep*x_xmark[delaunay-1]))[x_ymark[delaunay-1]*3+1];
-                uchar pblue = ((uchar*)(orgb->imageData + orgb->widthStep*x_xmark[delaunay-1]))[x_ymark[delaunay-1]*3+2];
-
-                int diff = abs(red-pred) + abs(green-pgreen) + abs(blue-pblue);
+                // FIXME assuming 4 elements scalar ? what about greyscale mat ?
+                int diff=0;
+                for(int i=0; i<4; i++)
+                {
+                  diff += cv::abs(color[i] - pcolor[i]);
+                }
 
                 // post( "pix_opencv_lk : point (%d,%d,%d) : diff : %d threshold : %d", blue, green, red, diff, threshold );
 
                 if ( diff < threshold )
                 {
-                   cvSubdivDelaunay2DInsert( x_subdiv, points[1][i] );
-                   cvCalcSubdivVoronoi2D( x_subdiv );
+                  x_subdiv.insert(points[1][i]);
+                  // x_subdiv.calcVoronoi();
                 }
               }
             }
          }
 
-         cvCircle( rgb, cvPointFrom32f(points[1][i]), 3, CV_RGB(0,255,0), -1, 8,0);
+         cv::circle( mat, cv::Point(points[1][i]), 3, CV_RGB(0,255,0), -1, 8,0);
 
          marked=0;
          oi=-1;
@@ -277,7 +192,7 @@ void pix_opencv_lk :: processRGBAImage(imageStruct &image)
          {
            char tindex[4];
              sprintf( tindex, "%d", oi );
-             cvPutText( rgb, tindex, cvPointFrom32f(points[1][i]), &font, CV_RGB(255,255,255));
+             cv::putText( mat, tindex, cv::Point(points[1][i]), cv::FONT_HERSHEY_COMPLEX, 1, CV_RGB(255,255,255));
              x_xmark[oi]=(int)points[1][i].x;
              x_ymark[oi]=(int)points[1][i].y;
              x_found[oi]=ftolerance;
@@ -321,613 +236,47 @@ void pix_opencv_lk :: processRGBAImage(imageStruct &image)
 
   if( add_remove_pt && count < MAX_COUNT )
   {
-        points[1][count++] = cvPointTo32f(pt);
+        points[1][count++] = cv::Point2f(pt);
+        std::vector<cv::Point2f> vec{cv::Point2f(pt)};
+        cv::cornerSubPix(gray, vec, cv::Size(win_size, win_size), cv::Size(-1,-1),
+            cv::TermCriteria(cv::TermCriteria::MAX_ITER | cv::TermCriteria::EPS, 20, 0.03));
+        /*
         cvFindCornerSubPix( gray, points[1] + count - 1, 1,
            cvSize(win_size,win_size), cvSize(-1,-1),
            cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03));
+        */
         add_remove_pt = 0;
   }
 
   // draw the delaunay
   if ( delaunay >= 0 )
   {
-     CvSeqReader  reader;
-     int i, total = x_subdiv->edges->total;
-     int elem_size = x_subdiv->edges->elem_size;
+    std::vector<cv::Vec4f> edges;
+    x_subdiv.getEdgeList(edges);
 
-     cvStartReadSeq( (CvSeq*)(x_subdiv->edges), &reader, 0 );
+    for(size_t i=0; i<edges.size(); i++)
+    {
+      cv::Point2f org;
+      cv::Point2f dst;
+      x_subdiv.edgeOrg(i, &org);
+      x_subdiv.edgeDst(i, &dst);
+      {
+        cv::Point iorg(org);
+        cv::Point idst(dst);
 
-     for( i = 0; i < total; i++ )
-     {
-       CvQuadEdge2D* edge = (CvQuadEdge2D*)(reader.ptr);
-       CvSubdiv2DPoint* org_pt;
-       CvSubdiv2DPoint* dst_pt;
-       CvPoint2D32f org;
-       CvPoint2D32f dst;
-       CvPoint iorg, idst;
-
-         if( CV_IS_SET_ELEM( edge ))
-         {
-           org_pt = cvSubdiv2DEdgeOrg((CvSubdiv2DEdge)edge);
-           dst_pt = cvSubdiv2DEdgeDst((CvSubdiv2DEdge)edge);
-
-           if( org_pt && dst_pt )
-           {
-               org = org_pt->pt;
-               dst = dst_pt->pt;
-
-               iorg = cvPoint( cvRound( org.x ), cvRound( org.y ));
-               idst = cvPoint( cvRound( dst.x ), cvRound( dst.y ));
-
-               if ( ( org.x > 0 ) && ( org.x < comp_xsize ) &&
-                    ( dst.x > 0 ) && ( dst.x < comp_xsize ) &&
-                    ( org.y > 0 ) && ( org.y < comp_ysize ) &&
-                    ( dst.y > 0 ) && ( dst.y < comp_ysize ) )
-               cvLine( rgb, iorg, idst, CV_RGB(255,0,0), 1, CV_AA, 0 );
-           }
-         }
-
-         CV_NEXT_SEQ_ELEM( elem_size, reader );
-     }
-  }
-
-  CV_SWAP( prev_gray, gray, swap_temp );
-  CV_SWAP( prev_pyramid, pyramid, swap_temp );
-  CV_SWAP( points[0], points[1], swap_points );
-  need_to_init = 0;
-
-  cvCvtColor(rgb, rgba, CV_BGR2BGRA);
-  memcpy( image.data, rgba->imageData, image.xsize*image.ysize*4 );
-}
-
-void pix_opencv_lk :: processRGBImage(imageStruct &image)
-{ 
-  int i, k;
-  int im, oi;
-  int marked;
-  float dist, odist;
-
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
-  {
-
-    this->comp_xsize=image.xsize;
-    this->comp_ysize=image.ysize;
-
-    cvReleaseImage( &rgba );
-    cvReleaseImage( &orgb );
-    cvReleaseImage( &rgb );
-    cvReleaseImage( &gray );
-    cvReleaseImage( &ogray );
-    cvReleaseImage( &prev_gray );
-    cvReleaseImage( &pyramid );
-    cvReleaseImage( &prev_pyramid );
-
-    rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-    orgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    gray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    ogray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    prev_gray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    pyramid = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    prev_pyramid = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    points[0] = (CvPoint2D32f*)cvAlloc(MAX_COUNT*sizeof(points[0][0]));
-    points[1] = (CvPoint2D32f*)cvAlloc(MAX_COUNT*sizeof(points[0][0]));
-    status = (char*)cvAlloc(MAX_COUNT);
-
-  }
-
-  memcpy( rgb->imageData, image.data, image.xsize*image.ysize*3 );
-  memcpy( orgb->imageData, image.data, image.xsize*image.ysize*3 );
-  cvCvtColor(rgb, gray, CV_BGRA2GRAY);
-
-  if( night_mode )
-      cvZero( rgb );
-
-  for ( im=0; im<MAX_MARKERS; im++ )
-  {
-       x_found[im]--;
-  }
-
-  if ( delaunay >= 0 )
-  {
-    // init data structures for the delaunay
-    x_fullrect.x = -comp_xsize/2;
-    x_fullrect.y = -comp_ysize/2;
-    x_fullrect.width = 2*comp_xsize;
-    x_fullrect.height = 2*comp_ysize;
-
-    x_storage = cvCreateMemStorage(0);
-    x_subdiv = cvCreateSubdiv2D( CV_SEQ_KIND_SUBDIV2D, sizeof(*x_subdiv),
-                               sizeof(CvSubdiv2DPoint),
-                               sizeof(CvQuadEdge2D),
-                               x_storage );
-     cvInitSubdivDelaunay2D( x_subdiv, x_fullrect );
-  }
-
-  if( need_to_init )
-  {
-     /* automatic initialization */
-     IplImage* eig = cvCreateImage( cvSize(gray->width,gray->height), 32, 1 );
-     IplImage* temp = cvCreateImage( cvSize(gray->width,gray->height), 32, 1 );
-
-     count = MAX_COUNT;
-     cvGoodFeaturesToTrack( gray, eig, temp, points[1], &count,
-                               quality, min_distance, 0, 3, 0, 0.04 );
-     // cvFindCornerSubPix( gray, points[1], count,
-     //      cvSize(win_size,win_size), cvSize(-1,-1),
-     //      cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03));
-     cvReleaseImage( &eig );
-     cvReleaseImage( &temp );
-
-     add_remove_pt = 0;
-  }
-  else if( count > 0 )
-  {
-     cvCalcOpticalFlowPyrLK( prev_gray, gray, prev_pyramid, pyramid,
-              points[0], points[1], count, cvSize(win_size,win_size), 3, status, 0,
-              cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03), flags );
-     flags |= CV_LKFLOW_PYR_A_READY;
-     for( i = k = 0; i < count; i++ )
-     {
-        if( add_remove_pt )
-        {
-           double dx = pt.x - points[1][i].x;
-           double dy = pt.y - points[1][i].y;
-
-           if( dx*dx + dy*dy <= 25 )
-           {
-              add_remove_pt = 0;
-              continue;
-           }
-         }
-
-         if( !status[i] )
-          continue;
-
-         points[1][k++] = points[1][i];
-         if ( delaunay == 0 ) // add all the points
-         {
-            cvSubdivDelaunay2DInsert( x_subdiv, points[1][i] );
-            cvCalcSubdivVoronoi2D( x_subdiv );
-         }
-         // only add points included in (color-threshold)<p<(color+treshold)
-         if ( ( delaunay > 0 ) && ( x_xmark[delaunay-1] != -1 ) )
-         {
-            int px = cvPointFrom32f(points[1][i]).x;
-            int py = cvPointFrom32f(points[1][i]).y;
-            int ppx, ppy;
-
-            // eight connected pixels
-            for ( ppx=px-1; ppx<=px+1; ppx++ )
-            {
-              for ( ppy=py-1; ppy<=py+1; ppy++ )
-              {
-                if ( ( ppx < 0 ) || ( ppx >= comp_xsize ) ) continue;
-                if ( ( ppy < 0 ) || ( ppy >= comp_ysize ) ) continue;
-
-                uchar red = ((uchar*)(orgb->imageData + orgb->widthStep*ppx))[ppy*3];
-                uchar green = ((uchar*)(orgb->imageData + orgb->widthStep*ppx))[ppy*3+1];
-                uchar blue = ((uchar*)(orgb->imageData + orgb->widthStep*ppx))[ppy*3+2];
-
-                uchar pred = ((uchar*)(orgb->imageData + orgb->widthStep*x_xmark[delaunay-1]))[x_ymark[delaunay-1]*3];
-                uchar pgreen = ((uchar*)(orgb->imageData + orgb->widthStep*x_xmark[delaunay-1]))[x_ymark[delaunay-1]*3+1];
-                uchar pblue = ((uchar*)(orgb->imageData + orgb->widthStep*x_xmark[delaunay-1]))[x_ymark[delaunay-1]*3+2];
-
-                int diff = abs(red-pred) + abs(green-pgreen) + abs(blue-pblue);
-
-                // post( "pix_opencv_lk : point (%d,%d,%d) : diff : %d", blue, green, red, diff );
-
-                if ( diff < threshold )
-                {
-                   cvSubdivDelaunay2DInsert( x_subdiv, points[1][i] );
-                   cvCalcSubdivVoronoi2D( x_subdiv );
-                }
-              }
-            }
-         }
-
-         cvCircle( rgb, cvPointFrom32f(points[1][i]), 3, CV_RGB(0,255,0), -1, 8,0);
-
-         marked=0;
-         oi=-1;
-         dist=(comp_xsize>comp_ysize)?comp_xsize:comp_ysize;
-
-         for ( im=0; im<MAX_MARKERS; im++ )
-         {
-           if ( x_xmark[im] == -1 ) continue; // i don't see the point
-
-           odist=sqrt( pow( points[1][i].x - x_xmark[im], 2 ) + pow( points[1][i].y - x_ymark[im], 2 ) );
-
-           // search for this point
-           if ( odist <= maxmove )
-           {
-               if ( odist < dist )
-               {
-                 dist = odist;
-                 marked=1;
-                 oi=im;
-               }
-           }
-         }
-
-         if ( oi !=-1 )
-         { 
-           char tindex[4];
-              sprintf( tindex, "%d", oi );
-              cvPutText( rgb, tindex, cvPointFrom32f(points[1][i]), &font, CV_RGB(255,255,255));
-              x_xmark[oi]=points[1][i].x;
-              x_ymark[oi]=points[1][i].y;
-              x_found[oi]=ftolerance;
-              SETFLOAT(&x_list[0], oi);
-              SETFLOAT(&x_list[1], x_xmark[oi]);
-              SETFLOAT(&x_list[2], x_ymark[oi]);
-              outlet_list( m_dataout, 0, 3, x_list );
-         }
-
-         if ( markall && !marked )
-         {
-           for ( im=0; im<MAX_MARKERS; im++)
-           {
-             if ( x_xmark[im] == -1 )
-             {
-               x_xmark[im]=points[1][i].x;
-               x_ymark[im]=points[1][i].y;
-               x_found[im]=ftolerance;
-               break;
-             }
-           }
-         }
+        if ( ( org.x > 0 ) && ( org.x < comp_xsize ) &&
+             ( dst.x > 0 ) && ( dst.x < comp_xsize ) &&
+             ( org.y > 0 ) && ( org.y < comp_ysize ) &&
+             ( dst.y > 0 ) && ( dst.y < comp_ysize ) )
+          cv::line( mat, iorg, idst, CV_RGB(255,0,0), 1, cv::LINE_AA);
       }
-      count = k;
+    }
   }
 
-  for ( im=0; im<MAX_MARKERS; im++ )
-  {
-        if ( (x_xmark[im] != -1.0 ) && !x_found[im] )
-        {
-           x_xmark[im]=-1.0;
-           x_ymark[im]=-1.0;
-           SETFLOAT(&x_list[0], im+1);
-           SETFLOAT(&x_list[1], x_xmark[im]);
-           SETFLOAT(&x_list[2], x_ymark[im]);
-           // send a lost point message to the patch
-           outlet_list( m_dataout, 0, 3, x_list );
-           post( "pix_opencv_lk : lost point %d", im+1 );
-        }
-  }
-
-  if( add_remove_pt && count < MAX_COUNT )
-  {
-        points[1][count++] = cvPointTo32f(pt);
-        cvFindCornerSubPix( gray, points[1] + count - 1, 1,
-           cvSize(win_size,win_size), cvSize(-1,-1),
-           cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03));
-        add_remove_pt = 0;
-  }
-
-  // draw the delaunay
-  if ( delaunay >= 0 )
-  {
-     CvSeqReader  reader;
-     int i, total = x_subdiv->edges->total;
-     int elem_size = x_subdiv->edges->elem_size;
-
-     cvStartReadSeq( (CvSeq*)(x_subdiv->edges), &reader, 0 );
-
-     for( i = 0; i < total; i++ )
-     {
-       CvQuadEdge2D* edge = (CvQuadEdge2D*)(reader.ptr);
-       CvSubdiv2DPoint* org_pt;
-       CvSubdiv2DPoint* dst_pt;
-       CvPoint2D32f org;
-       CvPoint2D32f dst;
-       CvPoint iorg, idst;
-
-         if( CV_IS_SET_ELEM( edge ))
-         {
-           org_pt = cvSubdiv2DEdgeOrg((CvSubdiv2DEdge)edge);
-           dst_pt = cvSubdiv2DEdgeDst((CvSubdiv2DEdge)edge);
-
-           if( org_pt && dst_pt )
-           {
-               org = org_pt->pt;
-               dst = dst_pt->pt;
-
-               iorg = cvPoint( cvRound( org.x ), cvRound( org.y ));
-               idst = cvPoint( cvRound( dst.x ), cvRound( dst.y ));
-
-               if ( ( org.x > 0 ) && ( org.x < comp_xsize ) &&
-                    ( dst.x > 0 ) && ( dst.x < comp_xsize ) &&
-                    ( org.y > 0 ) && ( org.y < comp_ysize ) &&
-                    ( dst.y > 0 ) && ( dst.y < comp_ysize ) )
-               cvLine( rgb, iorg, idst, CV_RGB(255,0,0), 1, CV_AA, 0 );
-           }
-         }
-
-         CV_NEXT_SEQ_ELEM( elem_size, reader );
-     }
-  }
-
-  CV_SWAP( prev_gray, gray, swap_temp );
-  CV_SWAP( prev_pyramid, pyramid, swap_temp );
-  CV_SWAP( points[0], points[1], swap_points );
+  std::swap(prev_gray, gray);
+//  std::swap(prev_pyramid, pyramid);
+  std::swap( points[0], points[1]);
   need_to_init = 0;
-
-  memcpy( image.data, rgb->imageData, image.xsize*image.ysize*3 );
-}
-
-void pix_opencv_lk :: processYUVImage(imageStruct &image)
-{
-  post( "pix_opencv_lk : yuv format not supported" );
-}
-    	
-void pix_opencv_lk :: processGrayImage(imageStruct &image)
-{ 
-  int i, k;
-  int im, oi;
-  int marked;
-  float dist, odist;
-
-  if ((this->comp_xsize!=image.xsize)&&(this->comp_ysize!=image.ysize)) 
-  {
-
-    this->comp_xsize=image.xsize;
-    this->comp_ysize=image.ysize;
-
-    cvReleaseImage( &rgba );
-    cvReleaseImage( &orgb );
-    cvReleaseImage( &rgb );
-    cvReleaseImage( &ogray );
-    cvReleaseImage( &gray );
-    cvReleaseImage( &prev_gray );
-    cvReleaseImage( &pyramid );
-    cvReleaseImage( &prev_pyramid );
-
-    rgba = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 4 );
-    orgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    rgb = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 3 );
-    gray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    prev_gray = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    pyramid = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    prev_pyramid = cvCreateImage( cvSize(comp_xsize, comp_ysize), 8, 1 );
-    points[0] = (CvPoint2D32f*)cvAlloc(MAX_COUNT*sizeof(points[0][0]));
-    points[1] = (CvPoint2D32f*)cvAlloc(MAX_COUNT*sizeof(points[0][0]));
-    status = (char*)cvAlloc(MAX_COUNT);
-
-  }
-
-  memcpy( gray->imageData, image.data, image.xsize*image.ysize );
-  memcpy( ogray->imageData, image.data, image.xsize*image.ysize );
-
-  if( night_mode )
-      cvZero( gray );
-
-  for ( im=0; im<MAX_MARKERS; im++ )
-  {
-       x_found[im]--;
-  }
-
-  if ( delaunay >= 0 )
-  {
-    // init data structures for the delaunay
-    x_fullrect.x = -comp_xsize/2;
-    x_fullrect.y = -comp_ysize/2;
-    x_fullrect.width = 2*comp_xsize;
-    x_fullrect.height = 2*comp_ysize;
-
-    x_storage = cvCreateMemStorage(0);
-    x_subdiv = cvCreateSubdiv2D( CV_SEQ_KIND_SUBDIV2D, sizeof(*x_subdiv),
-                               sizeof(CvSubdiv2DPoint),
-                               sizeof(CvQuadEdge2D),
-                               x_storage );
-     cvInitSubdivDelaunay2D( x_subdiv, x_fullrect );
-  }
-
-  if( need_to_init )
-  {
-     /* automatic initialization */
-     IplImage* eig = cvCreateImage( cvSize(gray->width,gray->height), 32, 1 );
-     IplImage* temp = cvCreateImage( cvSize(gray->width,gray->height), 32, 1 );
-
-     count = MAX_COUNT;
-     cvGoodFeaturesToTrack( gray, eig, temp, points[1], &count,
-                               quality, min_distance, 0, 3, 0, 0.04 );
-     // cvFindCornerSubPix( gray, points[1], count,
-     //      cvSize(win_size,win_size), cvSize(-1,-1),
-     //      cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03));
-     cvReleaseImage( &eig );
-     cvReleaseImage( &temp );
-
-     add_remove_pt = 0;
-  }
-  else if( count > 0 )
-  {
-     cvCalcOpticalFlowPyrLK( prev_gray, gray, prev_pyramid, pyramid,
-              points[0], points[1], count, cvSize(win_size,win_size), 3, status, 0,
-              cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03), flags );
-     flags |= CV_LKFLOW_PYR_A_READY;
-     for( i = k = 0; i < count; i++ )
-     {
-        if( add_remove_pt )
-        {
-           double dx = pt.x - points[1][i].x;
-           double dy = pt.y - points[1][i].y;
-
-           if( dx*dx + dy*dy <= 25 )
-           {
-              add_remove_pt = 0;
-              continue;
-           }
-         }
-
-         if( !status[i] )
-          continue;
-
-         points[1][k++] = points[1][i];
-         if ( delaunay == 0 ) // add all the points
-         {
-            cvSubdivDelaunay2DInsert( x_subdiv, points[1][i] );
-            cvCalcSubdivVoronoi2D( x_subdiv );
-         }
-         // only add points included in (color-threshold)<p<(color+treshold)
-         if ( ( delaunay > 0 ) && ( x_xmark[delaunay-1] != -1 ) )
-         {
-            int px = cvPointFrom32f(points[1][i]).x;
-            int py = cvPointFrom32f(points[1][i]).y;
-            int ppx, ppy;
-
-            // eight connected pixels
-            for ( ppx=px-1; ppx<=px+1; ppx++ )
-            {
-              for ( ppy=py-1; ppy<=py+1; ppy++ )
-              {
-                if ( ( ppx < 0 ) || ( ppx >= comp_xsize ) ) continue;
-                if ( ( ppy < 0 ) || ( ppy >= comp_ysize ) ) continue;
-
-                uchar lum = ((uchar*)(ogray->imageData + ogray->widthStep*ppx))[ppy];
-                uchar plum = ((uchar*)(ogray->imageData + ogray->widthStep*x_xmark[delaunay-1]))[x_ymark[delaunay-1]];
-
-                int diff = abs(plum-lum);
-
-                // post( "pix_opencv_lk : point (%d,%d,%d) : diff : %d", blue, green, red, diff );
-
-                if ( diff < threshold )
-                {
-                   cvSubdivDelaunay2DInsert( x_subdiv, points[1][i] );
-                   cvCalcSubdivVoronoi2D( x_subdiv );
-                }
-              }
-            }
-         }
-
-         cvCircle( gray, cvPointFrom32f(points[1][i]), 3, CV_RGB(0,255,0), -1, 8,0);
-
-         marked=0;
-         oi=-1;
-         dist=(comp_xsize>comp_ysize)?comp_xsize:comp_ysize;
-
-         for ( im=0; im<MAX_MARKERS; im++ )
-         {
-           if ( x_xmark[im] == -1 ) continue; // i don't see the point
-
-            odist=sqrt( pow( points[1][i].x - x_xmark[im], 2 ) + pow( points[1][i].y - x_ymark[im], 2 ) );
-
-            // search for the closest point
-            if ( odist <= maxmove )
-            {
-               if ( odist < dist )
-               {
-                 dist = odist;
-                 marked=1;
-                 oi=im;
-               }
-            }
-          }
-
-          if ( oi !=-1 )
-          { 
-             char tindex[4];
-               sprintf( tindex, "%d", oi );
-               cvPutText( gray, tindex, cvPointFrom32f(points[1][i]), &font, CV_RGB(255,255,255));
-               x_xmark[oi]=points[1][i].x;
-               x_ymark[oi]=points[1][i].y;
-               x_found[oi]=ftolerance;
-               SETFLOAT(&x_list[0], oi);
-               SETFLOAT(&x_list[1], x_xmark[oi]);
-               SETFLOAT(&x_list[2], x_ymark[oi]);
-               outlet_list( m_dataout, 0, 3, x_list );
-         }
-
-         if ( markall && !marked )
-         {
-           for ( im=0; im<MAX_MARKERS; im++)
-           {
-             if ( x_xmark[im] == -1 )
-             {
-               x_xmark[im]=points[1][i].x;
-               x_ymark[im]=points[1][i].y;
-               x_found[im]=ftolerance;
-               break;
-             }
-           }
-         }
-      }
-      count = k;
-  }
-
-  for ( im=0; im<MAX_MARKERS; im++ )
-  {
-        if ( (x_xmark[im] != -1.0 ) && !x_found[im] )
-        {
-           x_xmark[im]=-1.0;
-           x_ymark[im]=-1.0;
-           SETFLOAT(&x_list[0], im+1);
-           SETFLOAT(&x_list[1], x_xmark[im]);
-           SETFLOAT(&x_list[2], x_ymark[im]);
-           // send a lost point message to the patch
-           outlet_list( m_dataout, 0, 3, x_list );
-           post( "pix_opencv_lk : lost point %d", im+1 );
-        }
-  }
-
-  if( add_remove_pt && count < MAX_COUNT )
-  {
-        points[1][count++] = cvPointTo32f(pt);
-        cvFindCornerSubPix( gray, points[1] + count - 1, 1,
-           cvSize(win_size,win_size), cvSize(-1,-1),
-           cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03));
-        add_remove_pt = 0;
-  }
-
-  // draw the delaunay
-  if ( delaunay >= 0 )
-  {
-     CvSeqReader  reader;
-     int i, total = x_subdiv->edges->total;
-     int elem_size = x_subdiv->edges->elem_size;
-
-     cvStartReadSeq( (CvSeq*)(x_subdiv->edges), &reader, 0 );
-
-     for( i = 0; i < total; i++ )
-     {
-       CvQuadEdge2D* edge = (CvQuadEdge2D*)(reader.ptr);
-       CvSubdiv2DPoint* org_pt;
-       CvSubdiv2DPoint* dst_pt;
-       CvPoint2D32f org;
-       CvPoint2D32f dst;
-       CvPoint iorg, idst;
-
-         if( CV_IS_SET_ELEM( edge ))
-         {
-           org_pt = cvSubdiv2DEdgeOrg((CvSubdiv2DEdge)edge);
-           dst_pt = cvSubdiv2DEdgeDst((CvSubdiv2DEdge)edge);
-
-           if( org_pt && dst_pt )
-           {
-               org = org_pt->pt;
-               dst = dst_pt->pt;
-
-               iorg = cvPoint( cvRound( org.x ), cvRound( org.y ));
-               idst = cvPoint( cvRound( dst.x ), cvRound( dst.y ));
-
-               if ( ( org.x > 0 ) && ( org.x < comp_xsize ) &&
-                    ( dst.x > 0 ) && ( dst.x < comp_xsize ) &&
-                    ( org.y > 0 ) && ( org.y < comp_ysize ) &&
-                    ( dst.y > 0 ) && ( dst.y < comp_ysize ) )
-               cvLine( gray, iorg, idst, CV_RGB(255,0,0), 1, CV_AA, 0 );
-           }
-         }
-
-         CV_NEXT_SEQ_ELEM( elem_size, reader );
-     }
-  }
-
-  CV_SWAP( prev_gray, gray, swap_temp );
-  CV_SWAP( prev_pyramid, pyramid, swap_temp );
-  CV_SWAP( points[0], points[1], swap_points );
-  need_to_init = 0;
-
-  memcpy( image.data, gray->imageData, image.xsize*image.ysize );
 }
 
 /////////////////////////////////////////////////////////

@@ -1,26 +1,6 @@
-/*-----------------------------------------------------------------
-LOG
-    GEM - Graphics Environment for Multimedia
-
-    LK point detection and tracking
-
-    Copyright (c) 1997-1999 Mark Danks. mark@danks.org
-    Copyright (c) Günther Geiger. geiger@epy.co.at
-    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM. zmoelnig@iem.kug.ac.at
-    Copyright (c) 2002 James Tittle & Chris Clepper
-    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-
------------------------------------------------------------------*/
-
-#ifndef INCLUDE_PIX_OPENCV_LK_H_
-#define INCLUDE_PIX_OPENCV_LK_H_
-
-#ifndef _EiC
-#include "opencv2/legacy/legacy.hpp"
-#include "opencv2/video/tracking.hpp"
-
-#endif
+#pragma once
+#include <opencv2/core.hpp>
+#include <opencv2/video/tracking.hpp>
 
 #include "Base/GemPixObj.h"
 
@@ -31,14 +11,14 @@ const int MAX_COUNT = 500;
 -------------------------------------------------------------------
 CLASS
     pix_opencv_lk
-    
+
     LK point detection and tracking
 
 KEYWORDS
     pix
-    
+
 DESCRIPTION
-   
+
 -----------------------------------------------------------------*/
 class GEM_EXPORT pix_opencv_lk : public GemPixObj
 {
@@ -46,87 +26,79 @@ class GEM_EXPORT pix_opencv_lk : public GemPixObj
 
     public:
 
-	//////////
-	// Constructor
-    	pix_opencv_lk();
-    	
-    protected:
-    	
-    	//////////
-    	// Destructor
-    	virtual ~pix_opencv_lk();
+      //////////
+      // Constructor
+      pix_opencv_lk();
 
-    	//////////
-    	// Do the processing
-    	virtual void 	processRGBAImage(imageStruct &image);
-    	virtual void 	processRGBImage(imageStruct &image);
-	virtual void 	processYUVImage(imageStruct &image);
-    	virtual void 	processGrayImage(imageStruct &image); 
+  protected:
 
-        void  winSizeMess(float winsize);
-        void  nightModeMess(float nightmode);
-        void  qualityMess(float quality);
-        void  initMess(void);
-        void  markMess(int, t_atom*);
-        void  deleteMess(float index);
-        void  clearMess(void);
-        void  minDistanceMess(float mindistance);
-        void  maxMoveMess(float maxmove);
-        void  ftoleranceMess(float ftolerance);
-        void  delaunayMess(t_symbol *s);
-        void  pdelaunayMess(float fpoint, float fthreshold);
+    //////////
+    // Destructor
+    virtual ~pix_opencv_lk();
 
-        int comp_xsize;
-        int comp_ysize;
+    //////////
+    // Do the processing
+    virtual void 	processImage(imageStruct &image);
 
-        t_outlet *m_dataout;
-        t_atom x_list[3];
-        int win_size;
-        double quality;
-        int min_distance;
-        int night_mode;
-        int maxmove;
-        int markall;
-        int ftolerance;
-        int delaunay;
-        int threshold;
+    void  winSizeMess(float winsize);
+    void  nightModeMess(float nightmode);
+    void  qualityMess(float quality);
+    void  initMess(void);
+    void  markMess(int, t_atom*);
+    void  deleteMess(float index);
+    void  clearMess(void);
+    void  minDistanceMess(float mindistance);
+    void  maxMoveMess(float maxmove);
+    void  ftoleranceMess(float ftolerance);
+    void  delaunayMess(t_symbol *s);
+    void  pdelaunayMess(float fpoint, float fthreshold);
 
-    private:
-    
-    	//////////
-    	// Static member functions
-        static void  winSizeMessCallback(void *data, t_floatarg winsize);
-        static void  nightModeMessCallback(void *data, t_floatarg nightmode);
-        static void  qualityMessCallback(void *data, t_floatarg quality);
-        static void  initMessCallback(void *data);
-        static void  markMessCallback(void *data, t_symbol* name, int argc, t_atom* argv);
-        static void  deleteMessCallback(void *data, t_floatarg index);
-        static void  clearMessCallback(void *data);
-        static void  minDistanceMessCallback(void *data, t_floatarg mindistance);
-        static void  maxMoveMessCallback(void *data, t_floatarg maxmove);
-        static void  ftoleranceMessCallback(void *data, t_floatarg ftolerance);
-        static void  delaunayMessCallback(void *data, t_symbol *s);
-        static void  pdelaunayMessCallback(void *data, t_floatarg fpoint, t_floatarg fthreshold);
+    int comp_xsize{};
+    int comp_ysize{};
 
-	// Internal Open CV data
-        IplImage *rgba, *rgb, *orgb, *gray, *ogray, *prev_gray, *pyramid, *prev_pyramid, *swap_temp;
-        int x_xmark[MAX_MARKERS];
-        int x_ymark[MAX_MARKERS];
-        int x_found[MAX_MARKERS];
-        CvPoint2D32f* points[2], *swap_points;
-        char* status;
-        int count;
-        int need_to_init;
-        int flags;
-        int add_remove_pt;
-        CvPoint pt;
-        CvFont font;
+    t_outlet *m_dataout;
+    t_atom x_list[3];
+    int win_size;
+    double quality;
+    int min_distance;
+    int night_mode;
+    int maxmove;
+    int markall;
+    int ftolerance;
+    int delaunay;
+    int threshold;
 
-        // structures needed for the delaunay
-        CvRect x_fullrect;
-        CvMemStorage* x_storage;
-        CvSubdiv2D* x_subdiv;
-	
+  private:
+
+    //////////
+    // Static member functions
+    static void  winSizeMessCallback(void *data, t_floatarg winsize);
+    static void  nightModeMessCallback(void *data, t_floatarg nightmode);
+    static void  qualityMessCallback(void *data, t_floatarg quality);
+    static void  initMessCallback(void *data);
+    static void  markMessCallback(void *data, t_symbol* name, int argc, t_atom* argv);
+    static void  deleteMessCallback(void *data, t_floatarg index);
+    static void  clearMessCallback(void *data);
+    static void  minDistanceMessCallback(void *data, t_floatarg mindistance);
+    static void  maxMoveMessCallback(void *data, t_floatarg maxmove);
+    static void  ftoleranceMessCallback(void *data, t_floatarg ftolerance);
+    static void  delaunayMessCallback(void *data, t_symbol *s);
+    static void  pdelaunayMessCallback(void *data, t_floatarg fpoint, t_floatarg fthreshold);
+
+    int x_xmark[MAX_MARKERS];
+    int x_ymark[MAX_MARKERS];
+    int x_found[MAX_MARKERS];
+    std::vector<cv::Point2f> points[2];
+    std::vector<uchar> status;
+    int count;
+    int need_to_init;
+    int flags;
+    int add_remove_pt;
+    cv::Point pt;
+
+    // structures needed for the delaunay
+    cv::Rect x_fullrect;
+
+    cv::Mat gray, prev_gray;
+    cv::Subdiv2D x_subdiv;
 };
-
-#endif	// for header file
