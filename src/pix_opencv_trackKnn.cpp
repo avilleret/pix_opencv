@@ -7,8 +7,8 @@
 // Implementation file
 //
 //    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
+//    Copyright (c) Gï¿½nther Geiger.
+//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::fï¿½r::umlï¿½ute. IEM
 //    Copyright (c) 2002 James Tittle & Chris Clepper
 //    For information on usage and redistribution, and for a DISCLAIMER OF ALL
 //    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
@@ -19,7 +19,7 @@
 // pix_opencv_trackKnn extract and simplify contours of incomming image
 // by Antoine Villeret - 2012
 
-#include "pix_opencv_trackKnn.h"
+#include "pix_opencv_trackKnn.hpp"
 
 #include <map>
 
@@ -348,7 +348,7 @@ void pix_opencv_trackKnn :: doTracking()
       //random color for blob. Could be useful?
       Mat color(1,1,CV_8UC3);
       color=Scalar(rand()%180,255,255);
-      cvtColor(color,color,CV_HSV2RGB);
+      cvtColor(color,color,cv::COLOR_HSV2RGB);
       
       const unsigned char* ptr=color.ptr<unsigned char>(0);
       Scalar scolor(ptr[0],ptr[1],ptr[2]);

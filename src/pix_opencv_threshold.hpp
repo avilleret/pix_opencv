@@ -1,25 +1,6 @@
-/*-----------------------------------------------------------------
-LOG
-    GEM - Graphics Environment for Multimedia
-
-    Threshold filter
-
-    Copyright (c) 1997-1999 Mark Danks. mark@danks.org
-    Copyright (c) Günther Geiger. geiger@epy.co.at
-    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM. zmoelnig@iem.kug.ac.at
-    Copyright (c) 2002 James Tittle & Chris Clepper
-    For information on usage and redistribution, and for a DISCLAIMER OF ALL
-    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
-
------------------------------------------------------------------*/
-
-#ifndef INCLUDE_PIX_OPENCV_THRESHOLD_H_
-#define INCLUDE_PIX_OPENCV_THRESHOLD_H_
-
-#ifndef _EiC
-#include "opencv2/core/core_c.h"
-#include "opencv2/imgproc/imgproc_c.h"
-#endif
+#pragma once
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 #include "Base/GemPixObj.h"
 
 /*-----------------------------------------------------------------
@@ -47,16 +28,8 @@ class GEM_EXPORT pix_opencv_threshold : public GemPixObj
     	
     protected:
     	
-    	//////////
-    	// Destructor
-    	virtual ~pix_opencv_threshold();
-
-    	//////////
     	// Do the processing
-    	virtual void 	processRGBAImage(imageStruct &image);
-    	virtual void 	processRGBImage(imageStruct &image);
-	virtual void 	processYUVImage(imageStruct &image);
-    	virtual void 	processGrayImage(imageStruct &image); 
+      void 	processImage(imageStruct &image) override;
     	
 	//////////
     	// Set the new edge threshold
@@ -80,10 +53,4 @@ class GEM_EXPORT pix_opencv_threshold : public GemPixObj
     	static void 	floatMaxMessCallback(void *data, t_floatarg maxvalue);
     	static void 	floatThreshMessCallback(void *data, t_floatarg thresh_value);
     	static void 	floatModeMessCallback(void *data, t_floatarg thresh_mode_value);
-
-	/////////
-	// IplImage needed
-    	IplImage 	*orig, *rgb, *gray;
 };
-
-#endif	// for header file

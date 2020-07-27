@@ -7,8 +7,8 @@
 // Implementation file
 //
 //    Copyright (c) 1997-2000 Mark Danks.
-//    Copyright (c) Günther Geiger.
-//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::für::umläute. IEM
+//    Copyright (c) Gï¿½nther Geiger.
+//    Copyright (c) 2001-2002 IOhannes m zmoelnig. forum::fï¿½r::umlï¿½ute. IEM
 //    Copyright (c) 2002 James Tittle & Chris Clepper
 //    For information on usage and redistribution, and for a DISCLAIMER OF ALL
 //    WARRANTIES, see the file, "GEM.LICENSE.TERMS" in this distribution.
@@ -18,7 +18,8 @@
 // pix_opencv_opticalflow compute optical flow, several algorithms are available in one object
 // by Antoine Villeret - 2012
 
-#include "pix_opencv_opticalflow.h"
+#include "pix_opencv_opticalflow.hpp"
+#include "pix_opencv_utils.hpp"
 
 CPPEXTERN_NEW(pix_opencv_opticalflow)
 
@@ -50,13 +51,11 @@ pix_opencv_opticalflow :: ~pix_opencv_opticalflow()
 // render
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_opticalflow :: processRGBAImage(imageStruct &image)
+void pix_opencv_opticalflow :: processImage(imageStruct &image)
 { 
   if ( image.xsize <= 0 || image.ysize <= 0 ) return;
-  
-  cv::Mat rgbaImage( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
-  //~cvtColor(rgbaImage, m_curr, cv::COLOR_RGBA2RGB); //convert RGBA to RGB
-  cvtColor(rgbaImage, m_curr, cv::COLOR_RGBA2GRAY); //convert RGBA to RGB
+
+  m_curr = image2mat_gray(image);
   
   if (m_prev.size() != m_curr.size()){
       m_prev = m_curr.clone();

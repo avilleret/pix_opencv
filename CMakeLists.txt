@@ -28,6 +28,12 @@ set(SOURCES
   # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_knear.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_laplace.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_lk.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_opticalflow.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_pgh_compare.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_surf.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_threshold.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_trackKnn.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_warpperspective.cpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.cpp
@@ -54,6 +60,12 @@ set(HEADERS
   # ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_knear.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_laplace.hpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_lk.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_opticalflow.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_pgh_compare.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_surf.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_threshold.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_trackKnn.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_warpperspective.hpp
 
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_utils.hpp
 )
