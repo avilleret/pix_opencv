@@ -49,6 +49,6 @@ if [ -d package ]; then
 
   if [ ! -z $CI_COMMIT_TAG ]
   then
-    # ${SCRIPT_FOLDER}/upload_to_deken.sh
+    echo ${SCRIPT_FOLDER}/upload_to_deken.sh
   fi
 fi
