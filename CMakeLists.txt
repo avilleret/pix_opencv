@@ -4,7 +4,7 @@ project(pix_opencv CXX)
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(OpenCV 4 REQUIRED
-  COMPONENTS core imgproc
+  COMPONENTS core imgproc video
   OPTIONAL_COMPONENTS bgsegm objdetect)
 
 set(SOURCES
