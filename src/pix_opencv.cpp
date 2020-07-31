@@ -60,7 +60,7 @@ void pix_opencv_setup(void)
 #else
     verbose(-1,"\twithout non-free features");
 #endif
-#ifdef HAVE_FACETRACKER
+#ifdef HAVE_OBJDETECT
     verbose(-1,"\twith FaceTracker.");
 #else
     verbose(-1,"\tand without FaceTracker.");
