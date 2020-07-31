@@ -31,11 +31,9 @@ pix_opencv_bgsubstract :: ~pix_opencv_bgsubstract()
 // processImage
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_bgsubstract :: processImage(imageStruct &image)
+void pix_opencv_bgsubstract :: processGrayImage(imageStruct &image)
 { 
-    cv::Mat mat = image2mat(image);
-    // Convert to grayscale
-    cv::cvtColor(orig, gray, cv::COLOR_BGRA2GRAY);
+    cv::Mat gray = image2mat(image);
 
     if (x_set) {
       prev_gray = gray.clone();

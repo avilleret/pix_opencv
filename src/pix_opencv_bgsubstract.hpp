@@ -34,7 +34,7 @@ class GEM_EXPORT pix_opencv_bgsubstract : public GemPixObj
 
     //////////
     // Do the processing
-    virtual void 	processImage(imageStruct &image);
+    virtual void 	processGrayImage(imageStruct &image);
 
     //////////
     // Set the new edge threshold
@@ -51,9 +51,6 @@ class GEM_EXPORT pix_opencv_bgsubstract : public GemPixObj
     static void 	floatTreshMessCallback(void *data, t_floatarg thresh_value);
     static void 	SetMessCallback(void *data);
 
-    cv::Mat orig;
-    cv::Mat rgb;
-    cv::Mat gray;
     cv::Mat prev_gray;
     cv::Mat grayLow;
     cv::Mat grayUp;
