@@ -114,7 +114,7 @@ void pix_opencv_calibration :: processGrayImage(imageStruct &image)
 	else if ( success_count >= board_view_nb && m_calibration != 0 ) {
 		computeCalibration( gray );
 	 }
-	else if ( m_calibration == 0 ) { 
+  else if ( m_calibration == 0 && !m_mapx.empty() && !m_mapy.empty()) {
     cv::remap(gray,tmp,m_mapx,m_mapy, cv::INTER_NEAREST);
 		image.data = (unsigned char*) tmp.data;
 	}
@@ -139,6 +139,9 @@ void pix_opencv_calibration :: findCorners ( cv::Mat& image )
 										patternSize, 
 										corners,  
 										findChessFlag);
+
+  if(corners.empty())
+    return;
 
 	if (image.channels() == 4) {
 		find_rgb = image.clone();
