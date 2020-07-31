@@ -7,6 +7,9 @@ find_package(OpenCV 4 REQUIRED
   COMPONENTS core imgproc video
   OPTIONAL_COMPONENTS bgsegm objdetect)
 
+set(PD_INSTALL_FOLDER ${PROJECT_NAME} CACHE PATH "Pure Data package installation directory")
+message(STATUS "'${PROJECT_NAME}' will be installed in '${PD_INSTALL_FOLDE}'")
+
 set(SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_athreshold.cpp
   ${CMAKE_CURRENT_LIST_DIR}/src/pix_opencv_bgsubstract.cpp
@@ -118,3 +121,18 @@ elseif(UNIX)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS} FaceTracker)
+
+install(TARGETS ${PROJECT_NAME}
+    DESTINATION ${PD_INSTALL_FOLDER}
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                GROUP_READ GROUP_EXECUTE
+                WORLD_READ WORLD_EXECUTE
+)
+
+file(GLOB HELP_FILES ${CMAKE_CURRENT_LIST_DIR}/help/*)
+
+install(FILES
+  ${HELP_FILES}
+  ${CMAKE_CURRENT_LIST_DIR}/LICENSE.txt
+    DESTINATION ${PD_INSTALL_FOLDER}
+)
