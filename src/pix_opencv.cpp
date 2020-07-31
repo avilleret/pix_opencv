@@ -25,6 +25,14 @@ extern "C" void pix_opencv_hough_lines_setup();
 extern "C" void pix_opencv_hu_compare_setup();
 extern "C" void pix_opencv_hu_moments_setup();
 extern "C" void pix_opencv_laplace_setup();
+extern "C" void pix_opencv_lk_setup();
+extern "C" void pix_opencv_opticalflow_setup();
+extern "C" void pix_opencv_pgh_compare_setup();
+#if HAVE_LIBOPENCV_NONFREE
+extern "C" void pix_opencv_surf_setup();
+#endif
+extern "C" void pix_opencv_threshold_setup();
+extern "C" void pix_opencv_warpperspective_setup();
 
 extern "C" {
 
@@ -85,6 +93,14 @@ void pix_opencv_setup(void)
     pix_opencv_hu_compare_setup();
     pix_opencv_hu_moments_setup();
     pix_opencv_laplace_setup();
+    pix_opencv_lk_setup();
+    pix_opencv_opticalflow_setup();
+    pix_opencv_pgh_compare_setup();
+#if HAVE_LIBOPENCV_NONFREE
+    pix_opencv_surf_setup();
+#endif
+    pix_opencv_threshold_setup();
+    pix_opencv_warpperspective_setup();
 }
 
 } // extern "C"
