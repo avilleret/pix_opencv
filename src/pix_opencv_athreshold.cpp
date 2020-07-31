@@ -36,11 +36,10 @@ pix_opencv_athreshold :: ~pix_opencv_athreshold()
 // processImage
 //
 /////////////////////////////////////////////////////////
-void pix_opencv_athreshold :: processImage(imageStruct &image)
+void pix_opencv_athreshold :: processGrayImage(imageStruct &image)
 {
   cv::Mat mat = image2mat(image);
-  error("erer");
-  
+
   // Applies fixed-level thresholding to single-channel array.
   switch(x_threshold_mode) {
     case 0:

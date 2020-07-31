@@ -29,11 +29,11 @@ class GEM_EXPORT pix_opencv_athreshold : public GemPixObj
     	
     	//////////
     	// Destructor
-    	virtual ~pix_opencv_athreshold();
+      ~pix_opencv_athreshold();
 
     	//////////
     	// Do the processing
-      virtual void 	processImage(imageStruct &image);
+      void 	processGrayImage(imageStruct &image) override;
     	
 	//////////
     	// Set the new edge threshold
