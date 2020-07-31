@@ -1,26 +1,26 @@
-#N canvas 597 253 985 540 10;
-#X obj 17 17 cnv 15 430 320 empty empty empty 20 12 0 14 -233017 -66577
+#N canvas 78 93 985 540 10;
+#X obj 17 207 cnv 15 430 320 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X obj 17 -29 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
+#X obj 17 161 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
 0;
-#X text 26 -25 Arguments:;
-#X obj 17 -124 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
+#X text 26 165 Arguments:;
+#X obj 17 66 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X text 22 -162 Class: pix_opencv;
-#X text 47 -5 none;
-#X obj 459 -182 cnv 15 510 520 empty empty empty 20 12 0 14 -228992
--66577 0;
-#X obj 611 168 cnv 15 280 80 empty empty empty 20 12 0 14 -24198 -66577
+#X text 22 28 Class: pix_opencv;
+#X text 47 185 none;
+#X obj 459 8 cnv 15 510 520 empty empty empty 20 12 0 14 -228992 -66577
 0;
-#X floatatom 744 211 5 0 0 0 - - -, f 5;
-#X obj 615 228 pix_opencv_bgsubstract;
-#X msg 627 172 set;
-#X text 663 172 set the background;
-#X text 741 195 threshold (default 13);
-#X obj 641 -173 gemhead;
-#X obj 615 255 pix_texture;
-#X obj 615 274 square 2;
-#X obj 741 259 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
+#X obj 611 358 cnv 15 280 80 empty empty empty 20 12 0 14 -24198 -66577
+0;
+#X floatatom 744 401 5 0 0 0 - - -;
+#X obj 615 418 pix_opencv_bgsubstract;
+#X msg 627 362 set;
+#X text 663 362 set the background;
+#X text 741 385 threshold (default 13);
+#X obj 641 17 gemhead;
+#X obj 615 445 pix_texture;
+#X obj 615 464 square 2;
+#X obj 741 449 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
 0;
 #N canvas 0 50 454 304 gemwin 0;
 #X obj 67 89 outlet;
@@ -52,32 +52,32 @@
 #X connect 9 0 6 0;
 #X connect 10 0 7 0;
 #X connect 10 2 9 0;
-#X restore 751 303 pd gemwin;
-#X msg 751 285 destroy;
-#X obj 464 253 pix_texture;
-#X obj 464 272 square 2;
-#X obj 615 121 separator;
-#X obj 653 -146 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
+#X restore 751 493 pd gemwin;
+#X msg 751 475 destroy;
+#X obj 464 443 pix_texture;
+#X obj 464 462 square 2;
+#X obj 615 311 separator;
+#X obj 653 44 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
 -1;
-#X obj 710 29 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
+#X obj 710 219 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
 -1 -1;
-#X floatatom 692 -6 5 0 10000 1 frame# - -, f 5;
-#X obj 653 -117 openpanel;
-#X msg 653 -97 open \$1;
-#X obj 641 12 pix_film;
-#X msg 659 -54 auto \$1;
-#X obj 659 -72 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
+#X floatatom 692 184 5 0 10000 1 frame# - -;
+#X obj 653 73 openpanel;
+#X msg 653 93 open \$1;
+#X obj 641 202 pix_film;
+#X msg 659 136 auto \$1;
+#X obj 659 118 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
 1;
-#X text 749 265 Create window and render;
-#X msg 754 -71 colorspace RGBA;
-#X msg 765 -52 colorspace RGB;
-#X msg 772 -32 colorspace Grey;
-#X obj 754 -99 loadbang;
-#X obj 615 100 pix_separator;
-#X obj 464 121 separator;
-#X obj 464 101 pix_separator;
-#X obj 464 141 translateXYZ -2 0 0;
-#X obj 615 141 translateXYZ 2 0 0;
+#X text 749 455 Create window and render;
+#X msg 754 119 colorspace RGBA;
+#X msg 765 138 colorspace RGB;
+#X msg 772 158 colorspace Grey;
+#X obj 754 91 loadbang;
+#X obj 615 290 pix_separator;
+#X obj 464 311 separator;
+#X obj 464 291 pix_separator;
+#X obj 464 331 translateXYZ -2 0 0;
+#X obj 615 331 translateXYZ 2 0 0;
 #N canvas 1 168 274 158 vswitch 0;
 #X obj 36 138 outlet;
 #X obj 36 26 inlet;
@@ -93,30 +93,30 @@
 #X connect 4 0 5 1;
 #X connect 5 0 0 0;
 #X connect 6 0 0 0;
-#X restore 464 58 pd vswitch;
-#X obj 532 58 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0 1
-;
-#X obj 464 10 pix_video;
-#X obj 464 -175 gemhead;
-#X msg 503 -65 device 0;
-#X msg 512 -34 driver 1;
-#X msg 489 -119 dialog;
-#X msg 494 -89 device /dev/dv1394-0;
-#X obj 464 78 pix_rgba;
-#X text 24 219 written by Yves Degoyon ( ydegoyon@gmail.com );
-#X text 23 -178 Synopsis: [pix_opencv_bgsubstract];
-#X text 22 37 Useful if you want to detect dynamic objects over a static
-background.;
-#X text 22 84 This object takes an image as a background reference
+#X restore 464 248 pd vswitch;
+#X obj 532 248 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 464 200 pix_video;
+#X obj 464 15 gemhead;
+#X msg 503 125 device 0;
+#X msg 512 156 driver 1;
+#X msg 489 71 dialog;
+#X msg 494 101 device /dev/dv1394-0;
+#X text 24 409 written by Yves Degoyon ( ydegoyon@gmail.com );
+#X text 23 12 Synopsis: [pix_opencv_bgsubstract];
+#X text 22 227 Useful if you want to detect dynamic objects over a
+static background.;
+#X text 22 274 This object takes an image as a background reference
 and compare each incomming frame with that. On the output you get a
 b&w image \, black pixels are considered as background and white pixels
 as foreground.;
-#X text 21 144 pix_opencv_bgsubstract works comparing color values
+#X text 21 334 pix_opencv_bgsubstract works comparing color values
 of each pixel \, so it can fail if the foreground object has the same
 color than the background \, and also if the light conditions or the
 shadows change since you SET the background image.;
-#X text 27 -107 pix_opencv_bgsubstract :: A very simple background
-substractor and binarization object.;
+#X text 27 83 pix_opencv_bgsubstract :: A very simple background substractor
+and binarization object.;
+#X obj 464 268 pix_gray;
 #X connect 8 0 9 1;
 #X connect 9 0 14 0;
 #X connect 10 0 9 0;
@@ -146,7 +146,7 @@ substractor and binarization object.;
 #X connect 37 0 36 0;
 #X connect 38 0 19 0;
 #X connect 39 0 9 0;
-#X connect 40 0 48 0;
+#X connect 40 0 54 0;
 #X connect 41 0 40 2;
 #X connect 42 0 40 0;
 #X connect 43 0 42 0;
@@ -154,5 +154,5 @@ substractor and binarization object.;
 #X connect 45 0 42 0;
 #X connect 46 0 42 0;
 #X connect 47 0 42 0;
-#X connect 48 0 37 0;
-#X connect 48 0 35 0;
+#X connect 54 0 37 0;
+#X connect 54 0 35 0;
