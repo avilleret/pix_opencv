@@ -16,24 +16,7 @@ CPPEXTERN_NEW(pix_opencv_camshift)
 
 pix_opencv_camshift :: pix_opencv_camshift()
 { 
-  int i;
-  int hdims = 16;
-  float hranges_arr[] = {0,180};
-  float* hranges = hranges_arr;
-
-  comp_xsize=320;
-  comp_ysize=240;
-
   m_dataout = outlet_new(this->x_obj, &s_anything);
-
-  x_track = 0;
-  x_init = 0;
-  x_rwidth = 20;
-  x_rheight = 20;
-  x_backproject = 0;
-  x_vmin = 50;
-  x_vmax = 256;
-  x_smin = 30;
 }
 
 /////////////////////////////////////////////////////////
@@ -50,24 +33,25 @@ pix_opencv_camshift :: ~pix_opencv_camshift()
 /////////////////////////////////////////////////////////
 void pix_opencv_camshift :: processImage(imageStruct &image)
 {
-  int i, k;
-  int im;
-  int marked;
-  int hdims = 16;
-  float hranges_arr[] = {0,180};
-  float* hranges = hranges_arr;
-
   cv::Mat hsv = image2mat_hsv(image);
 
+  if(hsv.size() != m_last_size)
+  {
+    m_last_size = hsv.size();
+    x_track = 0;
+    x_init = 0;
+  }
 
   if ( x_track  )
   {
     cv::inRange(hsv, cv::Scalar(0,x_smin,std::min(x_vmin,x_vmax),0),
                 cv::Scalar(180,256,std::max(x_vmin,x_vmax),0), mask);
-    cv::Mat hue, hist, backproj;
+    cv::Mat hist, backproj;
 
     // extract hue (1st channel) from hsv (3 channels)
-    cv::mixChannels({hsv}, {hue}, {0,0});
+    std::vector<cv::Mat> mat_vec;
+    cv::split(hsv, mat_vec);
+    auto& hue = mat_vec[0];
 
     int hsize = 16;
     float hranges[] = {0,180};
@@ -195,14 +179,14 @@ void  pix_opencv_camshift :: trackMess(float px, float py)
 {
   int rx, ry, w, h;
 
-  if ( ( px<0.0 ) || ( px>comp_xsize ) || ( py<0.0 ) || ( py>comp_ysize ) ) return;
+  if ( ( px<0.0 ) || ( px>m_last_size.width ) || ( py<0.0 ) || ( py>m_last_size.height ) ) return;
 
   //py = comp_ysize - py;
   origin = cv::Point((int)px,(int)py);
   rx = ( (int)px-(x_rwidth/2) < 0 )? 0:(int)px-(x_rwidth/2);
   ry = ( (int)py-(x_rheight/2) < 0 )? 0:(int)py-(x_rheight/2);
-  w = (rx+x_rwidth>comp_xsize ) ? ( comp_xsize - rx ):x_rwidth;
-  h = (ry+x_rheight>comp_ysize ) ? ( comp_ysize - ry ):x_rheight;
+  w = (rx+x_rwidth>m_last_size.width ) ? ( m_last_size.width - rx ):x_rwidth;
+  h = (ry+x_rheight>m_last_size.height ) ? ( m_last_size.height - ry ):x_rheight;
   selection = cv::Rect(rx,ry,w,h);
   post( "pix_opencv_camshift : track point (%f,%f) region (%d %d %d %d)", px, py, rx, ry, w, h );
   x_track = 1;

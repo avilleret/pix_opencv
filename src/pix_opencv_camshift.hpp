@@ -48,18 +48,17 @@ class GEM_EXPORT pix_opencv_camshift : public GemPixObj
     void  rWidthMess(float rwidth);
     void  rHeightMess(float rheight);
 
-    int comp_xsize;
-    int comp_ysize;
+    cv::Size m_last_size{};
 
     t_outlet *m_dataout;
-    int     x_track;
-    int     x_init;
-    int     x_rwidth;
-    int     x_rheight;
-    int     x_backproject;
-    int     x_vmin;
-    int     x_vmax;
-    int     x_smin;
+    int     x_track{0};
+    int     x_init{0};
+    int     x_rwidth{20};
+    int     x_rheight{20};
+    int     x_backproject{0};
+    int     x_vmin{50};
+    int     x_vmax{256};
+    int     x_smin{30};
 
   private:
 
