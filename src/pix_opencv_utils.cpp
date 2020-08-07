@@ -103,18 +103,21 @@ void image2mat_hsv(imageStruct& image, cv::Mat& hsv)
   switch(image.csize)
   {
     case 1:
-      mat = cv::Mat(image.ysize, image.xsize, CV_8UC3, image.data);
+      mat = cv::Mat(image.ysize, image.xsize, CV_8UC1, image.data);
       cv::cvtColor(mat, bgr, cv::COLOR_GRAY2BGR);
       cv::cvtColor(bgr, hsv, cv::COLOR_BGR2HSV);
+      break;
     case 3:
       mat = cv::Mat(image.ysize, image.xsize, CV_8UC3, image.data);
       cv::cvtColor(mat, bgr, cv::COLOR_BGR2HSV);
+      break;
     case 4:
       mat = cv::Mat(image.ysize, image.xsize, CV_8UC4, image.data);
       cv::cvtColor(mat, bgr, cv::COLOR_BGRA2BGR);
       cv::cvtColor(bgr, hsv, cv::COLOR_BGR2HSV);
+      break;
     default:
-      error("image format not supported");
+      error("image csize %d not supported", image.csize);
   }
 }
 
