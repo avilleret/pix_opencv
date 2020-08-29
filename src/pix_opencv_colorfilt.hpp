@@ -43,11 +43,10 @@ class GEM_EXPORT pix_opencv_colorfilt : public GemPixObj
     	void	    	floatGMess(float g);
     	void	    	floatBMess(float b);
     	void	    	pickMess(float xcur, float ycur);
-    	void	    	drawColor(void);
 
     	// The color tolerance
         int x_tolerance;
-        cv::Vec3i x_color;
+        cv::Scalar x_color;
 
         t_outlet *x_R;  // output R component of selected color
         t_outlet *x_G;  // output G component of selected color
@@ -61,7 +60,7 @@ class GEM_EXPORT pix_opencv_colorfilt : public GemPixObj
 
     private:
 
-      cv::Mat bgr;
+      cv::Mat m_input;
     	//////////
     	// Static member functions
     	static void    	floatToleranceMessCallback(void *data, float tolerance);
