@@ -1,15 +1,15 @@
 #N canvas 240 210 936 587 10;
-#X obj -6 52 cnv 15 430 370 empty empty empty 20 12 0 14 -233017 -66577
+#X obj 4 202 cnv 15 430 370 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X obj -6 6 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
+#X obj 4 156 cnv 15 430 40 empty empty empty 20 12 0 14 -195568 -66577
 0;
-#X text 3 10 Arguments:;
-#X obj -7 -90 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
+#X text 13 160 Arguments:;
+#X obj 3 60 cnv 15 430 90 empty empty empty 20 12 0 14 -233017 -66577
 0;
-#X text 24 30 none;
-#X obj 430 -147 cnv 15 480 570 empty empty empty 20 12 0 14 -228992
--66577 0;
-#X obj 680 337 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
+#X text 34 180 none;
+#X obj 440 3 cnv 15 480 570 empty empty empty 20 12 0 14 -228992 -66577
+0;
+#X obj 690 487 cnv 15 220 70 empty empty empty 20 12 0 14 -195568 -66577
 0;
 #N canvas 0 22 454 304 gemwin 0;
 #X obj 67 89 outlet;
@@ -41,47 +41,47 @@
 #X connect 9 0 10 0;
 #X connect 9 2 8 0;
 #X connect 10 0 6 0;
-#X restore 690 381 pd gemwin;
-#X msg 690 363 create;
-#X obj 441 201 cnv 15 460 130 empty empty empty 20 12 0 14 -4034 -66577
+#X restore 700 531 pd gemwin;
+#X msg 700 513 create;
+#X obj 451 351 cnv 15 460 130 empty empty empty 20 12 0 14 -4034 -66577
 0;
-#X text 688 343 Create window and render;
-#X text 2 -57 written by Yves Degoyon ( ydegoyon@gmail.com );
-#X obj 446 361 rectangle 5.3 4;
-#X floatatom 485 310 5 0 0 0 - - -;
-#X floatatom 530 310 5 0 0 0 - - -;
-#X floatatom 575 310 5 0 0 0 - - -;
-#X text 619 310 RGB selected components;
-#X msg 483 230 tolerance \$1;
-#X floatatom 569 232 5 0 0 0 - - -;
-#X text 610 231 tolerance applied for the selection of colors;
-#X obj 832 49 gemmouse;
-#X obj 828 134 f;
-#X obj 798 133 f;
-#X obj 798 112 t b b;
-#X obj 798 155 pack f f;
-#X obj 798 90 route 1;
-#X text 3 -112 pix_opencv_colorfilt : color filter;
-#X text 4 -80 you can set the selected color with its RGB components
+#X text 698 493 Create window and render;
+#X text 12 93 written by Yves Degoyon ( ydegoyon@gmail.com );
+#X obj 456 511 rectangle 5.3 4;
+#X floatatom 495 460 5 0 0 0 - - -;
+#X floatatom 540 460 5 0 0 0 - - -;
+#X floatatom 585 460 5 0 0 0 - - -;
+#X text 629 460 RGB selected components;
+#X msg 493 380 tolerance \$1;
+#X floatatom 579 382 5 0 0 0 - - -;
+#X text 620 381 tolerance applied for the selection of colors;
+#X obj 842 199 gemmouse;
+#X obj 838 284 f;
+#X obj 808 283 f;
+#X obj 808 262 t b b;
+#X obj 808 305 pack f f;
+#X obj 808 240 route 1;
+#X text 13 38 pix_opencv_colorfilt : color filter;
+#X text 14 70 you can set the selected color with its RGB components
 or by selecting a piksel in the video window;
-#X msg 466 204 pick \$1 \$2;
-#X text 542 203 pick a color from the video;
-#X obj 633 -135 gemhead;
-#X obj 645 -108 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
+#X msg 476 354 pick \$1 \$2;
+#X text 552 353 pick a color from the video;
+#X obj 643 15 gemhead;
+#X obj 655 42 bng 25 250 50 0 load empty empty 0 -6 0 8 -262144 -1
 -1;
-#X obj 702 67 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
+#X obj 712 217 bng 15 250 50 0 empty empty end_reached 20 7 0 10 -262144
 -1 -1;
-#X floatatom 684 32 5 0 10000 1 frame# - -;
-#X obj 645 -79 openpanel;
-#X msg 645 -59 open \$1;
-#X obj 633 50 pix_film;
-#X msg 651 -16 auto \$1;
-#X obj 651 -34 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
+#X floatatom 694 182 5 0 10000 1 frame# - -;
+#X obj 655 71 openpanel;
+#X msg 655 91 open \$1;
+#X obj 643 200 pix_film;
+#X msg 661 134 auto \$1;
+#X obj 661 116 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
 1;
-#X msg 746 -33 colorspace RGBA;
-#X msg 759 5 colorspace RGB;
-#X msg 754 -14 colorspace Grey;
-#X obj 746 -61 loadbang;
+#X msg 756 117 colorspace RGBA;
+#X msg 769 155 colorspace RGB;
+#X msg 764 136 colorspace Grey;
+#X obj 756 89 loadbang;
 #N canvas 1 165 267 218 vswitch 0;
 #X obj 36 143 outlet;
 #X obj 36 26 inlet;
@@ -97,23 +97,23 @@ or by selecting a piksel in the video window;
 #X connect 4 0 5 1;
 #X connect 5 0 0 0;
 #X connect 6 0 0 0;
-#X restore 446 91 pd vswitch;
-#X obj 514 91 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0 1
-;
-#X obj 446 48 pix_video;
-#X obj 446 -134 gemhead;
-#X msg 485 -27 device 0;
-#X msg 494 4 driver 1;
-#X msg 471 -81 dialog;
-#X msg 476 -51 device /dev/dv1394-0;
-#X obj 446 289 pix_opencv_colorfilt;
-#X obj 446 133 pix_resize 320 240;
-#X obj 446 112 pix_rgba;
-#X floatatom 485 270 5 0 0 0 - - -;
-#X floatatom 530 270 5 0 0 0 - - -;
-#X floatatom 575 270 5 0 0 0 - - -;
-#X text 619 270 RGB selected components;
-#X obj 446 339 pix_texture;
+#X restore 456 241 pd vswitch;
+#X obj 524 241 tgl 15 0 empty load empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 456 198 pix_video;
+#X obj 456 16 gemhead;
+#X msg 495 123 device 0;
+#X msg 504 154 driver 1;
+#X msg 481 69 dialog;
+#X msg 486 99 device /dev/dv1394-0;
+#X obj 456 439 pix_opencv_colorfilt;
+#X obj 456 283 pix_resize 320 240;
+#X obj 456 262 pix_rgba;
+#X floatatom 495 420 5 0 0 0 - - -;
+#X floatatom 540 420 5 0 0 0 - - -;
+#X floatatom 585 420 5 0 0 0 - - -;
+#X text 629 420 RGB selected components;
+#X obj 456 489 pix_texture;
 #X connect 7 0 8 0;
 #X connect 8 0 7 0;
 #X connect 17 0 51 0;
