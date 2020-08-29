@@ -129,27 +129,58 @@ void mat2image(const cv::Mat& mat, imageStruct& image)
     return;
   }
 
-  if(image.csize == 1)
+  switch(image.csize)
   {
-    switch(mat.channels())
-    {
-      case 1:
-        image.data = mat.data;
-        break;
-      case 3:
+    case 1:
+      switch(mat.channels())
       {
-        cv::Mat rgb = image2mat(image);
-        cv::cvtColor(mat, rgb, cv::COLOR_GRAY2RGB);
-        break;
+        case 1:
+        {
+          image.data = mat.data;
+          break;
+        }
+        case 3:
+        {
+          cv::Mat rgb = image2mat(image);
+          cv::cvtColor(mat, rgb, cv::COLOR_GRAY2RGB);
+          break;
+        }
+        case 4:
+        {
+          cv::Mat rgba = image2mat(image);
+          cv::cvtColor(mat, rgba, cv::COLOR_GRAY2RGBA);
+          break;
+        }
+        default:
+          error("mat plane count not supported: %d", mat.channels());
       }
-      case 4:
+      break;
+    case 4:
+      switch(mat.channels())
       {
-        cv::Mat rgba = image2mat(image);
-        cv::cvtColor(mat, rgba, cv::COLOR_GRAY2RGBA);
-        break;
+        case 1:
+        {
+          cv::Mat rgba = image2mat(image);
+          cv::cvtColor(mat, rgba, cv::COLOR_GRAY2BGRA);
+          break;
+        }
+        case 3:
+        {
+          cv::Mat rgb = image2mat(image);
+          cv::cvtColor(mat, rgb, cv::COLOR_RGB2RGBA);
+          break;
+        }
+        case 4:
+        {
+          image.data = mat.data;
+          break;
+        }
+        default:
+          error("mat plane count not supported: %d", mat.channels());
       }
-      default:
-        error("mat plane count not supported: %d", mat.channels());
-    }
+      break;
+    default:
+      error("can't convert cv::Mat to image with csize %d", image.csize);
+      break;
   }
 }
