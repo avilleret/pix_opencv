@@ -45,8 +45,8 @@ void pix_opencv_camshift :: processImage(imageStruct &image)
   if ( x_track  )
   {
     cv::inRange(hsv, cv::Scalar(0,x_smin,std::min(x_vmin,x_vmax),0),
-                cv::Scalar(180,256,std::max(x_vmin,x_vmax),0), mask);
-    cv::Mat hist, backproj;
+                cv::Scalar(180,256,std::max(x_vmin,x_vmax),0), m_mask);
+    cv::Mat backproj;
 
     // extract hue (1st channel) from hsv (3 channels)
     std::vector<cv::Mat> mat_vec;
@@ -61,24 +61,26 @@ void pix_opencv_camshift :: processImage(imageStruct &image)
     {
       unsigned char max_val = 255;
       x_init = 0;
-      cv::Mat roi(hue, selection), maskroi(mask, selection);
-      cv::calcHist(&roi, 1, 0, maskroi, hist, 1, &hsize, &phranges);
-      cv::normalize(hist, hist, 0, max_val, cv::NORM_MINMAX);
+      cv::Mat roi(hue, m_selection), maskroi(m_mask, m_selection);
+
+      cv::calcHist(&roi, 1, 0, maskroi, m_hist, 1, &hsize, &phranges);
+      cv::normalize(m_hist, m_hist, 0, max_val, cv::NORM_MINMAX);
 
       //cv::minMaxLoc(hist, nullptr, &max_val, nullptr, nullptr);
 
-      trackwindow = selection;
+      m_trackwindow = m_selection;
     }
 
-    cv::calcBackProject(&hue, 1, 0, hist, backproj, &phranges);
-    backproj &= mask;
-    cv::RotatedRect trackBox = cv::CamShift(backproj, trackwindow,
+    cv::calcBackProject(&hue, 1, 0, m_hist, backproj, &phranges);
+
+    backproj &= m_mask;
+    cv::RotatedRect trackBox = cv::CamShift(backproj, m_trackwindow,
                         cv::TermCriteria( cv::TermCriteria::EPS | cv::TermCriteria::COUNT, 10, 1 ));
-    if( trackwindow.area() <= 1 )
+    if( m_trackwindow.area() <= 1 )
     {
         int cols = backproj.cols, rows = backproj.rows, r = (MIN(cols, rows) + 5)/6;
-        trackwindow = cv::Rect(trackwindow.x - r, trackwindow.y - r,
-                           trackwindow.x + r, trackwindow.y + r) &
+        m_trackwindow = cv::Rect(m_trackwindow.x - r, m_trackwindow.y - r,
+                           m_trackwindow.x + r, m_trackwindow.y + r) &
                       cv::Rect(0, 0, cols, rows);
     }
     if( x_backproject )
@@ -182,12 +184,12 @@ void  pix_opencv_camshift :: trackMess(float px, float py)
   if ( ( px<0.0 ) || ( px>m_last_size.width ) || ( py<0.0 ) || ( py>m_last_size.height ) ) return;
 
   //py = comp_ysize - py;
-  origin = cv::Point((int)px,(int)py);
+  m_origin = cv::Point((int)px,(int)py);
   rx = ( (int)px-(x_rwidth/2) < 0 )? 0:(int)px-(x_rwidth/2);
   ry = ( (int)py-(x_rheight/2) < 0 )? 0:(int)py-(x_rheight/2);
   w = (rx+x_rwidth>m_last_size.width ) ? ( m_last_size.width - rx ):x_rwidth;
   h = (ry+x_rheight>m_last_size.height ) ? ( m_last_size.height - ry ):x_rheight;
-  selection = cv::Rect(rx,ry,w,h);
+  m_selection = cv::Rect(rx,ry,w,h);
   post( "pix_opencv_camshift : track point (%f,%f) region (%d %d %d %d)", px, py, rx, ry, w, h );
   x_track = 1;
   x_init = 1;
@@ -197,13 +199,13 @@ void  pix_opencv_camshift :: rWidthMess(float rwidth)
 {
   if ( (int)rwidth>=0 ) x_rwidth = (int)rwidth;
   // refresh selection zone
-  trackMess( (float)origin.x, (float)origin.y );
+  trackMess( (float)m_origin.x, (float)m_origin.y );
 }
 
 void  pix_opencv_camshift :: rHeightMess(float rheight)
 {
   if ( (int)rheight>=0 ) x_rheight = (int)rheight;
   // refresh selection zone
-  trackMess( (float)origin.x, (float)origin.y );
+  trackMess( (float)m_origin.x, (float)m_origin.y );
 }
 

@@ -40,7 +40,7 @@ class GEM_EXPORT pix_opencv_camshift : public GemPixObj
     // Do the processing
     void 	processImage(imageStruct &image) override;
 
-    void  backProjectMess(float backproject);
+    void  backProjectMess(float m_backproject);
     void  vMinMess(float vmin);
     void  vMaxMess(float vmax);
     void  sMinMess(float smin);
@@ -64,7 +64,7 @@ class GEM_EXPORT pix_opencv_camshift : public GemPixObj
 
     //////////
     // Static member functions
-    static void  backProjectMessCallback(void *data, float backproject);
+    static void  backProjectMessCallback(void *data, float m_backproject);
     static void  vMinMessCallback(void *data, float vmin);
     static void  vMaxMessCallback(void *data, float vmax);
     static void  sMinMessCallback(void *data, float smin);
@@ -73,14 +73,11 @@ class GEM_EXPORT pix_opencv_camshift : public GemPixObj
     static void  rHeightMessCallback(void *data, float rheight);
 
     // Internal Open CV data
-    cv::Mat gray;
-    cv::Mat hsv;
-    cv::Mat hue;
-    cv::Mat mask;
-    cv::Mat backproject;
-    cv::Point origin;
-    cv::Rect selection;
-    cv::Rect trackwindow;
+    cv::Mat m_mask;
+    cv::Mat m_hist;
+    cv::Point m_origin;
+    cv::Rect m_selection;
+    cv::Rect m_trackwindow;
 
     t_atom x_list[5];
 };
