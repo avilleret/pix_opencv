@@ -123,11 +123,8 @@ void image2mat_hsv(imageStruct& image, cv::Mat& hsv)
 
 void mat2image(const cv::Mat& mat, imageStruct& image)
 {
-  if(mat.cols != image.xsize || mat.rows != image.ysize)
-  {
-    error("image should be of the same size");
-    return;
-  }
+  image.xsize = mat.cols;
+  image.ysize = mat.rows;
 
   switch(image.csize)
   {
@@ -181,6 +178,5 @@ void mat2image(const cv::Mat& mat, imageStruct& image)
       break;
     default:
       error("can't convert cv::Mat to image with csize %d", image.csize);
-      break;
   }
 }
