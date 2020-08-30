@@ -40,7 +40,7 @@ protected:
   int 		edge_thresh;
   int 		mask_size;
   int     build_voronoi;
-  int     voronoiType;
+  int     voronoiType = cv::DIST_LABEL_CCOMP;
   int     dist_type;
 
 private:

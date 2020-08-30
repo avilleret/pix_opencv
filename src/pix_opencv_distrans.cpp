@@ -161,5 +161,8 @@ void pix_opencv_distrans :: distMessCallback(void *data, t_floatarg f)
 
 void pix_opencv_distrans :: typeMessCallback(void *data, t_floatarg f)
 {
-  GetMyClass(data)->voronoiType = static_cast<int>(f);
+  if(f>0)
+    GetMyClass(data)->voronoiType = cv::DIST_LABEL_PIXEL;
+  else
+    GetMyClass(data)->voronoiType = cv::DIST_LABEL_CCOMP;
 }
