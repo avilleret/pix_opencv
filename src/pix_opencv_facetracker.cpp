@@ -93,7 +93,8 @@ pix_opencv_facetracker :: pix_opencv_facetracker(int argc,t_atom* argv)
         m_con = IO::LoadCon(con_file.c_str());
       }
       catch (const std::exception& e) {
-        std::cerr << "fail to load model: " << e.what() << std::endl;
+        std::cerr << "failed to load model: " << e.what() << std::endl;
+        error("fail to load model: %s", e.what());
       }
     }
   }
@@ -213,7 +214,9 @@ void pix_opencv_facetracker :: processImage(imageStruct &image)
   std::vector<int> wSize; 
   if(m_failed)wSize = m_wSize2; 
   else wSize = m_wSize1; 
-  
+
+  try {
+
   if(m_tracker.Track(gray,wSize,m_fpd,m_nIter,m_clamp,m_fTol,m_fcheck) == 0){
     int idx = m_tracker._clm.GetViewIdx(); m_failed = false;
     OutputMesh(im,m_tracker._shape,m_con,m_tri,m_tracker._clm._visi[idx]);
@@ -231,6 +234,10 @@ void pix_opencv_facetracker :: processImage(imageStruct &image)
     char text[256];
     sprintf(text,"%.2f frames/sec",(float)m_fps);
     cv::putText(im,text,cv::Point(10,20), cv::FONT_HERSHEY_SIMPLEX,0.5,CV_RGB(255,255,255));
+  }
+
+  }  catch (const std::exception& e) {
+    error("tracking failed due to runtime error: %s", e.what());
   }
 }
 
