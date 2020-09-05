@@ -1,4 +1,5 @@
 #include "pix_opencv_facetracker.hpp"
+#include "pix_opencv_utils.hpp"
 
 using namespace FACETRACKER;
 
@@ -206,23 +207,9 @@ void pix_opencv_facetracker :: Draw(cv::Mat &image,cv::Mat &shape,cv::Mat &con,c
     	
 void pix_opencv_facetracker :: processImage(imageStruct &image)
 { 
-  cv::Mat gray, im;
-  if ( image.ysize < 1 || image.xsize < 1 ) return;
-  if ( image.csize == 1 ){
-    gray = cv::Mat( image.ysize, image.xsize, CV_8UC1, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
-    im = gray;
-  } else if ( image.csize == 3 ) {
-    im = cv::Mat( image.ysize, image.xsize, CV_8UC3, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
-    cv::cvtColor(im,gray,cv::COLOR_RGB2GRAY);
-  } else if ( image.csize == 4 ) {
-    im = cv::Mat( image.ysize, image.xsize, CV_8UC4, image.data, image.csize*image.xsize); // just transform imageStruct to IplImage without copying data
-    cv::cvtColor(im,gray,cv::COLOR_RGBA2GRAY);
-  } else { 
-    error("pix_opencv_facetracker : unsupported video format %d",image.csize);
-    return;
-  }
+  cv::Mat gray = image2mat_gray(image);
+  cv::Mat im = image2mat(image);
 
-  //track this image
   std::vector<int> wSize; 
   if(m_failed)wSize = m_wSize2; 
   else wSize = m_wSize1; 
