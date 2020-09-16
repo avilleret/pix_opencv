@@ -74,12 +74,12 @@ void pix_opencv_warpperspective :: srcMatrixMess (int argc, t_atom *argv)
 {
 	int i;
 	if ( argc % 2 ) { 
-		error("src is should be a list of couple x/y values"); 
+    error("srcMatrix is should be a list of couple x/y values");
 		return; 
 	}
-  if ( argc != dstMatrix.total() )
+  if ( argc/2 != dstMatrix.total() )
 	{ 
-    error("src matrix should have the same size as dst matrix (%d x %d)", dstMatrix.cols, dstMatrix.rows);
+    error("srcMatrix should have the same size as dst matrix (%d x %d)", dstMatrix.cols, dstMatrix.rows);
 		return;
 	}
 	for ( i = 0; i < argc ; i++) {		
